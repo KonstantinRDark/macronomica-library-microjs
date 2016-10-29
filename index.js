@@ -1,7 +1,7 @@
 var dist;
 
 try {
-  dist = require('./dist');
+  dist = require('./build');
 } catch (err) {
   dist = require('./release');
 }
