@@ -1,6 +1,6 @@
 {
   "name": "microjs",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "description": "Библиотека для запуска микросервисов",
   "main": "index.js",
   "author": "Konstantin Dark",
