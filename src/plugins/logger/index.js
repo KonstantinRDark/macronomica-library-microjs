@@ -56,7 +56,7 @@ export default ({ name = 'micro', level = 'silly' } = {}) => micro => {
 };
 
 function hideParams(str) {
-  if (!!~str.indexOf('password')) {
+  if (!!str && !!str.indexOf && !!~str.indexOf('password')) {
     return str
       .replace(/(password:.[^,|\s]+)/gi, 'password=*****')
       .replace(/(password]=.[^,|\s]+)/gi, 'password]=*****')
