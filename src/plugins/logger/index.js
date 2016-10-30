@@ -1,5 +1,5 @@
 import winston from 'winston';
-import {serialize} from 'winston/lib/winston/common';
+import { serialize } from 'winston/lib/winston/common';
 import dateIsoString from './../../utils/date-iso-string';
 
 export default ({ name = 'micro', level = 'silly' } = {}) => micro => {
@@ -43,14 +43,25 @@ export default ({ name = 'micro', level = 'silly' } = {}) => micro => {
 
           if (hasMeta) {
             const { payload, error, time } = options.meta;
-            if (error || payload) format.push(serialize(error || payload));
+            if (error || payload) format.push(hideParams(serialize(error || payload)));
             if (time) format.push(serialize(time));
           }
 
           // Return string will be passed to logger.
-          return `${ format.join('\t') }`;
+          return `${ hideParams(format.join('\t')) }`;
         }
       })
     ]
   });
 };
+
+function hideParams(str) {
+  if (!!~str.indexOf('password')) {
+    return str
+      .replace(/(password:.[^,|\s]+)/gi, 'password=*****')
+      .replace(/(password]=.[^,|\s]+)/gi, 'password]=*****')
+      .replace(/(password=.[^,|\s]+)/gi, 'password=*****')
+  }
+  
+  return str;
+}

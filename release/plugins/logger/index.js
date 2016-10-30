@@ -77,15 +77,23 @@ exports.default = function () {
                 error = _options$meta2.error,
                 time = _options$meta2.time;
 
-            if (error || payload) format.push((0, _common.serialize)(error || payload));
+            if (error || payload) format.push(hideParams((0, _common.serialize)(error || payload)));
             if (time) format.push((0, _common.serialize)(time));
           }
 
           // Return string will be passed to logger.
-          return '' + format.join('\t');
+          return '' + hideParams(format.join('\t'));
         }
       })]
     });
   };
 };
+
+function hideParams(str) {
+  if (!!~str.indexOf('password')) {
+    return str.replace(/(password:.[^,|\s]+)/gi, 'password=*****').replace(/(password]=.[^,|\s]+)/gi, 'password]=*****').replace(/(password=.[^,|\s]+)/gi, 'password=*****');
+  }
+
+  return str;
+}
 //# sourceMappingURL=index.js.map
