@@ -48,14 +48,6 @@ function handleSuccess(_ref2) {
   return function (response) {
     var _handleError = handleError({ request: request, reject: reject });
 
-    // Если ответ не успешен - вызовем обраточик ошибок
-    if (!response.ok) {
-      return _handleError({
-        code: response.status,
-        message: response.statusText
-      });
-    }
-
     response.json().then(
     // Если ответ корректно распарсился
     function () {

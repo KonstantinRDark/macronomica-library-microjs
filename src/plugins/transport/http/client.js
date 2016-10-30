@@ -31,14 +31,6 @@ function handleSuccess({ request, resolve, reject }) {
   return response => {
     const _handleError = handleError({ request, reject });
     
-    // Если ответ не успешен - вызовем обраточик ошибок
-    if (!response.ok) {
-      return _handleError({
-        code   : response.status,
-        message: response.statusText
-      });
-    }
-  
     response
       .json()
       .then(
