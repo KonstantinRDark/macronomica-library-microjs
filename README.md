@@ -1,7 +1,7 @@
 # Приложение обертка для запуска микросервисов
 * **Source**: [Git](https://gitlab.com/microjs/microjs.git)
 * **Language**: JavaScript
-* **Engine**: [Node.js v6.5.0](https://nodejs.org/dist/latest-v5.x/)
+* **Engine**: [Node.js v6.5.0](https://nodejs.org/dist/latest-v6.x/)
 
 Пример использования:
 
