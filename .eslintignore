@@ -1,7 +1,5 @@
-dist
 node_modules
 coverage
-build
 src/**/*.json
 index.js
 gulpfile.js

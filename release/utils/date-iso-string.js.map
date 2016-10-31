@@ -1,1 +1,0 @@
-{"version":3,"sources":["utils/date-iso-string.js"],"names":["timestamp","Date","toISOString"],"mappings":";;;;;;kBAAe,UAACA,SAAD;AAAA,SAAgB,IAAIC,IAAJ,CAASD,SAAT,CAAD,CAAsBE,WAAtB,EAAf;AAAA,C","file":"date-iso-string.js","sourceRoot":"../../src"}

@@ -1,1 +1,0 @@
-{"version":3,"sources":["utils/provide-call.js"],"names":["micro","result","Array","isArray"],"mappings":";;;;;;AAAA;;;;;;;;kBAEe,UAACA,KAAD,EAAQC,MAAR,EAAmB;AAChC,MAAI,sBAAWA,MAAX,CAAJ,EAAwB;AACtB,WAAOC,MAAMC,OAAN,CAAcH,KAAd,IACHC,2CAAUD,KAAV,EADG,GAEHC,OAAOD,KAAP,CAFJ;AAGD;;AAED,SAAOC,MAAP;AACD,C","file":"provide-call.js","sourceRoot":"../../src"}
