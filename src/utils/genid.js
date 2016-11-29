@@ -1,3 +1,3 @@
 import nid from 'nid';
 
-export default () => nid(10);
+export default ({ length = 10 } = {}) => nid(length);

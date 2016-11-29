@@ -11,6 +11,10 @@ var _nid2 = _interopRequireDefault(_nid);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function () {
-  return (0, _nid2.default)(10);
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$length = _ref.length,
+      length = _ref$length === undefined ? 10 : _ref$length;
+
+  return (0, _nid2.default)(length);
 };
 //# sourceMappingURL=genid.js.map

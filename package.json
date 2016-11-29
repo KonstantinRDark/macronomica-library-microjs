@@ -1,6 +1,6 @@
 {
   "name": "@microjs/microjs",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "description": "Библиотека для запуска микросервисов",
   "main": "index.js",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/microjs/microjs.git"
+    "url": "https://github.com/macronomica/macronomica-library-microjs"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
