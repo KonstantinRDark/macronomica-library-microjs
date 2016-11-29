@@ -7,12 +7,14 @@ exports.default = use;
 
 /**
  * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} initSubscribers    // Список подписчиков на этап инициализации
+ * @param {function[]} runSubscribers     // Список подписчиков на этап инициализации
  * @returns {function(?function):object}
  */
-function use(microjs, initSubscribers) {
+function use(microjs, _ref) {
+  var runSubscribers = _ref.subscribers.run;
+
   return function (cb) {
-    initSubscribers.push(cb);
+    runSubscribers.push(cb);
     return microjs;
   };
 }

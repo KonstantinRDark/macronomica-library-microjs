@@ -30,7 +30,7 @@ function NodeHttpPlugin(_ref) {
     var getTransportPin = 'transport:' + TRANSPORT;
     var getTransportListenPin = 'transport:' + TRANSPORT + ', cmd:listen';
 
-    microjs.add(getTransportPin, function () {
+    microjs.add(getTransportPin, function getHttpTransportRoute() {
       return plugin;
     });
     microjs.add(getTransportListenPin, (0, _listen2.default)(microjs, plugin, onClose, settings));

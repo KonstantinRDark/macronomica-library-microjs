@@ -8,7 +8,7 @@ export default function NodeHttpPlugin({ ...settings }) {
     const getTransportPin = `transport:${ TRANSPORT }`;
     const getTransportListenPin = `transport:${ TRANSPORT }, cmd:listen`;
 
-    microjs.add(getTransportPin, () => plugin);
+    microjs.add(getTransportPin, function getHttpTransportRoute() { return plugin });
     microjs.add(getTransportListenPin, listenHttp(microjs, plugin, onClose, settings));
 
     onClose(() => microjs

@@ -2,7 +2,7 @@ import isString from 'lodash.isstring';
 import jsonic from 'jsonic';
 import genid from './../utils/genid';
 
-export default function add(microjs, manager) {
+export default function add(microjs, { manager }) {
   return (pin, cb) => {
     const action = {
       id  : genid(),

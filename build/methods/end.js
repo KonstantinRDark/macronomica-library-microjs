@@ -17,10 +17,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} closeSubscribers   // Список подписчиков на этап закрытия
+ * @param {function[]} endSubscribers     // Список подписчиков на этап закрытия
  * @returns {function(?function):Promise}
  */
-function run(microjs, closeSubscribers) {
+function run(microjs, _ref) {
+  var endSubscribers = _ref.subscribers.end;
+
   var dfd = void 0;
 
   return function (cb) {
@@ -30,7 +32,7 @@ function run(microjs, closeSubscribers) {
 
     dfd = (0, _defer2.default)(cb);
 
-    (0, _runCloseSubscribers2.default)(microjs, closeSubscribers).then(dfd.resolve).catch(dfd.reject);
+    (0, _runCloseSubscribers2.default)(microjs, endSubscribers).then(dfd.resolve).catch(dfd.reject);
 
     return dfd.promise;
   };

@@ -1,4 +1,4 @@
-export default function del(microjs, manager) {
+export default function del(microjs, { manager }) {
   return (pin) => {
     const route = manager.find(pin);
 

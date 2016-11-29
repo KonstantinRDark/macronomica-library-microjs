@@ -49,7 +49,7 @@ function listenHttp(micro, plugin, onClose, _ref) {
       host = _ref$host === undefined ? _constants.SERVER_HOST : _ref$host,
       port = _ref.port;
 
-  return function () {
+  return function listenHttpRoute() {
     if (['localhost', '0.0.0.0'].includes(port)) {
       port = _constants.SERVER_PORT;
     }
@@ -57,7 +57,7 @@ function listenHttp(micro, plugin, onClose, _ref) {
 
     var server = _http2.default.createServer(handleRequest);
 
-    server.on('error', micro.die);
+    server.on('error', micro.log.error);
     server.on('connection', function (socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
     });

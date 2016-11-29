@@ -56,7 +56,7 @@ export default function log(microjs, { level = LEVEL_DEBUG } = {}) {
 
       microjs
         .act({ cmd: 'logger', level, message, payload })
-        .catch(result => console.log(message, ...payload));
+        .catch(result => console.log(`${ level }\t${ message }`, ...payload));
 
       return logger;
     };

@@ -9,6 +9,10 @@ var _patrun = require('patrun');
 
 var _patrun2 = _interopRequireDefault(_patrun);
 
+var _defer = require('./utils/defer');
+
+var _defer2 = _interopRequireDefault(_defer);
+
 var _log = require('./methods/log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -44,21 +48,25 @@ var _run2 = _interopRequireDefault(_run);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function factoryMethod(listenSettings) {
-  var initSubscribers = [];
-  var closeSubscribers = [];
-
-  var microjs = {};
+  var runDeferred = (0, _defer2.default)();
+  var endDeferred = (0, _defer2.default)();
+  var promises = {
+    run: runDeferred.promise,
+    end: endDeferred.promise
+  };
+  var subscribers = { run: [], end: [] };
   var manager = (0, _patrun2.default)({ gex: true });
+  var microjs = {};
 
   Object.assign(microjs, {
     log: (0, _log2.default)(microjs),
-    use: (0, _use2.default)(microjs, initSubscribers),
-    add: (0, _add2.default)(microjs, manager),
-    del: (0, _del2.default)(microjs, manager),
+    use: (0, _use2.default)(microjs, { promises: promises, subscribers: subscribers }),
+    add: (0, _add2.default)(microjs, { manager: manager }),
+    del: (0, _del2.default)(microjs, { manager: manager }),
     api: (0, _api2.default)(microjs),
-    act: (0, _act2.default)(microjs, manager),
-    end: (0, _end2.default)(microjs, closeSubscribers),
-    run: (0, _run2.default)(microjs, initSubscribers, closeSubscribers, listenSettings)
+    act: (0, _act2.default)(microjs, { manager: manager, promises: promises }),
+    end: (0, _end2.default)(microjs, { subscribers: subscribers, promises: promises }),
+    run: (0, _run2.default)(microjs, { subscribers: subscribers, promises: promises }, listenSettings)
   });
 
   return microjs;

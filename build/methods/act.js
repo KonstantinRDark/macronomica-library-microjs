@@ -19,7 +19,10 @@ var _defer2 = _interopRequireDefault(_defer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function act(microjs, manager) {
+function act(microjs, _ref) {
+  var manager = _ref.manager,
+      promises = _ref.promises;
+
   return function (pin, cb) {
     var dfd = (0, _defer2.default)(cb);
     var msg = (0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin;

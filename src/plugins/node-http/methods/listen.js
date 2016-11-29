@@ -24,7 +24,7 @@ const preprocessors = [
 ];
 
 export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST, port }) {
-  return () => {
+  return function listenHttpRoute() {
     if ([ 'localhost', '0.0.0.0', ].includes(port)) {
       port = SERVER_PORT;
     }
@@ -32,7 +32,7 @@ export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST,
 
     const server = http.createServer(handleRequest);
 
-    server.on('error', micro.die);
+    server.on('error', micro.log.error);
     server.on('connection', function(socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
     });

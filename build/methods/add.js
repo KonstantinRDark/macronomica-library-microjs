@@ -19,7 +19,9 @@ var _genid2 = _interopRequireDefault(_genid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function add(microjs, manager) {
+function add(microjs, _ref) {
+  var manager = _ref.manager;
+
   return function (pin, cb) {
     var action = {
       id: (0, _genid2.default)(),

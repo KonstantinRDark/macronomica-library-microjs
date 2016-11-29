@@ -4,7 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = del;
-function del(microjs, manager) {
+function del(microjs, _ref) {
+  var manager = _ref.manager;
+
   return function (pin) {
     var route = manager.find(pin);
 

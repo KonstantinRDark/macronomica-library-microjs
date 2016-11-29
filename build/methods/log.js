@@ -69,7 +69,7 @@ function log(microjs) {
       microjs.act({ cmd: 'logger', level: level, message: message, payload: payload }).catch(function (result) {
         var _console;
 
-        return (_console = console).log.apply(_console, [message].concat(payload));
+        return (_console = console).log.apply(_console, [level + '\t' + message].concat(payload));
       });
 
       return logger;

@@ -2,7 +2,7 @@ import isString from 'lodash.isstring';
 import jsonic from 'jsonic';
 import defer from './../utils/defer';
 
-export default function act(microjs, manager) {
+export default function act(microjs, { manager, promises }) {
   return (pin, cb) => {
     const dfd = defer(cb);
     const msg = isString(pin) ? jsonic(pin) : pin;

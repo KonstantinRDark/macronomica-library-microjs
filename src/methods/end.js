@@ -3,10 +3,10 @@ import runCloseSubscribers from './../utils/run-close-subscribers';
 
 /**
  * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} closeSubscribers   // Список подписчиков на этап закрытия
+ * @param {function[]} endSubscribers     // Список подписчиков на этап закрытия
  * @returns {function(?function):Promise}
  */
-export default function run(microjs, closeSubscribers) {
+export default function run(microjs, { subscribers: { end: endSubscribers } }) {
   let dfd;
 
   return cb => {
@@ -16,7 +16,7 @@ export default function run(microjs, closeSubscribers) {
 
     dfd = defer(cb);
 
-    runCloseSubscribers(microjs, closeSubscribers)
+    runCloseSubscribers(microjs, endSubscribers)
       .then(dfd.resolve)
       .catch(dfd.reject);
 

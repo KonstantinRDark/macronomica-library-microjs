@@ -1,12 +1,12 @@
 
 /**
  * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} initSubscribers    // Список подписчиков на этап инициализации
+ * @param {function[]} runSubscribers     // Список подписчиков на этап инициализации
  * @returns {function(?function):object}
  */
-export default function use(microjs, initSubscribers) {
+export default function use(microjs, { subscribers:{ run:runSubscribers } }) {
   return cb => {
-    initSubscribers.push(cb);
+    runSubscribers.push(cb);
     return microjs;
   };
 }

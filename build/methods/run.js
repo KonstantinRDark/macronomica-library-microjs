@@ -22,18 +22,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 /**
- * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} initSubscribers    // Список подписчиков на этап инициализации
- * @param {function[]} closeSubscribers   // Список подписчиков на этап закрытия
- * @param {object} settings               // Настройки для запуска сервера
+ * @param {object} microjs                          // Экземпляр библиотеки
+ * @param {{ run: [], end: [] }} subscribers        // Список подписчиков
+ * @param {{ run: promise, end: promise }} promises // Список ожиданий
+ * @param {object} settings                         // Настройки для запуска сервера
  * @returns {function(?function):Promise}
  */
-function run(microjs, initSubscribers, closeSubscribers, settings) {
+function run(microjs, _ref, settings) {
+  var subscribers = _ref.subscribers,
+      promises = _ref.promises;
+
   var useServer = !!settings;
 
-  var _ref = settings || {},
-      transport = _ref.transport,
-      otherSettings = _objectWithoutProperties(_ref, ['transport']);
+  var _ref2 = settings || {},
+      _ref2$transport = _ref2.transport,
+      transport = _ref2$transport === undefined ? 'http' : _ref2$transport,
+      otherSettings = _objectWithoutProperties(_ref2, ['transport']);
 
   // Ссылка на обещание запуска
 
@@ -63,7 +67,7 @@ function run(microjs, initSubscribers, closeSubscribers, settings) {
     promise
     // Запустим всех подписчиков на этап инициализации
     .then(function () {
-      return (0, _runInitSubscribers2.default)(microjs, initSubscribers, closeSubscribers);
+      return (0, _runInitSubscribers2.default)(microjs, subscribers.run, subscribers.end);
     })
     // Запустим прослушку транспорта для сервера
     .then(function () {
