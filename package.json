@@ -1,6 +1,6 @@
 {
   "name": "@microjs/microjs",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Библиотека для запуска микросервисов",
   "main": "index.js",
