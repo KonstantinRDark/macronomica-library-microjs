@@ -20,7 +20,7 @@ micro
       })
       .then(response => response.json())
       .then(result => micro.log.info('cmd:ping', result))
-      .catch(error => micro.log.error('cmd:ping', error));
+      .catch(micro.log.error);
   })
-  .catch(error => micro.log.error(error))
+  .catch(micro.log.error)
 ;

@@ -12,6 +12,10 @@ var _defer = require('./../utils/defer');
 
 var _defer2 = _interopRequireDefault(_defer);
 
+var _dateIsoString = require('./../utils/date-iso-string');
+
+var _dateIsoString2 = _interopRequireDefault(_dateIsoString);
+
 var _nodeHttp = require('./../plugins/node-http');
 
 var _nodeHttp2 = _interopRequireDefault(_nodeHttp);
@@ -19,6 +23,10 @@ var _nodeHttp2 = _interopRequireDefault(_nodeHttp);
 var _runInitSubscribers = require('./../utils/run-init-subscribers');
 
 var _runInitSubscribers2 = _interopRequireDefault(_runInitSubscribers);
+
+var _runAddSubscribers = require('./../utils/run-add-subscribers');
+
+var _runAddSubscribers2 = _interopRequireDefault(_runAddSubscribers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -65,6 +73,8 @@ function run(app) {
 
     // Запустим всех подписчиков на этап инициализации
     (0, _runInitSubscribers2.default)(app)
+    // Запустим всех подписчиков на этап регисрации действий
+    .then(() => (0, _runAddSubscribers2.default)(app))
     // Запустим прослушку транспорта для сервера
     .then(() => {
       if (!useServer) {
@@ -72,7 +82,10 @@ function run(app) {
       }
 
       return transports[transport]();
-    }).then(() => runDeferred.resolve(app)).catch(runDeferred.reject);
+    }).then(() => {
+      app.emit('running', app);
+      runDeferred.resolve(app);
+    }).catch(runDeferred.reject);
 
     return runDeferred.promise;
   };

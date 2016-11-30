@@ -16,6 +16,8 @@ var _defer = require('./../utils/defer');
 
 var _defer2 = _interopRequireDefault(_defer);
 
+var _constants = require('./../constants');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -30,28 +32,39 @@ exports.default = app => {
    * @returns {app}
    */
   return (pin, cb) => {
-    const dfd = (0, _defer2.default)(cb);
-    const msg = (0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin;
-    const route = app.manager.find(msg);
-
-    if (!route) {
-      app.log.trace(`Вызов не существующего маршрута`, pin);
-      return dfd.reject(`Вызов не существующего маршрута`);
+    if (app.state === _constants.STATE_RUN) {
+      return exec();
     }
+    let dfd = (0, _defer2.default)(exec);
 
-    try {
-      let promise = route.callback(msg, route);
+    app.on('running', () => setTimeout(dfd.resolve, 10));
 
-      if (!promise || typeof promise.then !== 'function') {
-        promise = Promise.resolve(promise);
+    return dfd.promise;
+
+    function exec() {
+      const dfd = (0, _defer2.default)(cb);
+      const msg = (0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin;
+      const route = app.manager.find(msg);
+
+      if (!route) {
+        app.log.trace(`Вызов не существующего маршрута`, pin);
+        return dfd.reject(`Вызов не существующего маршрута`);
       }
 
-      promise.then(dfd.resolve).catch(dfd.reject);
+      try {
+        let promise = route.callback(msg, route);
 
-      return dfd.promise;
-    } catch (err) {
-      app.log.error(`Ошибка при вызове маршрута`, pin, err);
-      return dfd.reject(err);
+        if (!promise || typeof promise.then !== 'function') {
+          promise = Promise.resolve(promise);
+        }
+
+        promise.then(dfd.resolve).catch(dfd.reject);
+
+        return dfd.promise;
+      } catch (err) {
+        app.log.error(`Ошибка при вызове маршрута`, pin, err);
+        return dfd.reject(err);
+      }
     }
   };
 };

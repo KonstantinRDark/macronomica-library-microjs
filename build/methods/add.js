@@ -16,6 +16,8 @@ var _genid = require('./../utils/genid');
 
 var _genid2 = _interopRequireDefault(_genid);
 
+var _constants = require('./../constants');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -30,15 +32,25 @@ exports.default = app => {
    * @returns {app}
    */
   return (pin, cb) => {
-    const action = {
-      id: (0, _genid2.default)(),
-      name: cb.name || ''
-    };
-    app.log.info(`Добавление нового маршрута`, { pin, action });
+    if (app.state === _constants.STATE_RUN) {
+      return __add();
+    }
 
-    app.manager.add((0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin, { pin, action, callback: cb });
+    app.subscribers.add.push(__add);
 
     return app;
+
+    function __add() {
+      const action = {
+        id: (0, _genid2.default)(),
+        name: cb.name || ''
+      };
+      app.log.info(`Добавление нового маршрута`, { pin, action });
+
+      app.manager.add((0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin, { pin, action, callback: cb });
+
+      return app;
+    }
   };
 };
 //# sourceMappingURL=add.js.map

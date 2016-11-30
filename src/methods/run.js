@@ -1,6 +1,8 @@
 import defer from './../utils/defer';
+import dateIsoString from './../utils/date-iso-string';
 import NodeHttpPlugin from './../plugins/node-http';
 import runInitSubscribers from './../utils/run-init-subscribers';
+import runAddSubscribers from './../utils/run-add-subscribers';
 
 /**
  * @param {app} app                                 // Экземпляр библиотеки
@@ -38,6 +40,8 @@ export default function run(app) {
 
     // Запустим всех подписчиков на этап инициализации
     runInitSubscribers(app)
+      // Запустим всех подписчиков на этап регисрации действий
+      .then(() => runAddSubscribers(app))
       // Запустим прослушку транспорта для сервера
       .then(() => {
         if(!useServer) {
@@ -46,7 +50,10 @@ export default function run(app) {
 
         return transports[ transport ]();
       })
-      .then(() => runDeferred.resolve(app))
+      .then(() => {
+        app.emit('running', app);
+        runDeferred.resolve(app);
+      })
       .catch(runDeferred.reject);
 
     return runDeferred.promise;

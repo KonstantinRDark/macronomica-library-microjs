@@ -16,5 +16,5 @@ const worker = (0, _2.default)({ id: 'worker', listen: { host: '127.0.0.1', port
 
 const client = (0, _2.default)({ id: 'client' }).use((0, _logWinston2.default)({ label: 'client' })).api('worker', { host: '127.0.0.1', port: 8000 });
 
-worker.run().then(() => client.run()).then(() => client.act('api:worker, cmd:ping')).then(result => client.log.info('cmd:ping', result)).catch(error => client.log.error('cmd:ping', error));
+worker.run().catch(client.log.error).then(() => client.run().then(() => client.act('api:worker, cmd:ping')).then(result => client.log.info('cmd:ping', result)).catch(client.log.error));
 //# sourceMappingURL=api.js.map

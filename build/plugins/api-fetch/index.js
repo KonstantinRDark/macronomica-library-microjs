@@ -22,15 +22,15 @@ function ApiFetchPlugin() {
   let name = _ref.name,
       settings = _objectWithoutProperties(_ref, ['name']);
 
-  return (microjs, _ref2) => {
+  return (app, _ref2) => {
     let onClose = _ref2.onClose;
 
     const apiPin = `api:${ name }`;
-    const executeApi = (0, _fetch2.default)(microjs, _extends({ name }, settings));
+    const executeApi = (0, _fetch2.default)(app, _extends({ name }, settings));
 
-    microjs.add(apiPin, executeApi);
+    app.add(apiPin, executeApi);
 
-    onClose(() => microjs.del(apiPin));
+    onClose(() => app.del(apiPin));
 
     return Promise.resolve();
   };

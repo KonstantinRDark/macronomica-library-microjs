@@ -26,6 +26,6 @@ micro.run().then(() => {
   return (0, _nodeFetch2.default)(`http://${ HOST }:${ PORT }${ prefix }`, { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cmd: 'ping' })
-  }).then(response => response.json()).then(result => micro.log.info('cmd:ping', result)).catch(error => micro.log.error('cmd:ping', error));
-}).catch(error => micro.log.error(error));
+  }).then(response => response.json()).then(result => micro.log.info('cmd:ping', result)).catch(micro.log.error);
+}).catch(micro.log.error);
 //# sourceMappingURL=all.js.map

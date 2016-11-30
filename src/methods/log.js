@@ -1,3 +1,4 @@
+import Util from 'util';
 
 export const LEVEL_ALL = 'all';
 export const LEVEL_OFF = 'off';
@@ -120,6 +121,75 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
     return (message, payload) => {
       if (LEVELS[ logger.level ] < LEVELS[ level ]) {
         return logger;
+      }
+
+      if (level === LEVEL_FATAL) {
+        const error = message instanceof Error ? message : new Error(message);
+        let stack = error.stack || '';
+        stack = stack
+          .replace(/^.*?\n/, '\n')
+          .replace(/\n/g, '\n          ')
+        ;
+
+        message = [
+          '\n',
+          '##############################################################################################',
+          `# Fatal Error`,
+          '# Instance  : ' + app.id,
+          '# Started At: ' + app.time.started,
+          '# =========================================================================================== ',
+          '  Message   : ' + error.message,
+          '  Code      : ' + error.code,
+          '  Payload   : ' + Util.inspect(payload, { depth: null }),
+          '  Details   : ' + Util.inspect(error.details, { depth: null }),
+          '  When      : ' + (new Date()).toISOString(),
+          '  Stack     : ' + stack,
+          '  Node      : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
+          '              ' + Util.inspect(process.features).replace(/\s+/g, ' '),
+          '              ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
+          '  Process   : ',
+          '              pid=' + process.pid,
+          '              arch=' + process.arch,
+          '              platform=' + process.platform,
+          '              path=' + process.execPath,
+          '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
+          '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
+          '##############################################################################################'
+        ].join('\n');
+      }
+
+      if (level === LEVEL_ERROR && message instanceof Error) {
+        const error = message;
+        let stack = error.stack || '';
+        stack = stack
+          .replace(/^.*?\n/, '\n')
+          .replace(/\n/g, '\n          ')
+        ;
+
+        message = [
+          '\n',
+          '##############################################################################################',
+          `# Error`,
+          '# =========================================================================================== ',
+          '  Instance  : ' + app.id,
+          '  Message   : ' + error.message,
+          '  Code      : ' + error.code,
+          '  Payload   : ' + Util.inspect(payload, { depth: null }),
+          '  Details   : ' + Util.inspect(error.details, { depth: null }),
+          '  When      : ' + (new Date()).toISOString(),
+          '  Stack     : ' + stack,
+          '  Node      : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
+          '              ' + Util.inspect(process.features).replace(/\s+/g, ' '),
+          '              ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
+          '  Process   : ',
+          '              pid=' + process.pid,
+          '              arch=' + process.arch,
+          '              platform=' + process.platform,
+          '              path=' + process.execPath,
+          '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
+          '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
+          '##############################################################################################'
+        ].join('\n');
       }
 
       if (usePluginLogger) {

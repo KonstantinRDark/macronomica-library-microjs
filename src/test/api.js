@@ -11,7 +11,10 @@ const client = Micro({ id: 'client' })
 
 worker
   .run()
-  .then(() => client.run())
-  .then(() => client.act('api:worker, cmd:ping'))
-  .then(result => client.log.info('cmd:ping', result))
-  .catch(error => client.log.error('cmd:ping', error));
+  .catch(client.log.error)
+  .then(() => client
+    .run()
+    .then(() => client.act('api:worker, cmd:ping'))
+    .then(result => client.log.info('cmd:ping', result))
+    .catch(client.log.error)
+  );

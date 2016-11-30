@@ -1,6 +1,7 @@
 import isString from 'lodash.isstring';
 import jsonic from 'jsonic';
 import genid from './../utils/genid';
+import { STATE_RUN } from './../constants';
 
 /**
  * @param {app} app
@@ -14,14 +15,24 @@ export default app => {
    * @returns {app}
    */
   return (pin, cb) => {
-    const action = {
-      id  : genid(),
-      name: cb.name || ''
-    };
-    app.log.info(`Добавление нового маршрута`, { pin, action });
+    if (app.state === STATE_RUN) {
+      return __add();
+    }
 
-    app.manager.add(isString(pin) ? jsonic(pin) : pin, { pin, action, callback: cb });
+    app.subscribers.add.push(__add);
 
     return app;
+
+    function __add() {
+      const action = {
+        id  : genid(),
+        name: cb.name || ''
+      };
+      app.log.info(`Добавление нового маршрута`, { pin, action });
+
+      app.manager.add(isString(pin) ? jsonic(pin) : pin, { pin, action, callback: cb });
+
+      return app;
+    }
   };
 };

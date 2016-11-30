@@ -1,13 +1,13 @@
 import fetch from './methods/fetch'
 
 export default function ApiFetchPlugin({ name, ...settings } = {}) {
-  return (microjs, { onClose }) => {
+  return (app, { onClose }) => {
     const apiPin = `api:${ name }`;
-    const executeApi = fetch(microjs, { name, ...settings });
+    const executeApi = fetch(app, { name, ...settings });
 
-    microjs.add(apiPin, executeApi);
+    app.add(apiPin, executeApi);
 
-    onClose(() => microjs.del(apiPin));
+    onClose(() => app.del(apiPin));
 
     return Promise.resolve();
   };

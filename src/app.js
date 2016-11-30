@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import Patrun from 'patrun';
 
 import genid from './utils/genid';
+import dateIsoString from './utils/date-iso-string';
 
 import log from './methods/log';
 import use from './methods/use';
@@ -11,12 +12,7 @@ import act from './methods/act';
 import api from './methods/api';
 import end from './methods/end';
 import run from './methods/run';
-
-// Статус блокирует
-const STATE_INIT = 'init';
-const STATE_WAIT = 'wait';
-const STATE_RUN = 'run';
-const STATE_END = 'run';
+import { STATE_START, STATE_RUN } from './constants';
 
 /**
  * @namespace app
@@ -34,35 +30,69 @@ export default class Microjs extends EventEmitter {
    */
 
   /**
+   * @namespace app.id
+   * @type {string}
+   */
+  id = genid();
+
+  /**
    * @namespace app.state
    * @type {string}
    */
-  state = STATE_INIT;
+  state = STATE_START;
+
   /**
    * @namespace app.manager
    * @type {object}
    */
   manager = Patrun({ gex: true });
+
   /**
    * Список подписчиков
    * @namespace app.subscribers
-   * @type {{ run: Array<function>, end: Array<function> }}
+   * @type {{ run: Array<function>, add: Array<function>, end: Array<function> }}
    */
   subscribers = {
     run: [],      // подписчики для этапа запуска работы
+    add: [],      // подписчики для этапа регистрации действий
     end: []       // подписчики для этапа завершения работы
+  };
+
+  /**
+   * Метрики времени
+   * @namespace app.time
+   * @type {{ started: number, running: ?number }}
+   */
+  time = {
+    started: Date.now(),
+    running: null
   };
 
   constructor(settings = {}) {
     super();
-    const {
-      id = genid(),
-      maxListeners = EventEmitter.defaultMaxListeners
-    } = settings;
+    const { id, maxListeners = EventEmitter.defaultMaxListeners } = settings;
 
-    this.id = id;
+    if (!!id) {
+      this.id = id;
+    }
+
     this.settings = settings;
     this.setMaxListeners(maxListeners);
+
+    this.on('running', app => {
+      app.state = STATE_RUN;
+      app.time.running = Date.now();
+      app.log.info([
+        '\n',
+        '##############################################################################################',
+        '# Micro started',
+        '# ===========================================================================================',
+        '# Instance  : ' + app.id,
+        `# Started At: ${ dateIsoString(app.time.started) }`,
+        `# Running At: ${ dateIsoString(app.time.running) }`,
+        '##############################################################################################',
+      ].join('\n'));
+    });
   }
 
   log = log(this);

@@ -16,6 +16,10 @@ var _genid = require('./utils/genid');
 
 var _genid2 = _interopRequireDefault(_genid);
 
+var _dateIsoString = require('./utils/date-iso-string');
+
+var _dateIsoString2 = _interopRequireDefault(_dateIsoString);
+
 var _log = require('./methods/log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -48,13 +52,9 @@ var _run = require('./methods/run');
 
 var _run2 = _interopRequireDefault(_run);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _constants = require('./constants');
 
-// Статус блокирует
-const STATE_INIT = 'init';
-const STATE_WAIT = 'wait';
-const STATE_RUN = 'run';
-const STATE_END = 'run';
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * @namespace app
@@ -62,19 +62,33 @@ const STATE_END = 'run';
  * @augments EventEmitter
  */
 class Microjs extends _events2.default {
+
   /**
-   * @namespace app.manager
-   * @type {object}
+   * Список подписчиков
+   * @namespace app.subscribers
+   * @type {{ run: Array<function>, add: Array<function>, end: Array<function> }}
+   */
+
+
+  /**
+   * @namespace app.state
+   * @type {string}
    */
   constructor() {
     let settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     super();
-    this.state = STATE_INIT;
+    this.id = (0, _genid2.default)();
+    this.state = _constants.STATE_START;
     this.manager = (0, _patrun2.default)({ gex: true });
     this.subscribers = {
       run: [], // подписчики для этапа запуска работы
+      add: [], // подписчики для этапа регистрации действий
       end: [] // подписчики для этапа завершения работы
+    };
+    this.time = {
+      started: Date.now(),
+      running: null
     };
     this.log = (0, _log2.default)(this);
     this.use = (0, _use2.default)(this);
@@ -84,20 +98,35 @@ class Microjs extends _events2.default {
     this.act = (0, _act2.default)(this);
     this.end = (0, _end2.default)(this);
     this.run = (0, _run2.default)(this);
-    var _settings$id = settings.id;
-    const id = _settings$id === undefined ? (0, _genid2.default)() : _settings$id;
+    const id = settings.id;
     var _settings$maxListener = settings.maxListeners;
     const maxListeners = _settings$maxListener === undefined ? _events2.default.defaultMaxListeners : _settings$maxListener;
 
 
-    this.id = id;
+    if (!!id) {
+      this.id = id;
+    }
+
     this.settings = settings;
     this.setMaxListeners(maxListeners);
+
+    this.on('running', app => {
+      app.state = _constants.STATE_RUN;
+      app.time.running = Date.now();
+      app.log.info(['\n', '##############################################################################################', '# Micro started', '# ===========================================================================================', '# Instance  : ' + app.id, `# Started At: ${ (0, _dateIsoString2.default)(app.time.started) }`, `# Running At: ${ (0, _dateIsoString2.default)(app.time.running) }`, '##############################################################################################'].join('\n'));
+    });
   }
+
   /**
-   * Список подписчиков
-   * @namespace app.subscribers
-   * @type {{ run: Array<function>, end: Array<function> }}
+   * Метрики времени
+   * @namespace app.time
+   * @type {{ started: number, running: ?number }}
+   */
+
+
+  /**
+   * @namespace app.manager
+   * @type {object}
    */
 
   /**
@@ -110,7 +139,7 @@ class Microjs extends _events2.default {
    */
 
   /**
-   * @namespace app.state
+   * @namespace app.id
    * @type {string}
    */
 }
