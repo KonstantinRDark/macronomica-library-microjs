@@ -11,7 +11,8 @@ import {
 const ERROR_CODE_PREFIX = 'error.http.client';
 
 export default function fetch(microjs, { name, ...settings }) {
-  return ({ api, headers = {}, ...msg }, route) => new Promise((resolve, reject) => {
+  return (request, route) => new Promise((resolve, reject) => {
+    const { api, headers = {}, ...msg } = request;
     const { host, prefix = CLIENT_PREFIX } = settings;
     const port = settings.port ? `:${ settings.port }` : '';
     const method = 'POST';

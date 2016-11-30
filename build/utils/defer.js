@@ -5,20 +5,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = defer;
 function defer(cb) {
-  var hasFunction = cb && typeof cb === 'function';
-  var defer = {};
+  const hasFunction = cb && typeof cb === 'function';
+  const defer = {};
 
-  defer.promise = new Promise(function (resolve, reject) {
-    return Object.assign(defer, {
-      resolve: handlerResolve(defer, resolve),
-      reject: handlerReject(defer, reject)
-    });
-  });
+  defer.promise = new Promise((resolve, reject) => Object.assign(defer, {
+    resolve: handlerResolve(defer, resolve),
+    reject: handlerReject(defer, reject)
+  }));
 
   return defer;
 
   function handlerResolve(defer, resolve) {
-    return function (result) {
+    return result => {
       resolve(result);
 
       if (hasFunction) {
@@ -30,7 +28,7 @@ function defer(cb) {
   }
 
   function handlerReject(defer, reject) {
-    return function (error) {
+    return error => {
       reject(error);
 
       if (hasFunction) {

@@ -21,7 +21,7 @@ export default function run(app) {
    * @returns {Promise<app>}
    */
   return cb => {
-    const useServer = !!app.settings;
+    const useServer = !!app.settings.listen;
     const { transport = 'http', ...otherSettings } = app.settings || {};
 
     if (runDeferred) {
@@ -29,7 +29,6 @@ export default function run(app) {
     }
 
     runDeferred = defer(cb);
-    let promise = Promise.resolve();
 
     // Проверяем наличие транспорта для сервера
     if (useServer && typeof transport[ transport ] !== 'function') {
@@ -37,9 +36,8 @@ export default function run(app) {
       app.use(NodeHttpPlugin({ ...otherSettings }));
     }
 
-    promise
-      // Запустим всех подписчиков на этап инициализации
-      .then(() => runInitSubscribers(app))
+    // Запустим всех подписчиков на этап инициализации
+    runInitSubscribers(app)
       // Запустим прослушку транспорта для сервера
       .then(() => {
         if(!useServer) {

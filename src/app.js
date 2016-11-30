@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 import Patrun from 'patrun';
 
+import genid from './utils/genid';
+
 import log from './methods/log';
 import use from './methods/use';
 import add from './methods/add';
@@ -51,9 +53,15 @@ export default class Microjs extends EventEmitter {
     end: []       // подписчики для этапа завершения работы
   };
 
-  constructor(settings) {
+  constructor(settings = {}) {
     super();
-    const { maxListeners = EventEmitter.defaultMaxListeners } = this.settings = settings;
+    const {
+      id = genid(),
+      maxListeners = EventEmitter.defaultMaxListeners
+    } = settings;
+
+    this.id = id;
+    this.settings = settings;
     this.setMaxListeners(maxListeners);
   }
 

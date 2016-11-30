@@ -9,8 +9,6 @@ export default function ApiFetchPlugin({ name, ...settings } = {}) {
 
     onClose(() => microjs.del(apiPin));
 
-    return new Promise((resolve, reject) => {
-
-    });
+    return Promise.resolve();
   };
 }

@@ -18,7 +18,7 @@ export default app => {
       id  : genid(),
       name: cb.name || ''
     };
-    app.log.info(`Добавление нового маршрута`, { action });
+    app.log.info(`Добавление нового маршрута`, { pin, action });
 
     app.manager.add(isString(pin) ? jsonic(pin) : pin, { pin, action, callback: cb });
 

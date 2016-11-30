@@ -18,14 +18,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {app} app
  * @returns {function:Promise}
  */
-exports.default = function (app) {
-  var dfd = void 0;
+exports.default = app => {
+  let dfd;
   /**
    * @namespace app.end
    * @param {function} [cb]
    * @returns {Promise<app>}
    */
-  return function (cb) {
+  return cb => {
     if (dfd) {
       return dfd.promise;
     }

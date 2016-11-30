@@ -17,23 +17,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function ApiFetchPlugin() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      name = _ref.name,
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  let name = _ref.name,
       settings = _objectWithoutProperties(_ref, ['name']);
 
-  return function (microjs, _ref2) {
-    var onClose = _ref2.onClose;
+  return (microjs, _ref2) => {
+    let onClose = _ref2.onClose;
 
-    var apiPin = 'api:' + name;
-    var executeApi = (0, _fetch2.default)(microjs, _extends({ name: name }, settings));
+    const apiPin = `api:${ name }`;
+    const executeApi = (0, _fetch2.default)(microjs, _extends({ name }, settings));
 
     microjs.add(apiPin, executeApi);
 
-    onClose(function () {
-      return microjs.del(apiPin);
-    });
+    onClose(() => microjs.del(apiPin));
 
-    return new Promise(function (resolve, reject) {});
+    return Promise.resolve();
   };
 }
 //# sourceMappingURL=index.js.map

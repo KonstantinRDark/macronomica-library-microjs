@@ -3,25 +3,31 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _LEVELS;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var LEVEL_ALL = exports.LEVEL_ALL = 'all';
-var LEVEL_OFF = exports.LEVEL_OFF = 'off';
-var LEVEL_INFO = exports.LEVEL_INFO = 'info';
-var LEVEL_TRACE = exports.LEVEL_TRACE = 'trace';
-var LEVEL_DEBUG = exports.LEVEL_DEBUG = 'debug';
-var LEVEL_WARN = exports.LEVEL_WARN = 'warn';
-var LEVEL_ERROR = exports.LEVEL_ERROR = 'error';
-var LEVEL_FATAL = exports.LEVEL_FATAL = 'fatal';
+const LEVEL_ALL = exports.LEVEL_ALL = 'all';
+const LEVEL_OFF = exports.LEVEL_OFF = 'off';
+const LEVEL_INFO = exports.LEVEL_INFO = 'info';
+const LEVEL_TRACE = exports.LEVEL_TRACE = 'trace';
+const LEVEL_DEBUG = exports.LEVEL_DEBUG = 'debug';
+const LEVEL_WARN = exports.LEVEL_WARN = 'warn';
+const LEVEL_ERROR = exports.LEVEL_ERROR = 'error';
+const LEVEL_FATAL = exports.LEVEL_FATAL = 'fatal';
 /**
  * @name LEVELS
  * @type {Object<string, number>}
  * @enum {number}
  */
-var LEVELS = exports.LEVELS = (_LEVELS = {}, _defineProperty(_LEVELS, LEVEL_ALL, 0), _defineProperty(_LEVELS, LEVEL_FATAL, 10), _defineProperty(_LEVELS, LEVEL_ERROR, 20), _defineProperty(_LEVELS, LEVEL_WARN, 30), _defineProperty(_LEVELS, LEVEL_INFO, 40), _defineProperty(_LEVELS, LEVEL_TRACE, 50), _defineProperty(_LEVELS, LEVEL_DEBUG, 60), _defineProperty(_LEVELS, LEVEL_OFF, 100), _LEVELS);
+const LEVELS = exports.LEVELS = {
+  [LEVEL_ALL]: 0,
+
+  [LEVEL_FATAL]: 10,
+  [LEVEL_ERROR]: 20,
+  [LEVEL_WARN]: 30,
+  [LEVEL_INFO]: 40,
+  [LEVEL_TRACE]: 50,
+  [LEVEL_DEBUG]: 60,
+
+  [LEVEL_OFF]: 100
+};
 
 /**
  * @param {app} app
@@ -30,11 +36,10 @@ var LEVELS = exports.LEVELS = (_LEVELS = {}, _defineProperty(_LEVELS, LEVEL_ALL,
  */
 
 exports.default = function (app) {
-  var _logger;
-
   var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref$level = _ref.level,
-      level = _ref$level === undefined ? LEVEL_DEBUG : _ref$level;
+      _ref$level = _ref.level;
+
+  let level = _ref$level === undefined ? LEVEL_DEBUG : _ref$level;
 
   /**
    * Levels:
@@ -54,28 +59,66 @@ exports.default = function (app) {
   /**
    * @namespace app.log
    */
-  var logger = (_logger = {
+  const logger = {
     /**
      * @memberof app.log
      * @type {string}
      */
-    level: level,
+    level,
     /**
      * @memberof app.log
      * @type {Object<!string, !number>}
      */
-    LEVELS: LEVELS
-  }, _defineProperty(_logger, LEVEL_DEBUG, log(LEVEL_DEBUG)), _defineProperty(_logger, LEVEL_TRACE, log(LEVEL_TRACE)), _defineProperty(_logger, LEVEL_INFO, log(LEVEL_INFO)), _defineProperty(_logger, LEVEL_WARN, log(LEVEL_WARN)), _defineProperty(_logger, LEVEL_ERROR, log(LEVEL_ERROR)), _defineProperty(_logger, LEVEL_FATAL, log(LEVEL_FATAL)), _logger);
-  var usePluginLogger = void 0;
+    LEVELS,
+    /**
+     * @memberof app.log
+     * @name debug
+     * @param {string} message
+     * @param {*} [payload]
+     */
+    [LEVEL_DEBUG]: log(LEVEL_DEBUG),
+    /**
+     * @memberof app.log
+     * @name trace
+     * @param {string} message
+     * @param {*} [payload]
+     */
+    [LEVEL_TRACE]: log(LEVEL_TRACE),
+    /**
+     * @memberof app.log
+     * @name info
+     * @param {string} message
+     * @param {*} [payload]
+     */
+    [LEVEL_INFO]: log(LEVEL_INFO),
+    /**
+     * @memberof app.log
+     * @name warn
+     * @param {string} message
+     * @param {*} [payload]
+     */
+    [LEVEL_WARN]: log(LEVEL_WARN),
+    /**
+     * @memberof app.log
+     * @name error
+     * @param {string} message
+     * @param {*} [payload]
+     */
+    [LEVEL_ERROR]: log(LEVEL_ERROR),
+    /**
+     * @memberof app.log
+     * @name fatal
+     * @param {string} message
+     * @param {*} [payload]
+     */
+    [LEVEL_FATAL]: log(LEVEL_FATAL)
+  };
+  let usePluginLogger;
 
-  app.on('plugin.logger.use', function () {
-    return usePluginLogger = true;
-  });
-  app.on('plugin.logger.unuse', function () {
-    return usePluginLogger = false;
-  });
+  app.on('plugin.logger.use', () => usePluginLogger = true);
+  app.on('plugin.logger.unuse', () => usePluginLogger = false);
 
-  process.on('uncaughtException', app.log.error);
+  process.on('uncaughtException', logger.error);
 
   return logger;
 
@@ -84,18 +127,16 @@ exports.default = function (app) {
    * @returns {function(string, payload)}
    */
   function log(level) {
-    return function (message, payload) {
-      var _console, _console2, _console3;
-
+    return (message, payload) => {
       if (LEVELS[logger.level] < LEVELS[level]) {
         return logger;
       }
 
       if (usePluginLogger) {
-        app.emit('log', { level: level, message: message, payload: payload });
-        app.emit('log.' + level, { level: level, message: message, payload: payload });
+        app.emit('log', { level, message, payload });
+        app.emit(`log.${ level }`, { level, message, payload });
       } else {
-        var args = [level + '\t', message];
+        const args = [`${ level }\t`, message];
 
         if (!!payload) {
           args.push(JSON.stringify(payload, '', 4));
@@ -104,13 +145,13 @@ exports.default = function (app) {
         switch (level) {
           case LEVEL_ERROR:
           case LEVEL_FATAL:
-            (_console = console).error.apply(_console, args);
+            console.error(...args);
             break;
           case LEVEL_WARN:
-            (_console2 = console).warn.apply(_console2, args);
+            console.warn(...args);
             break;
           default:
-            (_console3 = console).log.apply(_console3, args);
+            console.log(...args);
         }
       }
 

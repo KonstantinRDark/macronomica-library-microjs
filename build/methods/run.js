@@ -30,34 +30,32 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
  */
 function run(app) {
   // Ссылка на обещание запуска
-  var runDeferred = void 0;
-  var transports = {
+  let runDeferred;
+  let transports = {
     http: null
   };
 
-  app.on('plugin.transport', function (type, listen) {
-    return transports[type] = listen;
-  });
+  app.on('plugin.transport', (type, listen) => transports[type] = listen);
 
   /**
    * @namespace app.run
    * @param {function} [cb]
    * @returns {Promise<app>}
    */
-  return function (cb) {
-    var useServer = !!app.settings;
+  return cb => {
+    const useServer = !!app.settings.listen;
 
     var _ref = app.settings || {},
-        _ref$transport = _ref.transport,
-        transport = _ref$transport === undefined ? 'http' : _ref$transport,
-        otherSettings = _objectWithoutProperties(_ref, ['transport']);
+        _ref$transport = _ref.transport;
+
+    const transport = _ref$transport === undefined ? 'http' : _ref$transport,
+          otherSettings = _objectWithoutProperties(_ref, ['transport']);
 
     if (runDeferred) {
       return runDeferred.promise;
     }
 
     runDeferred = (0, _defer2.default)(cb);
-    var promise = Promise.resolve();
 
     // Проверяем наличие транспорта для сервера
     if (useServer && typeof transport[transport] !== 'function') {
@@ -65,21 +63,16 @@ function run(app) {
       app.use((0, _nodeHttp2.default)(_extends({}, otherSettings)));
     }
 
-    promise
     // Запустим всех подписчиков на этап инициализации
-    .then(function () {
-      return (0, _runInitSubscribers2.default)(app);
-    })
+    (0, _runInitSubscribers2.default)(app)
     // Запустим прослушку транспорта для сервера
-    .then(function () {
+    .then(() => {
       if (!useServer) {
         return Promise.resolve();
       }
 
       return transports[transport]();
-    }).then(function () {
-      return runDeferred.resolve(app);
-    }).catch(runDeferred.reject);
+    }).then(() => runDeferred.resolve(app)).catch(runDeferred.reject);
 
     return runDeferred.promise;
   };

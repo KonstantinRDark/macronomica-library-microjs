@@ -16,7 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {app} app
  * @returns {function}
  */
-exports.default = function (app) {
+exports.default = app => {
   /**
    * @namespace app.api
    * @param {string} name
@@ -24,8 +24,8 @@ exports.default = function (app) {
    * @returns {app}
    */
   return function (name) {
-    var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return app.use((0, _apiFetch2.default)(_extends({ name: name }, settings)));
+    let settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return app.use((0, _apiFetch2.default)(_extends({ name }, settings)));
   };
 };
 //# sourceMappingURL=api.js.map

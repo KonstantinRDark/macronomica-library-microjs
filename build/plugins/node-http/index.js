@@ -17,16 +17,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var TRANSPORT = 'http';
+const TRANSPORT = 'http';
 
 function NodeHttpPlugin() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      settings = _objectWithoutProperties(_ref, []);
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  return function (app, _ref2) {
-    var onClose = _ref2.onClose;
+  let settings = _objectWithoutProperties(_ref, []);
 
-    var plugin = { id: (0, _genid2.default)() };
+  return (app, _ref2) => {
+    let onClose = _ref2.onClose;
+
+    const plugin = { id: (0, _genid2.default)() };
     app.emit('plugin.transport', TRANSPORT, (0, _listen2.default)(app, plugin, onClose, settings));
   };
 }

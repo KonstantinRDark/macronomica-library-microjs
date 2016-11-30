@@ -8,13 +8,13 @@ Object.defineProperty(exports, "__esModule", {
  * @param {app} app
  * @returns {function}
  */
-exports.default = function (app) {
+exports.default = app => {
   /**
    * @namespace app.use
    * @param {function} ?cb
    * @returns {app}
    */
-  return function (cb) {
+  return cb => {
     app.subscribers.run.push(cb);
     return app;
   };

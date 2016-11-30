@@ -14,26 +14,18 @@ var _logWinston2 = _interopRequireDefault(_logWinston);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var HOST = '127.0.0.1';
-var PORT = 8000;
-var prefix = '/act';
+const HOST = '127.0.0.1';
+const PORT = 8000;
+const prefix = '/act';
 
-var micro = (0, _2.default)({ host: HOST, port: PORT }).use((0, _logWinston2.default)()).add('cmd:ping', function ping() {
+const micro = (0, _2.default)({ listen: { host: HOST, port: PORT } }).use((0, _logWinston2.default)()).add('cmd:ping', function ping() {
   return 'pong';
 });
 
-micro.run().then(function () {
-  return (0, _nodeFetch2.default)('http://' + HOST + ':' + PORT + prefix, { method: 'POST',
+micro.run().then(() => {
+  return (0, _nodeFetch2.default)(`http://${ HOST }:${ PORT }${ prefix }`, { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cmd: 'ping' })
-  }).then(function (response) {
-    return response.json();
-  }).then(function (result) {
-    return micro.log.info('cmd:ping', result);
-  }).catch(function (error) {
-    return micro.log.error('cmd:ping', error);
-  });
-}).catch(function (error) {
-  return micro.log.error(error);
-});
+  }).then(response => response.json()).then(result => micro.log.info('cmd:ping', result)).catch(error => micro.log.error('cmd:ping', error));
+}).catch(error => micro.log.error(error));
 //# sourceMappingURL=all.js.map

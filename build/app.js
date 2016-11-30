@@ -12,6 +12,10 @@ var _patrun = require('patrun');
 
 var _patrun2 = _interopRequireDefault(_patrun);
 
+var _genid = require('./utils/genid');
+
+var _genid2 = _interopRequireDefault(_genid);
+
 var _log = require('./methods/log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -46,57 +50,49 @@ var _run2 = _interopRequireDefault(_run);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 // Статус блокирует
-var STATE_INIT = 'init';
-var STATE_WAIT = 'wait';
-var STATE_RUN = 'run';
-var STATE_END = 'run';
+const STATE_INIT = 'init';
+const STATE_WAIT = 'wait';
+const STATE_RUN = 'run';
+const STATE_END = 'run';
 
 /**
  * @namespace app
  * @class Microjs
  * @augments EventEmitter
  */
-
-var Microjs = function (_EventEmitter) {
-  _inherits(Microjs, _EventEmitter);
-
+class Microjs extends _events2.default {
   /**
    * @namespace app.manager
    * @type {object}
    */
-  function Microjs(settings) {
-    _classCallCheck(this, Microjs);
+  constructor() {
+    let settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    var _this = _possibleConstructorReturn(this, (Microjs.__proto__ || Object.getPrototypeOf(Microjs)).call(this));
-
-    _this.state = STATE_INIT;
-    _this.manager = (0, _patrun2.default)({ gex: true });
-    _this.subscribers = {
+    super();
+    this.state = STATE_INIT;
+    this.manager = (0, _patrun2.default)({ gex: true });
+    this.subscribers = {
       run: [], // подписчики для этапа запуска работы
       end: [] // подписчики для этапа завершения работы
     };
-    _this.log = (0, _log2.default)(_this);
-    _this.use = (0, _use2.default)(_this);
-    _this.add = (0, _add2.default)(_this);
-    _this.del = (0, _del2.default)(_this);
-    _this.api = (0, _api2.default)(_this);
-    _this.act = (0, _act2.default)(_this);
-    _this.end = (0, _end2.default)(_this);
-    _this.run = (0, _run2.default)(_this);
+    this.log = (0, _log2.default)(this);
+    this.use = (0, _use2.default)(this);
+    this.add = (0, _add2.default)(this);
+    this.del = (0, _del2.default)(this);
+    this.api = (0, _api2.default)(this);
+    this.act = (0, _act2.default)(this);
+    this.end = (0, _end2.default)(this);
+    this.run = (0, _run2.default)(this);
+    var _settings$id = settings.id;
+    const id = _settings$id === undefined ? (0, _genid2.default)() : _settings$id;
+    var _settings$maxListener = settings.maxListeners;
+    const maxListeners = _settings$maxListener === undefined ? _events2.default.defaultMaxListeners : _settings$maxListener;
 
-    var _this$settings = _this.settings = settings,
-        _this$settings$maxLis = _this$settings.maxListeners,
-        maxListeners = _this$settings$maxLis === undefined ? _events2.default.defaultMaxListeners : _this$settings$maxLis;
 
-    _this.setMaxListeners(maxListeners);
-    return _this;
+    this.id = id;
+    this.settings = settings;
+    this.setMaxListeners(maxListeners);
   }
   /**
    * Список подписчиков
@@ -117,10 +113,6 @@ var Microjs = function (_EventEmitter) {
    * @namespace app.state
    * @type {string}
    */
-
-
-  return Microjs;
-}(_events2.default);
-
+}
 exports.default = Microjs;
 //# sourceMappingURL=app.js.map

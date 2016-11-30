@@ -18,51 +18,50 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var ERROR_CODE_PREFIX = 'error.http.client';
+const ERROR_CODE_PREFIX = 'error.http.client';
 
 function fetch(microjs, _ref) {
-  var name = _ref.name,
+  let name = _ref.name,
       settings = _objectWithoutProperties(_ref, ['name']);
 
-  return function (_ref2, route) {
-    var api = _ref2.api,
-        _ref2$headers = _ref2.headers,
-        headers = _ref2$headers === undefined ? {} : _ref2$headers,
-        msg = _objectWithoutProperties(_ref2, ['api', 'headers']);
+  return (request, route) => new Promise((resolve, reject) => {
+    const api = request.api;
+    var _request$headers = request.headers;
 
-    return new Promise(function (resolve, reject) {
-      var host = settings.host,
-          _settings$prefix = settings.prefix,
-          prefix = _settings$prefix === undefined ? _constants.CLIENT_PREFIX : _settings$prefix;
+    const headers = _request$headers === undefined ? {} : _request$headers,
+          msg = _objectWithoutProperties(request, ['api', 'headers']);
 
-      var port = settings.port ? ':' + settings.port : '';
-      var method = 'POST';
+    const host = settings.host;
+    var _settings$prefix = settings.prefix;
+    const prefix = _settings$prefix === undefined ? _constants.CLIENT_PREFIX : _settings$prefix;
 
-      (0, _nodeFetch2.default)('http://' + host + port + prefix, {
-        method: method,
-        headers: _extends({ 'Content-Type': _constants.CLIENT_CONTENT_TYPE }, headers),
-        body: JSON.stringify(msg)
-      }).then(handleSuccess({ request: request, resolve: resolve, reject: reject }), handleError({ request: request, reject: reject }));
-    });
-  };
+    const port = settings.port ? `:${ settings.port }` : '';
+    const method = 'POST';
+
+    (0, _nodeFetch2.default)(`http://${ host }${ port }${ prefix }`, {
+      method,
+      headers: _extends({ 'Content-Type': _constants.CLIENT_CONTENT_TYPE }, headers),
+      body: JSON.stringify(msg)
+    }).then(handleSuccess({ request, resolve, reject }), handleError({ request, reject }));
+  });
 }
 
-function handleSuccess(_ref3) {
-  var request = _ref3.request,
-      resolve = _ref3.resolve,
-      reject = _ref3.reject;
+function handleSuccess(_ref2) {
+  let request = _ref2.request,
+      resolve = _ref2.resolve,
+      reject = _ref2.reject;
 
-  return function (response) {
-    var _handleError = handleError({ request: request, reject: reject });
+  return response => {
+    const _handleError = handleError({ request, reject });
 
     response.json().then(
     // Если ответ корректно распарсился
     function () {
-      var json = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      let json = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       // Разберем ответ - данная структура обязательна для клиентских ответов
-      var status = json[_constants.RESPONSE_PROPERTY_STATUS],
-          result = json[_constants.RESPONSE_PROPERTY_RESULT];
+      const status = json[_constants.RESPONSE_PROPERTY_STATUS],
+            result = json[_constants.RESPONSE_PROPERTY_RESULT];
 
       // Если статус результата - успех, то завершим работу вернув результат
 
@@ -77,8 +76,8 @@ function handleSuccess(_ref3) {
 
       // Если что-то непонятное - вызовем обработчик с ошибкой
       return _handleError({
-        code: ERROR_CODE_PREFIX + '/unknown.response.structure',
-        message: '\u041E\u0442\u0432\u0435\u0442 \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u043D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E\u0439 \u0441\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u044B',
+        code: `${ ERROR_CODE_PREFIX }/unknown.response.structure`,
+        message: `Ответ клиента неизвестной структуры`,
         details: json
       });
     },
@@ -87,19 +86,19 @@ function handleSuccess(_ref3) {
   };
 }
 
-function handleError(_ref4) {
-  var request = _ref4.request,
-      reject = _ref4.reject;
+function handleError(_ref3) {
+  let request = _ref3.request,
+      reject = _ref3.reject;
 
-  return function (e) {
-    var error = void 0;
+  return e => {
+    let error;
 
     switch (e.code) {
       // Возникает когда нет сервиса к которому обращаемся
       case 'ECONNREFUSED':
         error = {
-          code: ERROR_CODE_PREFIX + '/service.not.available',
-          message: '\u041A\u043B\u0438\u0435\u043D\u0442 \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 (' + request.id + ') \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D'
+          code: `${ ERROR_CODE_PREFIX }/service.not.available`,
+          message: `Клиент по запросу (${ request.id }) недоступен`
         };
         break;
       default:

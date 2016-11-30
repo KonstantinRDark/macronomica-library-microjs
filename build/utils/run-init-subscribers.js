@@ -16,9 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {Promise<undefined>}
  */
 function runInitSubscribers(app) {
-  return (0, _runSubscribers2.default)(app, app.subscribers.run, function (subscriber) {
-    return subscriber(app, { onClose: onClose });
-  });
+  return (0, _runSubscribers2.default)(app, app.subscribers.run, subscriber => subscriber(app, { onClose }));
 
   function onClose(cb) {
     app.subscribers.end.push(cb);

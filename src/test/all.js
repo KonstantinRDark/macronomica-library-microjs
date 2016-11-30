@@ -6,7 +6,7 @@ const HOST = '127.0.0.1';
 const PORT = 8000;
 const prefix = '/act';
 
-const micro = Micro({ host: HOST, port: PORT })
+const micro = Micro({ listen: { host: HOST, port: PORT } })
   .use(WinstonLogPlugin())
   .add('cmd:ping', function ping() { return 'pong'; });
 

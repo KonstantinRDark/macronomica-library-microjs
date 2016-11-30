@@ -22,25 +22,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {app} app
  * @returns {function:app}
  */
-exports.default = function (app) {
+exports.default = app => {
   /**
    * @namespace app.act
    * @param {string|object} pin
    * @param {function} [cb]
    * @returns {app}
    */
-  return function (pin, cb) {
-    var dfd = (0, _defer2.default)(cb);
-    var msg = (0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin;
-    var route = app.manager.find(msg);
+  return (pin, cb) => {
+    const dfd = (0, _defer2.default)(cb);
+    const msg = (0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin;
+    const route = app.manager.find(msg);
 
     if (!route) {
-      app.log.trace('\u0412\u044B\u0437\u043E\u0432 \u043D\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0433\u043E \u043C\u0430\u0440\u0448\u0440\u0443\u0442\u0430', pin);
-      return dfd.reject('\u0412\u044B\u0437\u043E\u0432 \u043D\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0433\u043E \u043C\u0430\u0440\u0448\u0440\u0443\u0442\u0430');
+      app.log.trace(`Вызов не существующего маршрута`, pin);
+      return dfd.reject(`Вызов не существующего маршрута`);
     }
 
     try {
-      var promise = route.callback(msg, route);
+      let promise = route.callback(msg, route);
 
       if (!promise || typeof promise.then !== 'function') {
         promise = Promise.resolve(promise);
@@ -50,7 +50,7 @@ exports.default = function (app) {
 
       return dfd.promise;
     } catch (err) {
-      app.log.error('\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0432\u044B\u0437\u043E\u0432\u0435 \u043C\u0430\u0440\u0448\u0440\u0443\u0442\u0430', pin, err);
+      app.log.error(`Ошибка при вызове маршрута`, pin, err);
       return dfd.reject(err);
     }
   };

@@ -36,17 +36,15 @@ var _constants = require('./../constants');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+const jsonBodyParser = _bodyParser2.default.json();
+const urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
+const type = 'http';
 
-var jsonBodyParser = _bodyParser2.default.json();
-var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
-var type = 'http';
-
-var preprocessors = [jsonBodyParser, urlencodedParser];
+const preprocessors = [jsonBodyParser, urlencodedParser];
 
 function listenHttp(app, plugin, onClose, _ref) {
-  var _ref$host = _ref.host,
-      host = _ref$host === undefined ? _constants.SERVER_HOST : _ref$host,
+  var _ref$host = _ref.host;
+  let host = _ref$host === undefined ? _constants.SERVER_HOST : _ref$host,
       port = _ref.port;
 
   return function listenHttpRoute() {
@@ -55,31 +53,29 @@ function listenHttp(app, plugin, onClose, _ref) {
     }
     port = port || _constants.SERVER_PORT;
 
-    var server = _http2.default.createServer(handleRequest);
+    const server = _http2.default.createServer(handleRequest);
 
     server.on('error', app.log.error);
     server.on('connection', function (socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
     });
 
-    onClose(function () {
-      return new Promise(function (resolve, reject) {
-        server.close(function (err) {
-          if (err && err.message !== 'Not running') {
-            return reject(err);
-          }
-          app.log.info('Отсановлен Node Http сервер', { plugin: { host: host, port: port } });
-          resolve();
-        });
+    onClose(() => new Promise((resolve, reject) => {
+      server.close(err => {
+        if (err && err.message !== 'Not running') {
+          return reject(err);
+        }
+        app.log.info('Отсановлен Node Http сервер', { plugin: { host, port } });
+        resolve();
       });
-    });
+    }));
 
-    return new Promise(function (resolve, reject) {
-      server.listen(port, host, function (err) {
+    return new Promise((resolve, reject) => {
+      server.listen(port, host, err => {
         if (err) {
           return reject(err);
         }
-        app.log.info('Запущен Node Http сервер', { plugin: { host: host, port: port } });
+        app.log.info('Запущен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     });
@@ -90,14 +86,15 @@ function listenHttp(app, plugin, onClose, _ref) {
       req.query = _qs2.default.parse(req.url.query);
 
       if (req.url.pathname !== _constants.SERVER_PREFIX) {
-        var _JSON$stringify;
-
-        var error = {
+        const error = {
           code: 'error.transport.http.listen/url.not.found',
           message: 'Не корректный маршрут запроса'
         };
 
-        var outJson = JSON.stringify((_JSON$stringify = {}, _defineProperty(_JSON$stringify, _constants.RESPONSE_PROPERTY_STATUS, _constants.RESPONSE_STATUS_ERROR), _defineProperty(_JSON$stringify, _constants.RESPONSE_PROPERTY_RESULT, error), _JSON$stringify));
+        const outJson = JSON.stringify({
+          [_constants.RESPONSE_PROPERTY_STATUS]: _constants.RESPONSE_STATUS_ERROR,
+          [_constants.RESPONSE_PROPERTY_RESULT]: error
+        });
 
         res.writeHead(404, {
           'Content-Type': 'application/json',
@@ -108,25 +105,26 @@ function listenHttp(app, plugin, onClose, _ref) {
         return res.end(outJson);
       }
 
-      (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, function (err) {
+      (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, err => {
         if (err) {
           return app.logger.error(err);
         }
-        var pin = _extends({}, req.body || {}, req.query, {
+        const pin = _extends({}, req.body || {}, req.query, {
           transport: {
-            type: type,
+            type,
             origin: req.headers['user-agent'],
             time: Date.now()
           }
         });
 
-        app.act(pin, function (error, result) {
-          var _JSON$stringify2;
+        app.act(pin, (error, result) => {
+          const code = error ? 500 : 200;
+          const status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
 
-          var code = error ? 500 : 200;
-          var status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
-
-          var outJson = JSON.stringify((_JSON$stringify2 = {}, _defineProperty(_JSON$stringify2, _constants.RESPONSE_PROPERTY_STATUS, status), _defineProperty(_JSON$stringify2, _constants.RESPONSE_PROPERTY_RESULT, error || result), _JSON$stringify2));
+          const outJson = JSON.stringify({
+            [_constants.RESPONSE_PROPERTY_STATUS]: status,
+            [_constants.RESPONSE_PROPERTY_RESULT]: error || result
+          });
 
           res.writeHead(code, {
             'Content-Type': 'application/json',

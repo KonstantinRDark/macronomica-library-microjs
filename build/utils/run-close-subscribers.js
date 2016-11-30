@@ -16,8 +16,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {Promise<undefined>}
  */
 function runCloseSubscribers(app) {
-  return (0, _runSubscribers2.default)(app, app.subscribers.end, function (subscriber) {
-    return subscriber(app);
-  });
+  return (0, _runSubscribers2.default)(app, app.subscribers.end, subscriber => subscriber(app));
 }
 //# sourceMappingURL=run-close-subscribers.js.map
