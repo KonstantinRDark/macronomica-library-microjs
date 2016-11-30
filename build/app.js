@@ -60,6 +60,8 @@ var STATE_END = 'run';
 
 /**
  * @namespace app
+ * @class Microjs
+ * @augments EventEmitter
  */
 
 var Microjs = function (_EventEmitter) {
@@ -96,6 +98,15 @@ var Microjs = function (_EventEmitter) {
    * Список подписчиков
    * @namespace app.subscribers
    * @type {{ run: Array<function>, end: Array<function> }}
+   */
+
+  /**
+   * @namespace app
+   * @memberof app.on
+   */
+  /**
+   * @namespace app
+   * @memberof app.emit
    */
 
   /**

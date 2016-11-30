@@ -68,7 +68,7 @@ function listenHttp(app, plugin, onClose, _ref) {
           if (err && err.message !== 'Not running') {
             return reject(err);
           }
-
+          app.log.info('Отсановлен Node Http сервер', { plugin: { host: host, port: port } });
           resolve();
         });
       });
@@ -79,7 +79,7 @@ function listenHttp(app, plugin, onClose, _ref) {
         if (err) {
           return reject(err);
         }
-        app.log.info('Запущен Node Http сервер', { host: host, port: port });
+        app.log.info('Запущен Node Http сервер', { plugin: { host: host, port: port } });
         resolve();
       });
     });

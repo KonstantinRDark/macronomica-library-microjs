@@ -9,6 +9,12 @@ import runInitSubscribers from './../utils/run-init-subscribers';
 export default function run(app) {
   // Ссылка на обещание запуска
   let runDeferred;
+  let transports = {
+    http: null
+  };
+
+  app.on('plugin.transport', (type, listen) => transports[ type ] = listen);
+
   /**
    * @namespace app.run
    * @param {function} [cb]
@@ -25,24 +31,24 @@ export default function run(app) {
     runDeferred = defer(cb);
     let promise = Promise.resolve();
 
-    if (useServer) {
-      promise = promise
-          // Проверяем наличие транспорта для сервера
-          .then(() => app.act({ transport }))
-          // если не найден транспорт - добавим в плагины транспорт по умолчанию
-          .catch(() => app.use(NodeHttpPlugin(otherSettings)));
+    // Проверяем наличие транспорта для сервера
+    if (useServer && typeof transport[ transport ] !== 'function') {
+      // если не найден транспорт - добавим в плагины транспорт по умолчанию
+      app.use(NodeHttpPlugin({ ...otherSettings }));
     }
 
     promise
       // Запустим всех подписчиков на этап инициализации
       .then(() => runInitSubscribers(app))
       // Запустим прослушку транспорта для сервера
-      .then(() => useServer
-        ? app.act({ transport, cmd: 'listen' })
-        : Promise.resolve())
       .then(() => {
-        return runDeferred.resolve(app);
+        if(!useServer) {
+          return Promise.resolve();
+        }
+
+        return transports[ transport ]();
       })
+      .then(() => runDeferred.resolve(app))
       .catch(runDeferred.reject);
 
     return runDeferred.promise;

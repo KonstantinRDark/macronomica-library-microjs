@@ -3,6 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.default = run;
 
 var _defer = require('./../utils/defer');
@@ -28,6 +31,14 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 function run(app) {
   // Ссылка на обещание запуска
   var runDeferred = void 0;
+  var transports = {
+    http: null
+  };
+
+  app.on('plugin.transport', function (type, listen) {
+    return transports[type] = listen;
+  });
+
   /**
    * @namespace app.run
    * @param {function} [cb]
@@ -48,16 +59,10 @@ function run(app) {
     runDeferred = (0, _defer2.default)(cb);
     var promise = Promise.resolve();
 
-    if (useServer) {
-      promise = promise
-      // Проверяем наличие транспорта для сервера
-      .then(function () {
-        return app.act({ transport: transport });
-      })
+    // Проверяем наличие транспорта для сервера
+    if (useServer && typeof transport[transport] !== 'function') {
       // если не найден транспорт - добавим в плагины транспорт по умолчанию
-      .catch(function () {
-        return app.use((0, _nodeHttp2.default)(otherSettings));
-      });
+      app.use((0, _nodeHttp2.default)(_extends({}, otherSettings)));
     }
 
     promise
@@ -67,7 +72,11 @@ function run(app) {
     })
     // Запустим прослушку транспорта для сервера
     .then(function () {
-      return useServer ? app.act({ transport: transport, cmd: 'listen' }) : Promise.resolve();
+      if (!useServer) {
+        return Promise.resolve();
+      }
+
+      return transports[transport]();
     }).then(function () {
       return runDeferred.resolve(app);
     }).catch(runDeferred.reject);

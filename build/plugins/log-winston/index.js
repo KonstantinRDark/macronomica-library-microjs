@@ -20,29 +20,29 @@ exports.default = function () {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       settings = _objectWithoutProperties(_ref, []);
 
-  return function (microjs, _ref2) {
+  return function (micro, _ref2) {
     var onClose = _ref2.onClose;
 
     var plugin = { id: (0, _genid2.default)() };
-    var logPin = 'cmd:logger, level:*';
+
     var logger = new _winston2.default.Logger({
-      level: microjs.log.level,
-      levels: microjs.log.LEVELS
+      level: micro.log.level,
+      levels: micro.log.LEVELS
     });
 
     logger.add(_winston2.default.transports.Console);
 
-    microjs.add(logPin, function (_ref3) {
-      var cmd = _ref3.cmd,
-          level = _ref3.level,
+    micro.emit('plugin.logger.use');
+    micro.on('log', function (_ref3) {
+      var level = _ref3.level,
           message = _ref3.message,
           payload = _ref3.payload;
       return logger[level](message, payload);
     });
 
     onClose(function () {
+      micro.emit('plugin.logger.unuse');
       logger = null;
-      microjs.del(logPin);
     });
 
     return plugin;

@@ -18,8 +18,19 @@ const STATE_END = 'run';
 
 /**
  * @namespace app
+ * @class Microjs
+ * @augments EventEmitter
  */
 export default class Microjs extends EventEmitter {
+  /**
+   * @namespace app
+   * @memberof app.on
+   */
+  /**
+   * @namespace app
+   * @memberof app.emit
+   */
+
   /**
    * @namespace app.state
    * @type {string}

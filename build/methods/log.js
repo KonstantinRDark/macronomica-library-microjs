@@ -21,7 +21,7 @@ var LEVEL_FATAL = exports.LEVEL_FATAL = 'fatal';
  * @type {Object<string, number>}
  * @enum {number}
  */
-var LEVELS = exports.LEVELS = (_LEVELS = {}, _defineProperty(_LEVELS, LEVEL_ALL, 0), _defineProperty(_LEVELS, LEVEL_INFO, 10), _defineProperty(_LEVELS, LEVEL_TRACE, 20), _defineProperty(_LEVELS, LEVEL_DEBUG, 30), _defineProperty(_LEVELS, LEVEL_WARN, 40), _defineProperty(_LEVELS, LEVEL_ERROR, 50), _defineProperty(_LEVELS, LEVEL_FATAL, 60), _defineProperty(_LEVELS, LEVEL_OFF, 100), _LEVELS);
+var LEVELS = exports.LEVELS = (_LEVELS = {}, _defineProperty(_LEVELS, LEVEL_ALL, 0), _defineProperty(_LEVELS, LEVEL_FATAL, 10), _defineProperty(_LEVELS, LEVEL_ERROR, 20), _defineProperty(_LEVELS, LEVEL_WARN, 30), _defineProperty(_LEVELS, LEVEL_INFO, 40), _defineProperty(_LEVELS, LEVEL_TRACE, 50), _defineProperty(_LEVELS, LEVEL_DEBUG, 60), _defineProperty(_LEVELS, LEVEL_OFF, 100), _LEVELS);
 
 /**
  * @param {app} app
@@ -66,28 +66,51 @@ exports.default = function (app) {
      */
     LEVELS: LEVELS
   }, _defineProperty(_logger, LEVEL_DEBUG, log(LEVEL_DEBUG)), _defineProperty(_logger, LEVEL_TRACE, log(LEVEL_TRACE)), _defineProperty(_logger, LEVEL_INFO, log(LEVEL_INFO)), _defineProperty(_logger, LEVEL_WARN, log(LEVEL_WARN)), _defineProperty(_logger, LEVEL_ERROR, log(LEVEL_ERROR)), _defineProperty(_logger, LEVEL_FATAL, log(LEVEL_FATAL)), _logger);
+  var usePluginLogger = void 0;
+
+  app.on('plugin.logger.use', function () {
+    return usePluginLogger = true;
+  });
+  app.on('plugin.logger.unuse', function () {
+    return usePluginLogger = false;
+  });
 
   return logger;
 
   /**
    * @param {string} level
-   * @returns {function(string, ...[*])}
+   * @returns {function(string, payload)}
    */
   function log(level) {
-    return function (message) {
-      for (var _len = arguments.length, payload = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        payload[_key - 1] = arguments[_key];
-      }
+    return function (message, payload) {
+      var _console, _console2, _console3;
 
       if (LEVELS[logger.level] < LEVELS[level]) {
         return logger;
       }
 
-      app.act({ cmd: 'logger', level: level, message: message, payload: payload }).catch(function (result) {
-        var _console;
+      if (usePluginLogger) {
+        app.emit('log', { level: level, message: message, payload: payload });
+        app.emit('log.' + level, { level: level, message: message, payload: payload });
+      } else {
+        var args = [level + '\t', message];
 
-        return (_console = console).log.apply(_console, [level + '\t' + message].concat(payload));
-      });
+        if (!!payload) {
+          args.push(JSON.stringify(payload, '', 4));
+        }
+
+        switch (level) {
+          case LEVEL_ERROR:
+          case LEVEL_FATAL:
+            (_console = console).error.apply(_console, args);
+            break;
+          case LEVEL_WARN:
+            (_console2 = console).warn.apply(_console2, args);
+            break;
+          default:
+            (_console3 = console).log.apply(_console3, args);
+        }
+      }
 
       return logger;
     };

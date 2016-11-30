@@ -19,25 +19,15 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 var TRANSPORT = 'http';
 
-function NodeHttpPlugin(_ref) {
-  var settings = _objectWithoutProperties(_ref, []);
+function NodeHttpPlugin() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      settings = _objectWithoutProperties(_ref, []);
 
-  return function (microjs, _ref2) {
-    var onClose = _ref2.onClose,
-        manager = _ref2.manager;
+  return function (app, _ref2) {
+    var onClose = _ref2.onClose;
 
     var plugin = { id: (0, _genid2.default)() };
-    var getTransportPin = 'transport:' + TRANSPORT;
-    var getTransportListenPin = 'transport:' + TRANSPORT + ', cmd:listen';
-
-    microjs.add(getTransportPin, function getHttpTransportRoute() {
-      return plugin;
-    });
-    microjs.add(getTransportListenPin, (0, _listen2.default)(microjs, plugin, onClose, settings));
-
-    onClose(function () {
-      return microjs.del(getTransportPin).del(getTransportListenPin);
-    });
+    app.emit('plugin.transport', TRANSPORT, (0, _listen2.default)(app, plugin, onClose, settings));
   };
 }
 //# sourceMappingURL=index.js.map

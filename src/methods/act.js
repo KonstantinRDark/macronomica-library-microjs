@@ -19,9 +19,7 @@ export default app => {
     const route = app.manager.find(msg);
 
     if (!route) {
-      if (msg.cmd !== 'logger') {
-        app.log.trace(`Вызов не существующего маршрута`, pin);
-      }
+      app.log.trace(`Вызов не существующего маршрута`, pin);
       return dfd.reject(`Вызов не существующего маршрута`);
     }
 

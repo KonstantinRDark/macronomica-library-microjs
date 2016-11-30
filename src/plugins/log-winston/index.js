@@ -2,22 +2,22 @@ import winston from 'winston';
 import genid from './../../utils/genid';
 
 export default ({ ...settings } = {}) => {
-  return (microjs, { onClose }) => {
+  return (micro, { onClose }) => {
     const plugin = { id: genid() };
-    const logPin = 'cmd:logger, level:*';
+
     let logger = new (winston.Logger)({
-      level : microjs.log.level,
-      levels: microjs.log.LEVELS
+      level : micro.log.level,
+      levels: micro.log.LEVELS
     });
 
     logger.add(winston.transports.Console);
 
-
-    microjs.add(logPin, ({ cmd, level, message, payload }) => logger[ level ](message, payload));
+    micro.emit('plugin.logger.use');
+    micro.on('log', ({ level, message, payload }) => logger[ level ](message, payload));
 
     onClose(() => {
+      micro.emit('plugin.logger.unuse');
       logger = null;
-      microjs.del(logPin);
     });
 
     return plugin;

@@ -15,12 +15,12 @@ export const LEVEL_FATAL = 'fatal';
 export const LEVELS = {
   [ LEVEL_ALL ]: 0,
 
-  [ LEVEL_INFO  ]: 10,
-  [ LEVEL_TRACE ]: 20,
-  [ LEVEL_DEBUG ]: 30,
-  [ LEVEL_WARN  ]: 40,
-  [ LEVEL_ERROR ]: 50,
-  [ LEVEL_FATAL ]: 60,
+  [ LEVEL_FATAL ]: 10,
+  [ LEVEL_ERROR ]: 20,
+  [ LEVEL_WARN  ]: 30,
+  [ LEVEL_INFO  ]: 40,
+  [ LEVEL_TRACE ]: 50,
+  [ LEVEL_DEBUG ]: 60,
 
   [ LEVEL_OFF ]: 100
 };
@@ -64,61 +64,84 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
      * @memberof app.log
      * @name debug
      * @param {string} message
-     * @param {...*} [payload]
+     * @param {*} [payload]
      */
     [ LEVEL_DEBUG ]: log(LEVEL_DEBUG),
     /**
      * @memberof app.log
      * @name trace
      * @param {string} message
-     * @param {...*} [payload]
+     * @param {*} [payload]
      */
     [ LEVEL_TRACE ]: log(LEVEL_TRACE),
     /**
      * @memberof app.log
      * @name info
      * @param {string} message
-     * @param {...*} [payload]
+     * @param {*} [payload]
      */
     [ LEVEL_INFO ] : log(LEVEL_INFO),
     /**
      * @memberof app.log
      * @name warn
      * @param {string} message
-     * @param {...*} [payload]
+     * @param {*} [payload]
      */
     [ LEVEL_WARN ] : log(LEVEL_WARN),
     /**
      * @memberof app.log
      * @name error
      * @param {string} message
-     * @param {...*} [payload]
+     * @param {*} [payload]
      */
     [ LEVEL_ERROR ]: log(LEVEL_ERROR),
     /**
      * @memberof app.log
      * @name fatal
      * @param {string} message
-     * @param {...*} [payload]
+     * @param {*} [payload]
      */
     [ LEVEL_FATAL ]: log(LEVEL_FATAL)
   };
+  let usePluginLogger;
+
+  app.on('plugin.logger.use', () => usePluginLogger = true);
+  app.on('plugin.logger.unuse', () => usePluginLogger = false);
 
   return logger;
 
   /**
    * @param {string} level
-   * @returns {function(string, ...[*])}
+   * @returns {function(string, payload)}
    */
   function log(level) {
-    return (message, ...payload) => {
+    return (message, payload) => {
       if (LEVELS[ logger.level ] < LEVELS[ level ]) {
         return logger;
       }
 
-      app
-        .act({ cmd: 'logger', level, message, payload })
-        .catch(result => console.log(`${ level }\t${ message }`, ...payload));
+      if (usePluginLogger) {
+        app.emit('log', { level, message, payload });
+        app.emit(`log.${ level }`, { level, message, payload });
+      } else {
+        const args = [ `${ level }\t`, message ];
+
+        if (!!payload) {
+          args.push(JSON.stringify(payload, '', 4));
+        }
+
+        switch (level) {
+          case LEVEL_ERROR:
+          case LEVEL_FATAL:
+            console.error(...args);
+            break;
+          case LEVEL_WARN:
+            console.warn(...args);
+            break;
+          default:
+            console.log(...args);
+        }
+      }
 
       return logger;
     };

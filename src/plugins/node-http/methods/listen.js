@@ -42,7 +42,7 @@ export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, p
         if (err && err.message !== 'Not running') {
           return reject(err);
         }
-
+        app.log.info('Отсановлен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     }));
@@ -52,7 +52,7 @@ export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, p
         if (err) {
           return reject(err);
         }
-        app.log.info('Запущен Node Http сервер', { host, port });
+        app.log.info('Запущен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     });
