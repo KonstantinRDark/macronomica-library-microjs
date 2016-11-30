@@ -3,14 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var APP_STATE_INITIALIZATION = exports.APP_STATE_INITIALIZATION = 'initialization';
-var APP_STATE_INSTALLING = exports.APP_STATE_INSTALLING = 'installing';
-var APP_STATE_RUNNING = exports.APP_STATE_RUNNING = 'running';
-var APP_STATE_PAUSED = exports.APP_STATE_PAUSED = 'paused';
-var APP_STATE_STOPPED = exports.APP_STATE_STOPPED = 'stopped';
+const STATE_START = exports.STATE_START = 'start';
+const STATE_RUN = exports.STATE_RUN = 'run';
 
-var PLUGIN_TRANSPORT_NAME_HTTP = exports.PLUGIN_TRANSPORT_NAME_HTTP = 'http';
-var PLUGIN_TRANSPORT_NAME_HTTPS = exports.PLUGIN_TRANSPORT_NAME_HTTPS = 'https';
+const LEVEL_ALL = exports.LEVEL_ALL = 'all';
+const LEVEL_OFF = exports.LEVEL_OFF = 'off';
+const LEVEL_INFO = exports.LEVEL_INFO = 'info';
+const LEVEL_TRACE = exports.LEVEL_TRACE = 'trace';
+const LEVEL_DEBUG = exports.LEVEL_DEBUG = 'debug';
+const LEVEL_WARN = exports.LEVEL_WARN = 'warn';
+const LEVEL_ERROR = exports.LEVEL_ERROR = 'error';
+const LEVEL_FATAL = exports.LEVEL_FATAL = 'fatal';
 
-var PLUGIN_LOGGER_NAME = exports.PLUGIN_LOGGER_NAME = 'logger';
+const LEVEL_DEFAULT = exports.LEVEL_DEFAULT = LEVEL_DEBUG;
 //# sourceMappingURL=constants.js.map
