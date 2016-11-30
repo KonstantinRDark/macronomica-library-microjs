@@ -91,7 +91,11 @@ var Microjs = function (_EventEmitter) {
     _this.end = (0, _end2.default)(_this);
     _this.run = (0, _run2.default)(_this);
 
-    _this.settings = settings;
+    var _this$settings = _this.settings = settings,
+        _this$settings$maxLis = _this$settings.maxListeners,
+        maxListeners = _this$settings$maxLis === undefined ? _events2.default.defaultMaxListeners : _this$settings$maxLis;
+
+    _this.setMaxListeners(maxListeners);
     return _this;
   }
   /**

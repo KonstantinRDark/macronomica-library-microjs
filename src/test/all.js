@@ -8,23 +8,19 @@ const prefix = '/act';
 
 const micro = Micro({ host: HOST, port: PORT })
   .use(WinstonLogPlugin())
-  .add('cmd:ping', function ping() {
-    micro.log.info('pong');
-    return 'pong';
-  });
+  .add('cmd:ping', function ping() { return 'pong'; });
 
 micro
   .run()
   .then(() => {
     return fetch(`http://${ HOST }:${ PORT }${ prefix }`,
-      {
-        method : 'POST',
+      { method : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body   : JSON.stringify({ cmd: 'ping' })
       })
       .then(response => response.json())
-      .then(result => micro.log.info(result))
-      .catch(error => micro.log.error(error));
+      .then(result => micro.log.info('cmd:ping', result))
+      .catch(error => micro.log.error('cmd:ping', error));
   })
   .catch(error => micro.log.error(error))
 ;

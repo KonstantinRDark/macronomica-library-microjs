@@ -53,7 +53,8 @@ export default class Microjs extends EventEmitter {
 
   constructor(settings) {
     super();
-    this.settings = settings;
+    const { maxListeners = EventEmitter.defaultMaxListeners } = this.settings = settings;
+    this.setMaxListeners(maxListeners);
   }
 
   log = log(this);

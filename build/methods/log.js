@@ -75,6 +75,8 @@ exports.default = function (app) {
     return usePluginLogger = false;
   });
 
+  process.on('uncaughtException', app.log.error);
+
   return logger;
 
   /**

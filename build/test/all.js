@@ -19,21 +19,19 @@ var PORT = 8000;
 var prefix = '/act';
 
 var micro = (0, _2.default)({ host: HOST, port: PORT }).use((0, _logWinston2.default)()).add('cmd:ping', function ping() {
-  micro.log.info('pong');
   return 'pong';
 });
 
 micro.run().then(function () {
-  return (0, _nodeFetch2.default)('http://' + HOST + ':' + PORT + prefix, {
-    method: 'POST',
+  return (0, _nodeFetch2.default)('http://' + HOST + ':' + PORT + prefix, { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cmd: 'ping' })
   }).then(function (response) {
     return response.json();
   }).then(function (result) {
-    return micro.log.info(result);
+    return micro.log.info('cmd:ping', result);
   }).catch(function (error) {
-    return micro.log.error(error);
+    return micro.log.error('cmd:ping', error);
   });
 }).catch(function (error) {
   return micro.log.error(error);

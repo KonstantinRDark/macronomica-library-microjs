@@ -108,6 +108,8 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
   app.on('plugin.logger.use', () => usePluginLogger = true);
   app.on('plugin.logger.unuse', () => usePluginLogger = false);
 
+  process.on('uncaughtException', app.log.error);
+
   return logger;
 
   /**
