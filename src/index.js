@@ -1,5 +1,8 @@
 import Microjs from './app';
 import WinstonLogPlugin from './plugins/log-winston';
+import genid from './utils/genid';
+import defer from './utils/defer';
+import iterate from './utils/iterate';
 
 import {
   LEVEL_ALL,
@@ -23,6 +26,9 @@ export {
   LEVEL_ERROR,
   LEVEL_FATAL,
   LEVEL_DEFAULT,
-  WinstonLogPlugin
+  WinstonLogPlugin,
+  iterate,
+  defer,
+  genid
 }
 export default settings => new Microjs(settings);
