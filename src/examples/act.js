@@ -1,12 +1,10 @@
 import Micro from './../';
-import WinstonLogPlugin from './../plugins/log-winston';
 
-const micro = Micro()
-  .use(WinstonLogPlugin());
+const micro = Micro();
 
 micro
   .run()
   .then(() => micro.act('cmd:ping'))
-  .then(result => micro.log.info(`ping - ${ result }`))
+  .then(micro.log.info)
   .catch(micro.log.error)
 ;

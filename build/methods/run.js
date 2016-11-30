@@ -16,10 +16,6 @@ var _dateIsoString = require('./../utils/date-iso-string');
 
 var _dateIsoString2 = _interopRequireDefault(_dateIsoString);
 
-var _nodeHttp = require('./../plugins/node-http');
-
-var _nodeHttp2 = _interopRequireDefault(_nodeHttp);
-
 var _runInitSubscribers = require('./../utils/run-init-subscribers');
 
 var _runInitSubscribers2 = _interopRequireDefault(_runInitSubscribers);
@@ -63,12 +59,13 @@ function run(app) {
       return runDeferred.promise;
     }
 
+    app.log.info(`started at ${ (0, _dateIsoString2.default)(app.time.started) }`);
     runDeferred = (0, _defer2.default)(cb);
 
     // Проверяем наличие транспорта для сервера
     if (useServer && typeof transport[transport] !== 'function') {
       // если не найден транспорт - добавим в плагины транспорт по умолчанию
-      app.use((0, _nodeHttp2.default)(_extends({}, otherSettings)));
+      app.use(app.defaultTransportPlugin(_extends({}, otherSettings)));
     }
 
     // Запустим всех подписчиков на этап инициализации

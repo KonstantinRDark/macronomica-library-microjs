@@ -1,6 +1,5 @@
 import defer from './../utils/defer';
 import dateIsoString from './../utils/date-iso-string';
-import NodeHttpPlugin from './../plugins/node-http';
 import runInitSubscribers from './../utils/run-init-subscribers';
 import runAddSubscribers from './../utils/run-add-subscribers';
 
@@ -30,12 +29,13 @@ export default function run(app) {
       return runDeferred.promise;
     }
 
+    app.log.info(`started at ${ dateIsoString(app.time.started) }`);
     runDeferred = defer(cb);
 
     // Проверяем наличие транспорта для сервера
     if (useServer && typeof transport[ transport ] !== 'function') {
       // если не найден транспорт - добавим в плагины транспорт по умолчанию
-      app.use(NodeHttpPlugin({ ...otherSettings }));
+      app.use(app.defaultTransportPlugin({ ...otherSettings }));
     }
 
     // Запустим всех подписчиков на этап инициализации

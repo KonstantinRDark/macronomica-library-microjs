@@ -21,7 +21,7 @@ export default app => {
 
     const { action } = route;
 
-    app.log.info(`Удаление маршрута`, action);
+    app.log.info(`Удаление маршрута`, { pin, action });
 
     app.manager.remove(pin);
 

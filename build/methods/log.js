@@ -75,42 +75,42 @@ exports.default = function (app) {
     /**
      * @memberof app.log
      * @name debug
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [_constants.LEVEL_DEBUG]: log(_constants.LEVEL_DEBUG),
     /**
      * @memberof app.log
      * @name trace
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [_constants.LEVEL_TRACE]: log(_constants.LEVEL_TRACE),
     /**
      * @memberof app.log
      * @name info
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [_constants.LEVEL_INFO]: log(_constants.LEVEL_INFO),
     /**
      * @memberof app.log
      * @name warn
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [_constants.LEVEL_WARN]: log(_constants.LEVEL_WARN),
     /**
      * @memberof app.log
      * @name error
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [_constants.LEVEL_ERROR]: log(_constants.LEVEL_ERROR),
     /**
      * @memberof app.log
      * @name fatal
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [_constants.LEVEL_FATAL]: log(_constants.LEVEL_FATAL)

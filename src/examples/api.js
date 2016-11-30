@@ -1,19 +1,17 @@
 import Micro from './../';
-import WinstonLogPlugin from './../plugins/log-winston';
 
-const worker = Micro({ listen: { host: '127.0.0.1', port: 8000 } })
-  .use(WinstonLogPlugin());
+const host = '127.0.0.1';
+const port = 8000;
+const listen = { host, port };
 
-const client = Micro()
-  .use(WinstonLogPlugin())
-  .api('worker', { host: '127.0.0.1', port: 8000 });
+const worker = Micro({ listen });
+const client = Micro().api('worker', listen);
 
 worker
   .run()
-  .catch(client.log.error)
-  .then(() => client
-    .run()
-    .then(() => client.act('api:worker, cmd:ping'))
-    .then(result => client.log.info('cmd:ping', result))
-    .catch(client.log.error)
-  );
+  .then(worker => client.run())
+  .then(client => client.act({ api: 'worker', cmd: 'ping' }))
+  .then(client.log.info)
+  .then(() => client.end())
+  .then(() => worker.end())
+  .catch(client.log.error);

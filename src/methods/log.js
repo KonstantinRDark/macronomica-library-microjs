@@ -67,42 +67,42 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
     /**
      * @memberof app.log
      * @name debug
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [ LEVEL_DEBUG ]: log(LEVEL_DEBUG),
     /**
      * @memberof app.log
      * @name trace
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [ LEVEL_TRACE ]: log(LEVEL_TRACE),
     /**
      * @memberof app.log
      * @name info
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [ LEVEL_INFO ] : log(LEVEL_INFO),
     /**
      * @memberof app.log
      * @name warn
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [ LEVEL_WARN ] : log(LEVEL_WARN),
     /**
      * @memberof app.log
      * @name error
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [ LEVEL_ERROR ]: log(LEVEL_ERROR),
     /**
      * @memberof app.log
      * @name fatal
-     * @param {string} message
+     * @param {string|Array<string>} message
      * @param {*} [payload]
      */
     [ LEVEL_FATAL ]: log(LEVEL_FATAL)

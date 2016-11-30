@@ -1,8 +1,16 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _constants = require('./../constants');
+
+var _runInitSubscribers = require('./../utils/run-init-subscribers');
+
+var _runInitSubscribers2 = _interopRequireDefault(_runInitSubscribers);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * @param {app} app
@@ -15,7 +23,12 @@ exports.default = app => {
    * @returns {app}
    */
   return cb => {
-    app.subscribers.run.push(cb);
+    if (app.state !== _constants.STATE_RUN) {
+      app.subscribers.run.push(cb);
+    } else {
+      (0, _runInitSubscribers2.default)(app, [cb]);
+    }
+
     return app;
   };
 };

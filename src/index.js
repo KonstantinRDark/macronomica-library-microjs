@@ -1,4 +1,6 @@
 import Microjs from './app';
+import WinstonLogPlugin from './plugins/log-winston';
+
 import {
   LEVEL_ALL,
   LEVEL_OFF,
@@ -20,6 +22,7 @@ export {
   LEVEL_WARN,
   LEVEL_ERROR,
   LEVEL_FATAL,
-  LEVEL_DEFAULT
+  LEVEL_DEFAULT,
+  WinstonLogPlugin
 }
 export default settings => new Microjs(settings);

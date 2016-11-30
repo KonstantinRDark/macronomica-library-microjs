@@ -1,3 +1,5 @@
+import { STATE_RUN } from './../constants';
+import runInitSubscribers from './../utils/run-init-subscribers';
 
 /**
  * @param {app} app
@@ -10,7 +12,12 @@ export default app => {
    * @returns {app}
    */
   return cb => {
-    app.subscribers.run.push(cb);
+    if (app.state !== STATE_RUN) {
+      app.subscribers.run.push(cb);
+    } else {
+      runInitSubscribers(app, [ cb ]);
+    }
+
     return app;
   };
 };

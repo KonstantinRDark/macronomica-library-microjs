@@ -21,7 +21,8 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 exports.default = function () {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  let settings = _objectWithoutProperties(_ref, []);
+  let level = _ref.level,
+      settings = _objectWithoutProperties(_ref, ['level']);
 
   return (micro, _ref2) => {
     let onClose = _ref2.onClose;
@@ -29,7 +30,7 @@ exports.default = function () {
     const plugin = { id: (0, _genid2.default)() };
 
     let logger = new _winston2.default.Logger(_extends({
-      level: micro.log.level,
+      level: level || micro.log.level,
       levels: micro.log.LEVELS
     }, settings));
 
@@ -43,11 +44,6 @@ exports.default = function () {
           message = _ref3.message,
           payload = _ref3.payload;
       return logger[level](message, payload);
-    });
-
-    onClose(() => {
-      micro.emit('plugin.logger.unuse');
-      logger = null;
     });
 
     return plugin;

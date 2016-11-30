@@ -4,6 +4,9 @@ import Patrun from 'patrun';
 import genid from './utils/genid';
 import dateIsoString from './utils/date-iso-string';
 
+import WinstonLogPlugin from './plugins/log-winston';
+import NodeHttpPlugin from './plugins/node-http';
+
 import HealthCheckModule from './modules/health-check';
 
 import log from './methods/log';
@@ -51,6 +54,29 @@ export default class Microjs extends EventEmitter {
   manager = Patrun({ gex: true });
 
   /**
+   * Плагин транспорта по умолчанию
+   * @namespace app.defaultTransportPlugin
+   * @type {function}
+   */
+  defaultTransportPlugin = NodeHttpPlugin;
+
+  /**
+   * Плагин логгера по умолчанию
+   * @namespace app.defaultLogPlugin
+   * @type {function}
+   */
+  defaultLogPlugin = WinstonLogPlugin;
+
+  /**
+   * Список модулей для инициализации
+   * @namespace app.modules
+   * @type {Array<function>}
+   */
+  modules = [
+    HealthCheckModule()
+  ];
+
+  /**
    * Список подписчиков
    * @namespace app.subscribers
    * @type {{ run: Array<function>, add: Array<function>, end: Array<function> }}
@@ -71,33 +97,14 @@ export default class Microjs extends EventEmitter {
     running: null
   };
 
+  /**
+   * @this app
+   * @param settings
+   */
   constructor(settings = {}) {
     super();
-    const { id, level = this.log.level, maxListeners = EventEmitter.defaultMaxListeners } = settings;
-
-    if (!!id) {
-      this.id = id;
-    }
-
-    this.settings = settings;
-    this.log.level = level;
-    this.setMaxListeners(maxListeners);
-
-    this
-      .use(HealthCheckModule())
-      .on('running', app => {
-        app.state = STATE_RUN;
-        app.time.running = Date.now();
-        app.log.info([
-          '============================ app-running ===========================',
-          '# Instance Id: ' + app.id,
-          `# Started At : ${ dateIsoString(app.time.started) }`,
-          `# Running At : ${ dateIsoString(app.time.running) }`,
-          '========================== app-running-end =========================',
-        ]);
-      });
-
-    this.log.info(`started at ${ dateIsoString(this.time.started) }`);
+    initialize(this, settings);
+    this.on('running', onRunning);
   }
 
   log = log(this);
@@ -108,4 +115,45 @@ export default class Microjs extends EventEmitter {
   act = act(this);
   end = end(this);
   run = run(this);
+}
+
+/**
+ * @param {app} app
+ * @param {object} settings
+ */
+function initialize(app, settings) {
+  const {
+    id = app.id,
+    level = app.log.level,
+    plugins = [],
+    modules = app.modules,
+    maxListeners = EventEmitter.defaultMaxListeners
+  } = settings;
+
+  app.log.level = level;
+  app.setMaxListeners(maxListeners);
+
+  Object.assign(app, { id, settings });
+
+  app.use(app.defaultLogPlugin({ level }));
+
+  if (Array.isArray(plugins)) {
+    plugins.forEach(plugin => app.use(plugin));
+  }
+
+  if (Array.isArray(modules)) {
+    modules.forEach(module => app.use(module));
+  }
+}
+
+function onRunning(app) {
+  app.state = STATE_RUN;
+  app.time.running = Date.now();
+  app.log.info([
+    '============================ app-running ===========================',
+    '# Instance Id: ' + app.id,
+    `# Started At : ${ dateIsoString(app.time.started) }`,
+    `# Running At : ${ dateIsoString(app.time.running) }`,
+    '========================== app-running-end =========================',
+  ]);
 }

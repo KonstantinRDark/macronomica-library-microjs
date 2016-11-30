@@ -20,6 +20,14 @@ var _dateIsoString = require('./utils/date-iso-string');
 
 var _dateIsoString2 = _interopRequireDefault(_dateIsoString);
 
+var _logWinston = require('./plugins/log-winston');
+
+var _logWinston2 = _interopRequireDefault(_logWinston);
+
+var _nodeHttp = require('./plugins/node-http');
+
+var _nodeHttp2 = _interopRequireDefault(_nodeHttp);
+
 var _healthCheck = require('./modules/health-check');
 
 var _healthCheck2 = _interopRequireDefault(_healthCheck);
@@ -68,6 +76,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class Microjs extends _events2.default {
 
   /**
+   * @this app
+   * @param settings
+   */
+
+
+  /**
    * Список подписчиков
    * @namespace app.subscribers
    * @type {{ run: Array<function>, add: Array<function>, end: Array<function> }}
@@ -75,61 +89,9 @@ class Microjs extends _events2.default {
 
 
   /**
-   * @namespace app.state
-   * @type {string}
-   */
-  constructor() {
-    let settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    super();
-    this.id = (0, _genid2.default)();
-    this.state = _constants.STATE_START;
-    this.manager = (0, _patrun2.default)({ gex: true });
-    this.subscribers = {
-      run: [], // подписчики для этапа запуска работы
-      add: [], // подписчики для этапа регистрации действий
-      end: [] // подписчики для этапа завершения работы
-    };
-    this.time = {
-      started: Date.now(),
-      running: null
-    };
-    this.log = (0, _log2.default)(this);
-    this.use = (0, _use2.default)(this);
-    this.add = (0, _add2.default)(this);
-    this.del = (0, _del2.default)(this);
-    this.api = (0, _api2.default)(this);
-    this.act = (0, _act2.default)(this);
-    this.end = (0, _end2.default)(this);
-    this.run = (0, _run2.default)(this);
-    const id = settings.id;
-    var _settings$level = settings.level;
-    const level = _settings$level === undefined ? this.log.level : _settings$level;
-    var _settings$maxListener = settings.maxListeners;
-    const maxListeners = _settings$maxListener === undefined ? _events2.default.defaultMaxListeners : _settings$maxListener;
-
-
-    if (!!id) {
-      this.id = id;
-    }
-
-    this.settings = settings;
-    this.log.level = level;
-    this.setMaxListeners(maxListeners);
-
-    this.use((0, _healthCheck2.default)()).on('running', app => {
-      app.state = _constants.STATE_RUN;
-      app.time.running = Date.now();
-      app.log.info(['============================ app-running ===========================', '# Instance Id: ' + app.id, `# Started At : ${ (0, _dateIsoString2.default)(app.time.started) }`, `# Running At : ${ (0, _dateIsoString2.default)(app.time.running) }`, '========================== app-running-end =========================']);
-    });
-
-    this.log.info(`started at ${ (0, _dateIsoString2.default)(this.time.started) }`);
-  }
-
-  /**
-   * Метрики времени
-   * @namespace app.time
-   * @type {{ started: number, running: ?number }}
+   * Плагин логгера по умолчанию
+   * @namespace app.defaultLogPlugin
+   * @type {function}
    */
 
 
@@ -151,6 +113,101 @@ class Microjs extends _events2.default {
    * @namespace app.id
    * @type {string}
    */
+  constructor() {
+    let settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    super();
+    this.id = (0, _genid2.default)();
+    this.state = _constants.STATE_START;
+    this.manager = (0, _patrun2.default)({ gex: true });
+    this.defaultTransportPlugin = _nodeHttp2.default;
+    this.defaultLogPlugin = _logWinston2.default;
+    this.modules = [(0, _healthCheck2.default)()];
+    this.subscribers = {
+      run: [], // подписчики для этапа запуска работы
+      add: [], // подписчики для этапа регистрации действий
+      end: [] // подписчики для этапа завершения работы
+    };
+    this.time = {
+      started: Date.now(),
+      running: null
+    };
+    this.log = (0, _log2.default)(this);
+    this.use = (0, _use2.default)(this);
+    this.add = (0, _add2.default)(this);
+    this.del = (0, _del2.default)(this);
+    this.api = (0, _api2.default)(this);
+    this.act = (0, _act2.default)(this);
+    this.end = (0, _end2.default)(this);
+    this.run = (0, _run2.default)(this);
+    initialize(this, settings);
+    this.on('running', onRunning);
+  }
+
+  /**
+   * Метрики времени
+   * @namespace app.time
+   * @type {{ started: number, running: ?number }}
+   */
+
+
+  /**
+   * Список модулей для инициализации
+   * @namespace app.modules
+   * @type {Array<function>}
+   */
+
+
+  /**
+   * Плагин транспорта по умолчанию
+   * @namespace app.defaultTransportPlugin
+   * @type {function}
+   */
+
+
+  /**
+   * @namespace app.state
+   * @type {string}
+   */
 }
-exports.default = Microjs;
+
+exports.default = Microjs; /**
+                            * @param {app} app
+                            * @param {object} settings
+                            */
+
+function initialize(app, settings) {
+  var _settings$id = settings.id;
+  const id = _settings$id === undefined ? app.id : _settings$id;
+  var _settings$level = settings.level;
+  const level = _settings$level === undefined ? app.log.level : _settings$level;
+  var _settings$plugins = settings.plugins;
+  const plugins = _settings$plugins === undefined ? [] : _settings$plugins;
+  var _settings$modules = settings.modules;
+  const modules = _settings$modules === undefined ? app.modules : _settings$modules;
+  var _settings$maxListener = settings.maxListeners;
+  const maxListeners = _settings$maxListener === undefined ? _events2.default.defaultMaxListeners : _settings$maxListener;
+
+
+  app.log.level = level;
+  app.setMaxListeners(maxListeners);
+
+  Object.assign(app, { id, settings });
+
+  app.use(app.defaultLogPlugin({ level }));
+
+  if (Array.isArray(plugins)) {
+    plugins.forEach(plugin => app.use(plugin));
+  }
+
+  if (Array.isArray(modules)) {
+    modules.forEach(module => app.use(module));
+  }
+}
+
+function onRunning(app) {
+  app.state = _constants.STATE_RUN;
+  app.time.running = Date.now();
+  app.log.info(['============================ app-running ===========================', '# Instance Id: ' + app.id, `# Started At : ${ (0, _dateIsoString2.default)(app.time.started) }`, `# Running At : ${ (0, _dateIsoString2.default)(app.time.running) }`, '========================== app-running-end =========================']);
+}
 //# sourceMappingURL=app.js.map

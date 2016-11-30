@@ -13,10 +13,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * @param {app} app
+ * @param {Array<function>} [subscribers]
  * @returns {Promise<undefined>}
  */
 function runInitSubscribers(app) {
-  return (0, _runSubscribers2.default)(app, app.subscribers.run, subscriber => subscriber(app, { onClose }));
+  let subscribers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : app.subscribers.run;
+
+  return (0, _runSubscribers2.default)(app, subscribers, subscriber => subscriber(app, { onClose }));
 
   function onClose(cb) {
     let method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'push';
