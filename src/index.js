@@ -1,3 +1,3 @@
-import microjs from './factory-method';
+import Microjs from './app';
 
-export default microjs;
+export default settings => new Microjs(settings);

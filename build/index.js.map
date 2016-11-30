@@ -1,1 +1,1 @@
-{"version":3,"sources":["../src/index.js"],"names":[],"mappings":";;;;;;AAAA","file":"index.js","sourcesContent":["import microjs from './factory-method';\n\nexport default microjs;"]}
+{"version":3,"sources":["../src/index.js"],"names":["settings"],"mappings":";;;;;;AAAA;;;;;;kBAEe;AAAA,SAAY,kBAAYA,QAAZ,CAAZ;AAAA,C","file":"index.js","sourcesContent":["import Microjs from './app';\n\nexport default settings => new Microjs(settings);"]}

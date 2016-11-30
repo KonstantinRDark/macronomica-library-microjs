@@ -4,13 +4,9 @@ import runInitSubscribers from './../utils/run-init-subscribers';
 
 /**
  * @param {app} app                                 // Экземпляр библиотеки
- * @param {object} settings                         // Настройки для запуска сервера
  * @returns {function:Promise}
  */
-export default function run(app, settings) {
-  const useServer = !!settings;
-  const { transport = 'http', ...otherSettings } = settings || {};
-
+export default function run(app) {
   // Ссылка на обещание запуска
   let runDeferred;
   /**
@@ -19,6 +15,9 @@ export default function run(app, settings) {
    * @returns {Promise<app>}
    */
   return cb => {
+    const useServer = !!app.settings;
+    const { transport = 'http', ...otherSettings } = app.settings || {};
+
     if (runDeferred) {
       return runDeferred.promise;
     }

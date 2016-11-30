@@ -23,20 +23,10 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 /**
  * @param {app} app                                 // Экземпляр библиотеки
- * @param {object} settings                         // Настройки для запуска сервера
  * @returns {function:Promise}
  */
-function run(app, settings) {
-  var useServer = !!settings;
-
-  var _ref = settings || {},
-      _ref$transport = _ref.transport,
-      transport = _ref$transport === undefined ? 'http' : _ref$transport,
-      otherSettings = _objectWithoutProperties(_ref, ['transport']);
-
+function run(app) {
   // Ссылка на обещание запуска
-
-
   var runDeferred = void 0;
   /**
    * @namespace app.run
@@ -44,6 +34,13 @@ function run(app, settings) {
    * @returns {Promise<app>}
    */
   return function (cb) {
+    var useServer = !!app.settings;
+
+    var _ref = app.settings || {},
+        _ref$transport = _ref.transport,
+        transport = _ref$transport === undefined ? 'http' : _ref$transport,
+        otherSettings = _objectWithoutProperties(_ref, ['transport']);
+
     if (runDeferred) {
       return runDeferred.promise;
     }

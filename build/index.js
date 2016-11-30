@@ -4,11 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _factoryMethod = require('./factory-method');
+var _app = require('./app');
 
-var _factoryMethod2 = _interopRequireDefault(_factoryMethod);
+var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = _factoryMethod2.default;
+exports.default = function (settings) {
+  return new _app2.default(settings);
+};
 //# sourceMappingURL=index.js.map
