@@ -3,19 +3,20 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = use;
 
 /**
- * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} runSubscribers     // Список подписчиков на этап инициализации
- * @returns {function(?function):object}
+ * @param {app} app
+ * @returns {function}
  */
-function use(microjs, _ref) {
-  var runSubscribers = _ref.subscribers.run;
-
+exports.default = function (app) {
+  /**
+   * @namespace app.use
+   * @param {function} ?cb
+   * @returns {app}
+   */
   return function (cb) {
-    runSubscribers.push(cb);
-    return microjs;
+    app.subscribers.run.push(cb);
+    return app;
   };
-}
+};
 //# sourceMappingURL=use.js.map

@@ -1,18 +1,27 @@
-export default function del(microjs, { manager }) {
+/**
+ * @param {app} app
+ * @returns {function}
+ */
+export default app => {
+  /**
+   * @namespace app.del
+   * @param {string|object} pin
+   * @returns {app}
+   */
   return (pin) => {
-    const route = manager.find(pin);
+    const route = app.manager.find(pin);
 
     if (!route) {
-      microjs.log.trace(`Удаление несуществующего маршрута`, pin);
-      return microjs;
+      app.log.trace(`Удаление несуществующего маршрута`, pin);
+      return app;
     }
 
     const { action } = route;
 
-    microjs.log.info(`Удаление маршрута`, action);
+    app.log.info(`Удаление маршрута`, action);
 
-    manager.remove(pin);
+    app.manager.remove(pin);
 
-    return microjs;
+    return app;
   };
-}
+};

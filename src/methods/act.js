@@ -2,15 +2,25 @@ import isString from 'lodash.isstring';
 import jsonic from 'jsonic';
 import defer from './../utils/defer';
 
-export default function act(microjs, { manager, promises }) {
+/**
+ * @param {app} app
+ * @returns {function:app}
+ */
+export default app => {
+  /**
+   * @namespace app.act
+   * @param {string|object} pin
+   * @param {function} [cb]
+   * @returns {app}
+   */
   return (pin, cb) => {
     const dfd = defer(cb);
     const msg = isString(pin) ? jsonic(pin) : pin;
-    const route = manager.find(msg);
+    const route = app.manager.find(msg);
 
     if (!route) {
       if (msg.cmd !== 'logger') {
-        microjs.log.trace(`Вызов не существующего маршрута`, pin);
+        app.log.trace(`Вызов не существующего маршрута`, pin);
       }
       return dfd.reject(`Вызов не существующего маршрута`);
     }
@@ -26,7 +36,7 @@ export default function act(microjs, { manager, promises }) {
 
       return dfd.promise;
     } catch (err) {
-      microjs.log.error(`Ошибка при вызове маршрута`, pin, err);
+      app.log.error(`Ошибка при вызове маршрута`, pin, err);
       return dfd.reject(err);
     }
   };

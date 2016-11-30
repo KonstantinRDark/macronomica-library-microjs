@@ -44,7 +44,7 @@ var type = 'http';
 
 var preprocessors = [jsonBodyParser, urlencodedParser];
 
-function listenHttp(micro, plugin, onClose, _ref) {
+function listenHttp(app, plugin, onClose, _ref) {
   var _ref$host = _ref.host,
       host = _ref$host === undefined ? _constants.SERVER_HOST : _ref$host,
       port = _ref.port;
@@ -57,7 +57,7 @@ function listenHttp(micro, plugin, onClose, _ref) {
 
     var server = _http2.default.createServer(handleRequest);
 
-    server.on('error', micro.log.error);
+    server.on('error', app.log.error);
     server.on('connection', function (socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
     });
@@ -79,7 +79,7 @@ function listenHttp(micro, plugin, onClose, _ref) {
         if (err) {
           return reject(err);
         }
-
+        app.log.info('Запущен Node Http сервер', { host: host, port: port });
         resolve();
       });
     });
@@ -110,7 +110,7 @@ function listenHttp(micro, plugin, onClose, _ref) {
 
       (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, function (err) {
         if (err) {
-          return micro.logger.error(err);
+          return app.logger.error(err);
         }
         var pin = _extends({}, req.body || {}, req.query, {
           transport: {
@@ -120,7 +120,7 @@ function listenHttp(micro, plugin, onClose, _ref) {
           }
         });
 
-        micro.act(pin, function (error, result) {
+        app.act(pin, function (error, result) {
           var _JSON$stringify2;
 
           var code = error ? 500 : 200;

@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = run;
 
 var _defer = require('./../utils/defer');
 
@@ -16,15 +15,16 @@ var _runCloseSubscribers2 = _interopRequireDefault(_runCloseSubscribers);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} endSubscribers     // Список подписчиков на этап закрытия
- * @returns {function(?function):Promise}
+ * @param {app} app
+ * @returns {function:Promise}
  */
-function run(microjs, _ref) {
-  var endSubscribers = _ref.subscribers.end;
-
+exports.default = function (app) {
   var dfd = void 0;
-
+  /**
+   * @namespace app.end
+   * @param {function} [cb]
+   * @returns {Promise<app>}
+   */
   return function (cb) {
     if (dfd) {
       return dfd.promise;
@@ -32,9 +32,9 @@ function run(microjs, _ref) {
 
     dfd = (0, _defer2.default)(cb);
 
-    (0, _runCloseSubscribers2.default)(microjs, endSubscribers).then(dfd.resolve).catch(dfd.reject);
+    (0, _runCloseSubscribers2.default)(app).then(dfd.resolve).catch(dfd.reject);
 
     return dfd.promise;
   };
-}
+};
 //# sourceMappingURL=end.js.map

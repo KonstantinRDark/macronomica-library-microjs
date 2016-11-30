@@ -7,20 +7,30 @@ export const LEVEL_DEBUG = 'debug';
 export const LEVEL_WARN = 'warn';
 export const LEVEL_ERROR = 'error';
 export const LEVEL_FATAL = 'fatal';
+/**
+ * @name LEVELS
+ * @type {Object<string, number>}
+ * @enum {number}
+ */
 export const LEVELS = {
-  LEVEL_ALL: 0,
+  [ LEVEL_ALL ]: 0,
 
-  LEVEL_INFO : 10,
-  LEVEL_TRACE: 20,
-  LEVEL_DEBUG: 30,
-  LEVEL_WARN : 40,
-  LEVEL_ERROR: 50,
-  LEVEL_FATAL: 60,
+  [ LEVEL_INFO  ]: 10,
+  [ LEVEL_TRACE ]: 20,
+  [ LEVEL_DEBUG ]: 30,
+  [ LEVEL_WARN  ]: 40,
+  [ LEVEL_ERROR ]: 50,
+  [ LEVEL_FATAL ]: 60,
 
-  LEVEL_OFF: 100
+  [ LEVEL_OFF ]: 100
 };
 
-export default function log(microjs, { level = LEVEL_DEBUG } = {}) {
+/**
+ * @param {app} app
+ * @param { string } [level]
+ * @returns {object}
+ */
+export default (app, { level = LEVEL_DEBUG } = {}) => {
   /**
    * Levels:
    *
@@ -35,26 +45,78 @@ export default function log(microjs, { level = LEVEL_DEBUG } = {}) {
    * ERROR  Ошибка, но которая позволяет приложению продолжать работать
    * FATAL  Ошибка, которая приводит завершению приложения
    */
-  const logger = {};
 
-  return Object.assign(logger, {
+  /**
+   * @namespace app.log
+   */
+  const logger = {
+    /**
+     * @memberof app.log
+     * @type {string}
+     */
     level,
+    /**
+     * @memberof app.log
+     * @type {Object<!string, !number>}
+     */
     LEVELS,
+    /**
+     * @memberof app.log
+     * @name debug
+     * @param {string} message
+     * @param {...*} [payload]
+     */
     [ LEVEL_DEBUG ]: log(LEVEL_DEBUG),
+    /**
+     * @memberof app.log
+     * @name trace
+     * @param {string} message
+     * @param {...*} [payload]
+     */
     [ LEVEL_TRACE ]: log(LEVEL_TRACE),
+    /**
+     * @memberof app.log
+     * @name info
+     * @param {string} message
+     * @param {...*} [payload]
+     */
     [ LEVEL_INFO ] : log(LEVEL_INFO),
+    /**
+     * @memberof app.log
+     * @name warn
+     * @param {string} message
+     * @param {...*} [payload]
+     */
     [ LEVEL_WARN ] : log(LEVEL_WARN),
+    /**
+     * @memberof app.log
+     * @name error
+     * @param {string} message
+     * @param {...*} [payload]
+     */
     [ LEVEL_ERROR ]: log(LEVEL_ERROR),
-    [ LEVEL_FATAL ]: log(LEVEL_FATAL),
-  });
+    /**
+     * @memberof app.log
+     * @name fatal
+     * @param {string} message
+     * @param {...*} [payload]
+     */
+    [ LEVEL_FATAL ]: log(LEVEL_FATAL)
+  };
 
+  return logger;
+
+  /**
+   * @param {string} level
+   * @returns {function(string, ...[*])}
+   */
   function log(level) {
     return (message, ...payload) => {
       if (LEVELS[ logger.level ] < LEVELS[ level ]) {
         return logger;
       }
 
-      microjs
+      app
         .act({ cmd: 'logger', level, message, payload })
         .catch(result => console.log(`${ level }\t${ message }`, ...payload));
 

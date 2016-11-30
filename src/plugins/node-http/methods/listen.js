@@ -23,7 +23,7 @@ const preprocessors = [
   urlencodedParser
 ];
 
-export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST, port }) {
+export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, port }) {
   return function listenHttpRoute() {
     if ([ 'localhost', '0.0.0.0', ].includes(port)) {
       port = SERVER_PORT;
@@ -32,7 +32,7 @@ export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST,
 
     const server = http.createServer(handleRequest);
 
-    server.on('error', micro.log.error);
+    server.on('error', app.log.error);
     server.on('connection', function(socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
     });
@@ -52,7 +52,7 @@ export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST,
         if (err) {
           return reject(err);
         }
-
+        app.log.info('Запущен Node Http сервер', { host, port });
         resolve();
       });
     });
@@ -84,7 +84,7 @@ export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST,
 
       iterate(req.method === 'POST' ? preprocessors : [], req, res, (err) => {
         if (err) {
-          return micro.logger.error(err);
+          return app.logger.error(err);
         }
         const pin = {
           ...(req.body || {}),
@@ -96,7 +96,7 @@ export default function listenHttp(micro, plugin, onClose, { host = SERVER_HOST,
           }
         };
 
-        micro.act(pin, (error, result) => {
+        app.act(pin, (error, result) => {
           const code = error ? 500 : 200;
           const status = error ? RESPONSE_STATUS_ERROR : RESPONSE_STATUS_SUCCESS;
 

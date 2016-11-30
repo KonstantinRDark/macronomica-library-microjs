@@ -11,27 +11,48 @@ import api from './methods/api';
 import end from './methods/end';
 import run from './methods/run';
 
+// Статус блокирует
+const STATE_INIT = 'init';
+const STATE_WAIT = 'wait';
+const STATE_RUN = 'run';
+const STATE_END = 'run';
+/**
+ * @param {object} listenSettings
+ * @returns {app}
+ */
 export default function factoryMethod(listenSettings) {
-  const runDeferred = defer();
-  const endDeferred = defer();
-  const promises = {
-    run: runDeferred.promise,
-    end: endDeferred.promise
+  /**
+   * @namespace app
+   */
+  const app = {
+    /**
+     * @type {string}
+     */
+    state      : STATE_INIT,
+    /**
+     * @type {object}
+     */
+    manager    : Patrun({ gex: true }),
+    /**
+     * Список подписчиков
+     * @type {{ run: Array<function>, end: Array<function> }}
+     */
+    subscribers: {
+      run: [],      // подписчики для этапа запуска работы
+      end: []       // подписчики для этапа завершения работы
+    }
   };
-  const subscribers = { run: [], end: [] };
-  const manager = Patrun({ gex: true });
-  const microjs = {};
 
-  Object.assign(microjs, {
-    log: log(microjs),
-    use: use(microjs, { promises, subscribers }),
-    add: add(microjs, { manager }),
-    del: del(microjs, { manager }),
-    api: api(microjs),
-    act: act(microjs, { manager, promises }),
-    end: end(microjs, { subscribers, promises }),
-    run: run(microjs, { subscribers, promises }, listenSettings),
+  Object.assign(app, {
+    log: log(app),
+    use: use(app),
+    add: add(app),
+    del: del(app),
+    api: api(app),
+    act: act(app),
+    end: end(app),
+    run: run(app, listenSettings),
   });
 
-  return microjs;
+  return app;
 }

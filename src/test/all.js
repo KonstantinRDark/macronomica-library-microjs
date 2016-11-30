@@ -12,7 +12,8 @@ const micro = Micro({ host: HOST, port: PORT })
   });
 
 micro
-  .run(() => {
+  .run()
+  .then(() => {
 
     return fetch(`http://${ HOST }${ PORT }${ prefix }`,
       {
@@ -22,7 +23,7 @@ micro
       })
       .then(response => response.json())
       .then(result => console.log(result))
-      .catch(error => console.error(error));
-
+      .catch(error => micro.log.error(error));
   })
+  .catch(error => micro.log.error(error))
 ;

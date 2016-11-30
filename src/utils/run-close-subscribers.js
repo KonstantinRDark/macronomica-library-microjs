@@ -1,7 +1,9 @@
+import runSubscribers from './run-subscribers';
 
-export default function runCloseSubscribers(microjs, closeSubscribers) {
-
-  closeSubscribers.map(subscriber => subscriber(microjs));
-
-  return Promise.resolve();
+/**
+ * @param {app} app
+ * @returns {Promise<undefined>}
+ */
+export default function runCloseSubscribers(app) {
+  return runSubscribers(app, app.subscribers.end, subscriber => subscriber(app));
 }

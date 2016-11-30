@@ -19,7 +19,7 @@ var micro = (0, _2.default)({ host: HOST, port: PORT }).add('cmd:ping', function
   return 'pong';
 });
 
-micro.run(function () {
+micro.run().then(function () {
 
   return (0, _nodeFetch2.default)('http://' + HOST + PORT + prefix, {
     method: method,
@@ -30,7 +30,9 @@ micro.run(function () {
   }).then(function (result) {
     return console.log(result);
   }).catch(function (error) {
-    return console.error(error);
+    return micro.log.error(error);
   });
+}).catch(function (error) {
+  return micro.log.error(error);
 });
 //# sourceMappingURL=all.js.map

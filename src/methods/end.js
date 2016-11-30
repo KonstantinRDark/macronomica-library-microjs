@@ -2,13 +2,16 @@ import defer from './../utils/defer';
 import runCloseSubscribers from './../utils/run-close-subscribers';
 
 /**
- * @param {object} microjs                // Экземпляр библиотеки
- * @param {function[]} endSubscribers     // Список подписчиков на этап закрытия
- * @returns {function(?function):Promise}
+ * @param {app} app
+ * @returns {function:Promise}
  */
-export default function run(microjs, { subscribers: { end: endSubscribers } }) {
+export default app => {
   let dfd;
-
+  /**
+   * @namespace app.end
+   * @param {function} [cb]
+   * @returns {Promise<app>}
+   */
   return cb => {
     if (dfd) {
       return dfd.promise;
@@ -16,7 +19,7 @@ export default function run(microjs, { subscribers: { end: endSubscribers } }) {
 
     dfd = defer(cb);
 
-    runCloseSubscribers(microjs, endSubscribers)
+    runCloseSubscribers(app)
       .then(dfd.resolve)
       .catch(dfd.reject);
 

@@ -1,25 +1,13 @@
-import Queue from 'queue3';
-import defer from './defer';
+import runSubscribers from './run-subscribers';
 
-export default function runInitSubscribers(microjs, initSubscribers, closeSubscribers) {
-  const queue = new Queue();
-  let count = 0;
-  // TODO дописать алгоритм последовательного запуска
-  initSubscribers.map(subscriber => queue.push(cb => {
-    count++;
-    let p = subscriber(microjs, { onClose });
-
-    if (!p || typeof p.then !== 'function') {
-      p = Promise.resolve(p);
-    }
-
-     p.then(() => cb(null))
-      .catch(cb);
-  }));
-
-  return dfd.promise;
+/**
+ * @param {app} app
+ * @returns {Promise<undefined>}
+ */
+export default function runInitSubscribers(app) {
+  return runSubscribers(app, app.subscribers.run, subscriber => subscriber(app, { onClose }));
 
   function onClose(cb) {
-    closeSubscribers.push(cb);
+    app.subscribers.end.push(cb);
   }
 }

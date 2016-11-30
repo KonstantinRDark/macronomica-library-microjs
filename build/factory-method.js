@@ -47,28 +47,49 @@ var _run2 = _interopRequireDefault(_run);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// Статус блокирует
+var STATE_INIT = 'init';
+var STATE_WAIT = 'wait';
+var STATE_RUN = 'run';
+var STATE_END = 'run';
+/**
+ * @param {object} listenSettings
+ * @returns {app}
+ */
 function factoryMethod(listenSettings) {
-  var runDeferred = (0, _defer2.default)();
-  var endDeferred = (0, _defer2.default)();
-  var promises = {
-    run: runDeferred.promise,
-    end: endDeferred.promise
+  /**
+   * @namespace app
+   */
+  var app = {
+    /**
+     * @type {string}
+     */
+    state: STATE_INIT,
+    /**
+     * @type {object}
+     */
+    manager: (0, _patrun2.default)({ gex: true }),
+    /**
+     * Список подписчиков
+     * @type {{ run: Array<function>, end: Array<function> }}
+     */
+    subscribers: {
+      run: [], // подписчики для этапа запуска работы
+      end: [] // подписчики для этапа завершения работы
+    }
   };
-  var subscribers = { run: [], end: [] };
-  var manager = (0, _patrun2.default)({ gex: true });
-  var microjs = {};
 
-  Object.assign(microjs, {
-    log: (0, _log2.default)(microjs),
-    use: (0, _use2.default)(microjs, { promises: promises, subscribers: subscribers }),
-    add: (0, _add2.default)(microjs, { manager: manager }),
-    del: (0, _del2.default)(microjs, { manager: manager }),
-    api: (0, _api2.default)(microjs),
-    act: (0, _act2.default)(microjs, { manager: manager, promises: promises }),
-    end: (0, _end2.default)(microjs, { subscribers: subscribers, promises: promises }),
-    run: (0, _run2.default)(microjs, { subscribers: subscribers, promises: promises }, listenSettings)
+  Object.assign(app, {
+    log: (0, _log2.default)(app),
+    use: (0, _use2.default)(app),
+    add: (0, _add2.default)(app),
+    del: (0, _del2.default)(app),
+    api: (0, _api2.default)(app),
+    act: (0, _act2.default)(app),
+    end: (0, _end2.default)(app),
+    run: (0, _run2.default)(app, listenSettings)
   });
 
-  return microjs;
+  return app;
 }
 //# sourceMappingURL=factory-method.js.map

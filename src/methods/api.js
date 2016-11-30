@@ -1,5 +1,15 @@
 import ApiFetchPlugin from './../plugins/api-fetch';
 
-export default function api(microjs) {
-  return (name, settings = {}) => microjs.use(ApiFetchPlugin({ name, ...settings }));
-}
+/**
+ * @param {app} app
+ * @returns {function}
+ */
+export default app => {
+  /**
+   * @namespace app.api
+   * @param {string} name
+   * @param {object} [settings]
+   * @returns {app}
+   */
+  return (name, settings = {}) => app.use(ApiFetchPlugin({ name, ...settings }));
+};

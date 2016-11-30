@@ -6,14 +6,14 @@
   "main": "index.js",
   "author": "Konstantin Dark",
   "scripts": {
-    "setup"        : "npm install --no-optional && npm run compile",
-    "watch"        : "npm run clean && npm run watch:babel & npm run watch:other",
-    "deploy"       : "npm run version:patch && git push --tags origin HEAD:master",
-    "compile"      : "npm run clean && npm run compile:babel && npm run compile:other && git add -A build",
-    "clean"        : "rimraf build/*",
-    "test"         : "mocha -R spec --timeout 5000 test/index.js test/**/*.spec.js",
-    "watch:babel"  : "babel -w ./src/ -d build/ --source-maps",
-    "watch:other"  : "cpx \"src/**/*.json\" build -w -v",
+    "setup": "npm install --no-optional && npm run compile",
+    "watch": "npm run clean && npm run watch:babel & npm run watch:other",
+    "deploy": "npm run version:patch && git push --tags origin HEAD:master",
+    "compile": "npm run clean && npm run compile:babel && npm run compile:other && git add -A build",
+    "clean": "rimraf build/*",
+    "test": "mocha -R spec --timeout 5000 test/index.js test/**/*.spec.js",
+    "watch:babel": "babel -w ./src/ -d build/ --source-maps",
+    "watch:other": "cpx \"src/**/*.json\" build -w -v",
     "compile:babel": "babel ./src/ -d build/ --source-maps",
     "compile:other": "cpx \"src/**/*.json\" build",
     "version:patch": "npm run compile && npm version patch",
@@ -25,6 +25,7 @@
     "url": "https://github.com/macronomica/macronomica-library-microjs"
   },
   "dependencies": {
+    "async": "^2.1.4",
     "body-parser": "^1.15.2",
     "jsonic": "^0.2.2",
     "lodash.isfunction": "^3.0.8",
@@ -33,8 +34,8 @@
     "nid": "^0.3.2",
     "node-fetch": "^1.6.3",
     "patrun": "^0.5.1",
-    "queue3": "^1.0.3",
     "qs": "^6.3.0",
+    "queue3": "^1.0.3",
     "winston": "^2.2.0"
   },
   "devDependencies": {
