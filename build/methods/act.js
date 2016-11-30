@@ -48,7 +48,7 @@ exports.default = app => {
 
       if (!route) {
         app.log.trace(`Вызов не существующего маршрута`, pin);
-        return dfd.reject(`Вызов не существующего маршрута`);
+        return dfd.reject(`Вызов не существующего маршрута: ${ JSON.stringify(pin) }`);
       }
 
       try {
@@ -61,8 +61,8 @@ exports.default = app => {
         promise.then(dfd.resolve).catch(dfd.reject);
 
         return dfd.promise;
-      } catch (err) {
-        app.log.error(`Ошибка при вызове маршрута`, pin, err);
+      } catch (error) {
+        app.log.error(`Ошибка при вызове маршрута`, { pin, error });
         return dfd.reject(err);
       }
     }

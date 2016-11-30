@@ -1,12 +1,11 @@
 import Micro from './../';
 import WinstonLogPlugin from './../plugins/log-winston';
 
-const worker = Micro({ id: 'worker', listen: { host: '127.0.0.1', port: 8000 } })
-  .use(WinstonLogPlugin({ label: 'worker' }))
-  .add('cmd:ping', function ping() { return 'pong' });
+const worker = Micro({ listen: { host: '127.0.0.1', port: 8000 } })
+  .use(WinstonLogPlugin());
 
-const client = Micro({ id: 'client' })
-  .use(WinstonLogPlugin({ label: 'client' }))
+const client = Micro()
+  .use(WinstonLogPlugin())
   .api('worker', { host: '127.0.0.1', port: 8000 });
 
 worker

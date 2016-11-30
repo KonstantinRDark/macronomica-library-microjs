@@ -5,5 +5,10 @@ import runSubscribers from './run-subscribers';
  * @returns {Promise<undefined>}
  */
 export default function runAddSubscribers(app) {
-  return runSubscribers(app, app.subscribers.add, subscriber => subscriber(app));
+  app.log.info('============================ add-actions ===========================');
+  return runSubscribers(app, app.subscribers.add, subscriber => subscriber(app))
+    .then(result => {
+      app.log.info('========================== add-actions-end =========================');
+      return result;
+    });
 }

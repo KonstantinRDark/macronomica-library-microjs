@@ -42,10 +42,10 @@ export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, p
         if (err && err.message !== 'Not running') {
           return reject(err);
         }
-        app.log.info('Отсановлен Node Http сервер', { plugin: { host, port } });
+        app.log.info('Остановлен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
-    }));
+    }), 'unshift');
 
     return new Promise((resolve, reject) => {
       server.listen(port, host, (err) => {

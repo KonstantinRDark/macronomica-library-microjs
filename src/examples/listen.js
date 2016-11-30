@@ -1,14 +1,13 @@
 import fetch from 'node-fetch';
-import Micro from './../';
+import Micro, { LEVEL_INFO } from './../';
 import WinstonLogPlugin from './../plugins/log-winston';
 
 const HOST = '127.0.0.1';
 const PORT = 8000;
 const prefix = '/act';
 
-const micro = Micro({ listen: { host: HOST, port: PORT } })
-  .use(WinstonLogPlugin())
-  .add('cmd:ping', function ping() { return 'pong'; });
+const micro = Micro({ level: LEVEL_INFO, listen: { host: HOST, port: PORT } })
+  .use(WinstonLogPlugin());
 
 micro
   .run()
@@ -20,6 +19,7 @@ micro
       })
       .then(response => response.json())
       .then(result => micro.log.info('cmd:ping', result))
+      .then(result => micro.end())
       .catch(micro.log.error);
   })
   .catch(micro.log.error)

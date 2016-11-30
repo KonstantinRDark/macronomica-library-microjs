@@ -20,6 +20,10 @@ var _dateIsoString = require('./utils/date-iso-string');
 
 var _dateIsoString2 = _interopRequireDefault(_dateIsoString);
 
+var _healthCheck = require('./modules/health-check');
+
+var _healthCheck2 = _interopRequireDefault(_healthCheck);
+
 var _log = require('./methods/log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -99,6 +103,8 @@ class Microjs extends _events2.default {
     this.end = (0, _end2.default)(this);
     this.run = (0, _run2.default)(this);
     const id = settings.id;
+    var _settings$level = settings.level;
+    const level = _settings$level === undefined ? this.log.level : _settings$level;
     var _settings$maxListener = settings.maxListeners;
     const maxListeners = _settings$maxListener === undefined ? _events2.default.defaultMaxListeners : _settings$maxListener;
 
@@ -108,13 +114,16 @@ class Microjs extends _events2.default {
     }
 
     this.settings = settings;
+    this.log.level = level;
     this.setMaxListeners(maxListeners);
 
-    this.on('running', app => {
+    this.use((0, _healthCheck2.default)()).on('running', app => {
       app.state = _constants.STATE_RUN;
       app.time.running = Date.now();
-      app.log.info(['\n', '##############################################################################################', '# Micro started', '# ===========================================================================================', '# Instance  : ' + app.id, `# Started At: ${ (0, _dateIsoString2.default)(app.time.started) }`, `# Running At: ${ (0, _dateIsoString2.default)(app.time.running) }`, '##############################################################################################'].join('\n'));
+      app.log.info(['============================ app-running ===========================', '# Instance Id: ' + app.id, `# Started At : ${ (0, _dateIsoString2.default)(app.time.started) }`, `# Running At : ${ (0, _dateIsoString2.default)(app.time.running) }`, '========================== app-running-end =========================']);
     });
+
+    this.log.info(`started at ${ (0, _dateIsoString2.default)(this.time.started) }`);
   }
 
   /**

@@ -65,10 +65,10 @@ function listenHttp(app, plugin, onClose, _ref) {
         if (err && err.message !== 'Not running') {
           return reject(err);
         }
-        app.log.info('Отсановлен Node Http сервер', { plugin: { host, port } });
+        app.log.info('Остановлен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
-    }));
+    }), 'unshift');
 
     return new Promise((resolve, reject) => {
       server.listen(port, host, err => {

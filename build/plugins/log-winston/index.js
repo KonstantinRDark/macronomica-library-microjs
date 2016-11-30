@@ -21,8 +21,7 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 exports.default = function () {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  let label = _ref.label,
-      settings = _objectWithoutProperties(_ref, ['label']);
+  let settings = _objectWithoutProperties(_ref, []);
 
   return (micro, _ref2) => {
     let onClose = _ref2.onClose;
@@ -35,7 +34,7 @@ exports.default = function () {
     }, settings));
 
     logger.add(_winston2.default.transports.Console, {
-      label
+      label: micro.id
     });
 
     micro.emit('plugin.logger.use');

@@ -7,7 +7,7 @@ import runSubscribers from './run-subscribers';
 export default function runInitSubscribers(app) {
   return runSubscribers(app, app.subscribers.run, subscriber => subscriber(app, { onClose }));
 
-  function onClose(cb) {
-    app.subscribers.end.push(cb);
+  function onClose(cb, method = 'push') {
+    app.subscribers.end[ method ](cb);
   }
 }

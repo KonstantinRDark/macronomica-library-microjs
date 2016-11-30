@@ -19,7 +19,9 @@ function runInitSubscribers(app) {
   return (0, _runSubscribers2.default)(app, app.subscribers.run, subscriber => subscriber(app, { onClose }));
 
   function onClose(cb) {
-    app.subscribers.end.push(cb);
+    let method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'push';
+
+    app.subscribers.end[method](cb);
   }
 }
 //# sourceMappingURL=run-init-subscribers.js.map

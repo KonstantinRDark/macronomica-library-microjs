@@ -4,6 +4,8 @@ import Patrun from 'patrun';
 import genid from './utils/genid';
 import dateIsoString from './utils/date-iso-string';
 
+import HealthCheckModule from './modules/health-check';
+
 import log from './methods/log';
 import use from './methods/use';
 import add from './methods/add';
@@ -12,6 +14,7 @@ import act from './methods/act';
 import api from './methods/api';
 import end from './methods/end';
 import run from './methods/run';
+
 import { STATE_START, STATE_RUN } from './constants';
 
 /**
@@ -70,29 +73,31 @@ export default class Microjs extends EventEmitter {
 
   constructor(settings = {}) {
     super();
-    const { id, maxListeners = EventEmitter.defaultMaxListeners } = settings;
+    const { id, level = this.log.level, maxListeners = EventEmitter.defaultMaxListeners } = settings;
 
     if (!!id) {
       this.id = id;
     }
 
     this.settings = settings;
+    this.log.level = level;
     this.setMaxListeners(maxListeners);
 
-    this.on('running', app => {
-      app.state = STATE_RUN;
-      app.time.running = Date.now();
-      app.log.info([
-        '\n',
-        '##############################################################################################',
-        '# Micro started',
-        '# ===========================================================================================',
-        '# Instance  : ' + app.id,
-        `# Started At: ${ dateIsoString(app.time.started) }`,
-        `# Running At: ${ dateIsoString(app.time.running) }`,
-        '##############################################################################################',
-      ].join('\n'));
-    });
+    this
+      .use(HealthCheckModule())
+      .on('running', app => {
+        app.state = STATE_RUN;
+        app.time.running = Date.now();
+        app.log.info([
+          '============================ app-running ===========================',
+          '# Instance Id: ' + app.id,
+          `# Started At : ${ dateIsoString(app.time.started) }`,
+          `# Running At : ${ dateIsoString(app.time.running) }`,
+          '========================== app-running-end =========================',
+        ]);
+      });
+
+    this.log.info(`started at ${ dateIsoString(this.time.started) }`);
   }
 
   log = log(this);

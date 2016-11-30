@@ -1,20 +1,23 @@
 import Util from 'util';
+import {
+  LEVEL_DEFAULT,
+  LEVEL_ALL,
+  LEVEL_OFF,
+  LEVEL_INFO,
+  LEVEL_TRACE,
+  LEVEL_DEBUG,
+  LEVEL_WARN,
+  LEVEL_ERROR,
+  LEVEL_FATAL,
+} from './../constants';
 
-export const LEVEL_ALL = 'all';
-export const LEVEL_OFF = 'off';
-export const LEVEL_INFO = 'info';
-export const LEVEL_TRACE = 'trace';
-export const LEVEL_DEBUG = 'debug';
-export const LEVEL_WARN = 'warn';
-export const LEVEL_ERROR = 'error';
-export const LEVEL_FATAL = 'fatal';
 /**
  * @name LEVELS
  * @type {Object<string, number>}
  * @enum {number}
  */
 export const LEVELS = {
-  [ LEVEL_ALL ]: 0,
+  [ LEVEL_OFF ]: 0,
 
   [ LEVEL_FATAL ]: 10,
   [ LEVEL_ERROR ]: 20,
@@ -23,7 +26,7 @@ export const LEVELS = {
   [ LEVEL_TRACE ]: 50,
   [ LEVEL_DEBUG ]: 60,
 
-  [ LEVEL_OFF ]: 100
+  [ LEVEL_ALL ]: 100
 };
 
 /**
@@ -31,7 +34,7 @@ export const LEVELS = {
  * @param { string } [level]
  * @returns {object}
  */
-export default (app, { level = LEVEL_DEBUG } = {}) => {
+export default (app, { level = LEVEL_DEFAULT } = {}) => {
   /**
    * Levels:
    *
@@ -132,7 +135,6 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
         ;
 
         message = [
-          '\n',
           '##############################################################################################',
           `# Fatal Error`,
           '# Instance  : ' + app.id,
@@ -155,7 +157,7 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
           '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
           '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
           '##############################################################################################'
-        ].join('\n');
+        ];
       }
 
       if (level === LEVEL_ERROR && message instanceof Error) {
@@ -167,7 +169,6 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
         ;
 
         message = [
-          '\n',
           '##############################################################################################',
           `# Error`,
           '# =========================================================================================== ',
@@ -189,33 +190,41 @@ export default (app, { level = LEVEL_DEBUG } = {}) => {
           '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
           '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
           '##############################################################################################'
-        ].join('\n');
+        ];
       }
 
-      if (usePluginLogger) {
-        app.emit('log', { level, message, payload });
-        app.emit(`log.${ level }`, { level, message, payload });
+      if (Array.isArray(message)) {
+        message.forEach(emitOne);
       } else {
-        const args = [ `${ level }\t`, message ];
-
-        if (!!payload) {
-          args.push(JSON.stringify(payload, '', 4));
-        }
-
-        switch (level) {
-          case LEVEL_ERROR:
-          case LEVEL_FATAL:
-            console.error(...args);
-            break;
-          case LEVEL_WARN:
-            console.warn(...args);
-            break;
-          default:
-            console.log(...args);
-        }
+        emitOne(message);
       }
 
       return logger;
+
+      function emitOne(message) {
+        if (usePluginLogger) {
+          app.emit('log', { level, message, payload });
+          app.emit(`log.${ level }`, { level, message, payload });
+        } else {
+          const args = [ `${ level }: [${ app.id }]`, message ];
+
+          if (!!payload) {
+            args.push(JSON.stringify(payload, '', 4));
+          }
+
+          switch (level) {
+            case LEVEL_ERROR:
+            case LEVEL_FATAL:
+              console.error(...args);
+              break;
+            case LEVEL_WARN:
+              console.warn(...args);
+              break;
+            default:
+              console.log(...args);
+          }
+        }
+      }
     };
   }
 }

@@ -1,7 +1,7 @@
 import winston from 'winston';
 import genid from './../../utils/genid';
 
-export default ({ label, ...settings } = {}) => {
+export default ({ ...settings } = {}) => {
   return (micro, { onClose }) => {
     const plugin = { id: genid() };
 
@@ -12,7 +12,7 @@ export default ({ label, ...settings } = {}) => {
     });
 
     logger.add(winston.transports.Console, ({
-      label
+      label: micro.id
     }));
 
     micro.emit('plugin.logger.use');
