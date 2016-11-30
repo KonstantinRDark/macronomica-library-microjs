@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../src/utils/genid.js"],"names":["length"],"mappings":";;;;;;AAAA;;;;;;kBAEe;AAAA,iFAAmB,EAAnB;AAAA,yBAAGA,MAAH;;AAAA,MAAGA,MAAH,+BAAY,EAAZ;AAAA,SAA0B,mBAAIA,MAAJ,CAA1B;AAAA,C","file":"genid.js","sourcesContent":["import nid from 'nid';\n\nexport default ({ length = 10 } = {}) => nid(length);"]}
+{"version":3,"sources":["../../src/utils/genid.js"],"names":[],"mappings":";;;;;;AAAA;;;;;;kBAEe;AAAA,SAAM,mBAAI,EAAJ,CAAN;AAAA,C","file":"genid.js","sourcesContent":["import nid from 'nid';\n\nexport default () => nid(10);"]}

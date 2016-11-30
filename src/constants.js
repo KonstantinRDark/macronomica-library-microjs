@@ -1,13 +1,10 @@
-export const STATE_START = 'start';
-export const STATE_RUN = 'run';
+export const APP_STATE_INITIALIZATION = 'initialization';
+export const APP_STATE_INSTALLING = 'installing';
+export const APP_STATE_RUNNING = 'running';
+export const APP_STATE_PAUSED = 'paused';
+export const APP_STATE_STOPPED = 'stopped';
 
-export const LEVEL_ALL = 'all';
-export const LEVEL_OFF = 'off';
-export const LEVEL_INFO = 'info';
-export const LEVEL_TRACE = 'trace';
-export const LEVEL_DEBUG = 'debug';
-export const LEVEL_WARN = 'warn';
-export const LEVEL_ERROR = 'error';
-export const LEVEL_FATAL = 'fatal';
+export const PLUGIN_TRANSPORT_NAME_HTTP = 'http';
+export const PLUGIN_TRANSPORT_NAME_HTTPS = 'https';
 
-export const LEVEL_DEFAULT = LEVEL_DEBUG;
+export const PLUGIN_LOGGER_NAME = 'logger';

@@ -12,11 +12,11 @@ var _lodash2 = _interopRequireDefault(_lodash);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getNextCallback(args) {
-  let next = args.pop();
+  var next = args.pop();
 
   if (!(0, _lodash2.default)(next)) {
     args.push(next);
-    next = () => {};
+    next = function next() {};
   }
 
   return next;

@@ -15,7 +15,7 @@ exports.default = function (raw) {
     args[_key - 1] = arguments[_key];
   }
 
-  return iterate(raw[Symbol.iterator](), ...args);
+  return iterate.apply(undefined, [raw[Symbol.iterator]()].concat(args));
 };
 
 function iterate(iterator) {
@@ -23,18 +23,18 @@ function iterate(iterator) {
     args[_key2 - 1] = arguments[_key2];
   }
 
-  const preprocessor = iterator.next();
-  let next = (0, _getNextCallback2.default)(args);
+  var preprocessor = iterator.next();
+  var next = (0, _getNextCallback2.default)(args);
 
   if (preprocessor.done) {
     return next();
   }
 
-  preprocessor.value(...args, function (err) {
+  preprocessor.value.apply(preprocessor, args.concat([function (err) {
     if (err) {
       return next(err);
     }
-    iterate(iterator, ...args, next);
-  });
+    iterate.apply(undefined, [iterator].concat(args, [next]));
+  }]));
 }
 //# sourceMappingURL=iterate.js.map
