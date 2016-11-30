@@ -1,5 +1,5 @@
 # Приложение обертка для запуска микросервисов
-* **Source**: [Git](https://gitlab.com/microjs/microjs.git)
+* **Source**: [Git](https://github.com/macronomica/macronomica-library-microjs/tree/1.x.x)
 * **Language**: JavaScript
 * **Engine**: [Node.js v6.5.0](https://nodejs.org/dist/latest-v6.x/)
 
@@ -10,21 +10,6 @@
 import Micro from '@microjs/microjs';
 
 const micro = Micro();
-
-micro
-  .run()
-  .then(() => micro.act('cmd:ping'))
-  .then(micro.log.info)
-  .catch(micro.log.error);
-```
-
-### Замена логера по умолчанию на WinstonJS
-```javascript
-// TODO логер winston пока что без настроек
-import Micro, { WinstonLogPlugin } from '@microjs/microjs';
-
-const micro = Micro()
-  .use(WinstonLogPlugin());
 
 micro
   .run()
