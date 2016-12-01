@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WinstonLogPlugin = exports.LEVEL_DEFAULT = exports.LEVEL_FATAL = exports.LEVEL_ERROR = exports.LEVEL_WARN = exports.LEVEL_DEBUG = exports.LEVEL_TRACE = exports.LEVEL_INFO = exports.LEVEL_OFF = exports.LEVEL_ALL = undefined;
+exports.genid = exports.defer = exports.iterate = exports.WinstonLogPlugin = exports.LEVEL_DEFAULT = exports.LEVEL_FATAL = exports.LEVEL_ERROR = exports.LEVEL_WARN = exports.LEVEL_DEBUG = exports.LEVEL_TRACE = exports.LEVEL_INFO = exports.LEVEL_OFF = exports.LEVEL_ALL = undefined;
 
 var _app = require('./app');
 
@@ -12,6 +12,18 @@ var _app2 = _interopRequireDefault(_app);
 var _logWinston = require('./plugins/log-winston');
 
 var _logWinston2 = _interopRequireDefault(_logWinston);
+
+var _genid = require('./utils/genid');
+
+var _genid2 = _interopRequireDefault(_genid);
+
+var _defer = require('./utils/defer');
+
+var _defer2 = _interopRequireDefault(_defer);
+
+var _iterate = require('./utils/iterate');
+
+var _iterate2 = _interopRequireDefault(_iterate);
 
 var _constants = require('./constants');
 
@@ -27,6 +39,9 @@ exports.LEVEL_ERROR = _constants.LEVEL_ERROR;
 exports.LEVEL_FATAL = _constants.LEVEL_FATAL;
 exports.LEVEL_DEFAULT = _constants.LEVEL_DEFAULT;
 exports.WinstonLogPlugin = _logWinston2.default;
+exports.iterate = _iterate2.default;
+exports.defer = _defer2.default;
+exports.genid = _genid2.default;
 
 exports.default = settings => new _app2.default(settings);
 //# sourceMappingURL=index.js.map
