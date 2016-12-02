@@ -1,6 +1,7 @@
 import path from 'path';
 import sshAgent from 'http-ssh-agent';
 import isString from 'lodash.isstring';
+import { SSH_HOST, SSH_PORT, SSH_KEY_PATH } from './../constants';
 import error, {
   ERROR_SSH_SETTINGS_INCORRECT
 } from './../errors/error';
@@ -21,25 +22,38 @@ export default (app, settings) => {
 
   if (!!~url.indexOf('ssh')) {
     let [ sshOptions, sshUrlOptions, clientOptions ] = url.split('@');
+
+    if (!clientOptions) {
+      clientOptions = sshUrlOptions;
+      sshUrlOptions = null;
+    }
+
     let [ , sshUser ] = sshOptions.split('//') || [];
-    let [ sshHost, sshPort ] = sshUrlOptions.split(':') || [];
+    let [ sshHost = SSH_HOST, sshPort = SSH_PORT ] = sshUrlOptions? sshUrlOptions.split(':') : [];
+
+    if (!sshUser && !sshHost && !sshPort) {
+      app.log.error('Не корректные настройки SSH API', settings);
+      app.log.error('Пример настроек', { url: 'ssh//sshUser@sshHost:sshPort@host:port' });
+      throw error({ action: 'parse-settings', message: ERROR_SSH_SETTINGS_INCORRECT });
+    }
 
     if (!sshUser || !sshHost || !sshPort) {
-      app.log.error('Не корректные настройки SSH API', settings);
-      app.log.error('Пример настроек', {
-        url: 'ssh//sshUser@sshHost:sshPort@host:port'
-      });
+      let debugInfo = { sshOptions, sshUrlOptions, clientOptions, sshUser, sshHost, sshPort, settings };
+      if (!sshUser) { app.log.error('Отсутвует SSH USER', debugInfo) }
+      if (!sshHost) { app.log.error('Отсутвует SSH HOST', debugInfo) }
+      if (!sshPort) { app.log.error('Отсутвует SSH PORT', debugInfo) }
       throw error({ action: 'parse-settings', message: ERROR_SSH_SETTINGS_INCORRECT });
     }
 
     url = clientOptions;
-    agent = sshAgent({
+    ssh = {
       host      : sshHost,
       port      : sshPort,
       username  : sshUser,
-      privateKey: path.resolve(process.env.HOME + '/.ssh/id_rsa'),
+      privateKey: path.resolve(SSH_KEY_PATH),
       ...ssh
-    });
+    };
+    agent = sshAgent(ssh);
   }
 
   if (!!url && url.length) {
@@ -50,5 +64,5 @@ export default (app, settings) => {
     port = ':' + port;
   }
 
-  return { url: `${ protocol }://${ host }${ port }`, agent, ...other };
+  return { url: `${ protocol }://${ host }${ port }`, ssh, agent, ...other };
 };

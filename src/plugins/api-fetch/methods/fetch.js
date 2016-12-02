@@ -10,13 +10,19 @@ import {
 
 const ERROR_CODE_PREFIX = 'error.http.client';
 
-export default function fetch(microjs, { name, settings }) {
+export default function fetch(app, { name, settings }) {
   let {
     url,
     headers = {},
     prefix = CLIENT_PREFIX,
+    ssh,
     agent
   } = settings;
+
+  if (agent) {
+    app.log.info(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
+    app.log.debug('Настройки SSH TUNNEL:', ssh);
+  }
 
   return (request, route) => new Promise((resolve, reject) => {
     const { api, ...msg } = request;

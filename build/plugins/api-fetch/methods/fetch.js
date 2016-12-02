@@ -20,7 +20,7 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 const ERROR_CODE_PREFIX = 'error.http.client';
 
-function fetch(microjs, _ref) {
+function fetch(app, _ref) {
   let name = _ref.name,
       settings = _ref.settings;
   let url = settings.url;
@@ -28,8 +28,14 @@ function fetch(microjs, _ref) {
   let headers = _settings$headers === undefined ? {} : _settings$headers;
   var _settings$prefix = settings.prefix;
   let prefix = _settings$prefix === undefined ? _constants.CLIENT_PREFIX : _settings$prefix,
+      ssh = settings.ssh,
       agent = settings.agent;
 
+
+  if (agent) {
+    app.log.info(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
+    app.log.debug('Настройки SSH TUNNEL:', ssh);
+  }
 
   return (request, route) => new Promise((resolve, reject) => {
     const api = request.api,

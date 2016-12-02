@@ -20,6 +20,8 @@ var _lodash = require('lodash.isstring');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _constants = require('./../constants');
+
 var _error = require('./../errors/error');
 
 var _error2 = _interopRequireDefault(_error);
@@ -55,33 +57,54 @@ exports.default = (app, settings) => {
         sshUrlOptions = _url$split2[1],
         clientOptions = _url$split2[2];
 
+
+    if (!clientOptions) {
+      clientOptions = sshUrlOptions;
+      sshUrlOptions = null;
+    }
+
     var _ref = sshOptions.split('//') || [],
         _ref2 = _slicedToArray(_ref, 2);
 
     let sshUser = _ref2[1];
 
-    var _ref3 = sshUrlOptions.split(':') || [],
-        _ref4 = _slicedToArray(_ref3, 2);
+    var _ref3 = sshUrlOptions ? sshUrlOptions.split(':') : [],
+        _ref4 = _slicedToArray(_ref3, 2),
+        _ref4$ = _ref4[0];
 
-    let sshHost = _ref4[0],
-        sshPort = _ref4[1];
+    let sshHost = _ref4$ === undefined ? _constants.SSH_HOST : _ref4$;
+    var _ref4$2 = _ref4[1];
+    let sshPort = _ref4$2 === undefined ? _constants.SSH_PORT : _ref4$2;
 
+
+    if (!sshUser && !sshHost && !sshPort) {
+      app.log.error('Не корректные настройки SSH API', settings);
+      app.log.error('Пример настроек', { url: 'ssh//sshUser@sshHost:sshPort@host:port' });
+      throw (0, _error2.default)({ action: 'parse-settings', message: _error.ERROR_SSH_SETTINGS_INCORRECT });
+    }
 
     if (!sshUser || !sshHost || !sshPort) {
-      app.log.error('Не корректные настройки SSH API', settings);
-      app.log.error('Пример настроек', {
-        url: 'ssh//sshUser@sshHost:sshPort@host:port'
-      });
+      let debugInfo = { sshOptions, sshUrlOptions, clientOptions, sshUser, sshHost, sshPort, settings };
+      if (!sshUser) {
+        app.log.error('Отсутвует SSH USER', debugInfo);
+      }
+      if (!sshHost) {
+        app.log.error('Отсутвует SSH HOST', debugInfo);
+      }
+      if (!sshPort) {
+        app.log.error('Отсутвует SSH PORT', debugInfo);
+      }
       throw (0, _error2.default)({ action: 'parse-settings', message: _error.ERROR_SSH_SETTINGS_INCORRECT });
     }
 
     url = clientOptions;
-    agent = (0, _httpSshAgent2.default)(_extends({
+    ssh = _extends({
       host: sshHost,
       port: sshPort,
       username: sshUser,
-      privateKey: _path2.default.resolve(process.env.HOME + '/.ssh/id_rsa')
-    }, ssh));
+      privateKey: _path2.default.resolve(_constants.SSH_KEY_PATH)
+    }, ssh);
+    agent = (0, _httpSshAgent2.default)(ssh);
   }
 
   if (!!url && url.length) {
@@ -97,6 +120,6 @@ exports.default = (app, settings) => {
     port = ':' + port;
   }
 
-  return _extends({ url: `${ protocol }://${ host }${ port }`, agent }, other);
+  return _extends({ url: `${ protocol }://${ host }${ port }`, ssh, agent }, other);
 };
 //# sourceMappingURL=parse-settings.js.map

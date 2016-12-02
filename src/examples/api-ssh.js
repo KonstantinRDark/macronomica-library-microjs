@@ -1,8 +1,8 @@
 import path from 'path';
-import Micro from './../';
+import Micro, { LEVEL_ALL } from './../';
 
-const client = Micro().api('auths', {
-  url: 'ssh//root@178.63.99.6:2225@auths.data.backend.macronomica.com:8000',
+const client = Micro({ level: LEVEL_ALL }).api('auths', {
+  url: 'ssh//root@auths.data.backend.macronomica.com:8000',
   ssh: {
     privateKey: path.resolve(process.env.HOME + '/.ssh/ssh-tunel-test/id_rsa')
   }
