@@ -20,20 +20,19 @@ export default (app, settings) => {
     ...other
   } = settings;
 
-  if (!!~url.indexOf('ssh')) {
-    let [ sshOptions, sshUrlOptions, clientOptions ] = url.split('@');
+  if (!!~url.indexOf('@')) {
+    let [ sshUser, sshUrlOptions, clientOptions ] = url.split('@');
 
     if (!clientOptions) {
       clientOptions = sshUrlOptions;
       sshUrlOptions = null;
     }
 
-    let [ , sshUser ] = sshOptions.split('//') || [];
     let [ sshHost = SSH_HOST, sshPort = SSH_PORT ] = sshUrlOptions? sshUrlOptions.split(':') : [];
 
     if (!sshUser && !sshHost && !sshPort) {
       app.log.error('Не корректные настройки SSH API', settings);
-      app.log.error('Пример настроек', { url: 'ssh//sshUser@sshHost:sshPort@host:port' });
+      app.log.error('Пример настроек', { url: 'sshUser@sshHost:sshPort@host:port' });
       throw error({ action: 'parse-settings', message: ERROR_SSH_SETTINGS_INCORRECT });
     }
 

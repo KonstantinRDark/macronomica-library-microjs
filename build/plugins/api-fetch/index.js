@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = ApiFetchPlugin;
 
+var _httpSshAgent = require('http-ssh-agent');
+
+var _httpSshAgent2 = _interopRequireDefault(_httpSshAgent);
+
 var _fetch = require('./methods/fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);

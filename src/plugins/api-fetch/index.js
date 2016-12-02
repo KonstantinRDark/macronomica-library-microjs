@@ -1,3 +1,4 @@
+import sshAgent from 'http-ssh-agent';
 import fetch from './methods/fetch'
 import parseSettings from './utils/parse-settings'
 

@@ -49,11 +49,11 @@ exports.default = (app, settings) => {
   let agent = _settings$agent === undefined ? null : _settings$agent,
       other = _objectWithoutProperties(_settings, ['url', 'host', 'port', 'ssh', 'agent']);
 
-  if (!!~url.indexOf('ssh')) {
+  if (!!~url.indexOf('@')) {
     var _url$split = url.split('@'),
         _url$split2 = _slicedToArray(_url$split, 3);
 
-    let sshOptions = _url$split2[0],
+    let sshUser = _url$split2[0],
         sshUrlOptions = _url$split2[1],
         clientOptions = _url$split2[2];
 
@@ -63,23 +63,18 @@ exports.default = (app, settings) => {
       sshUrlOptions = null;
     }
 
-    var _ref = sshOptions.split('//') || [],
-        _ref2 = _slicedToArray(_ref, 2);
+    var _ref = sshUrlOptions ? sshUrlOptions.split(':') : [],
+        _ref2 = _slicedToArray(_ref, 2),
+        _ref2$ = _ref2[0];
 
-    let sshUser = _ref2[1];
-
-    var _ref3 = sshUrlOptions ? sshUrlOptions.split(':') : [],
-        _ref4 = _slicedToArray(_ref3, 2),
-        _ref4$ = _ref4[0];
-
-    let sshHost = _ref4$ === undefined ? _constants.SSH_HOST : _ref4$;
-    var _ref4$2 = _ref4[1];
-    let sshPort = _ref4$2 === undefined ? _constants.SSH_PORT : _ref4$2;
+    let sshHost = _ref2$ === undefined ? _constants.SSH_HOST : _ref2$;
+    var _ref2$2 = _ref2[1];
+    let sshPort = _ref2$2 === undefined ? _constants.SSH_PORT : _ref2$2;
 
 
     if (!sshUser && !sshHost && !sshPort) {
       app.log.error('Не корректные настройки SSH API', settings);
-      app.log.error('Пример настроек', { url: 'ssh//sshUser@sshHost:sshPort@host:port' });
+      app.log.error('Пример настроек', { url: 'sshUser@sshHost:sshPort@host:port' });
       throw (0, _error2.default)({ action: 'parse-settings', message: _error.ERROR_SSH_SETTINGS_INCORRECT });
     }
 

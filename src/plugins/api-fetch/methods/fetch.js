@@ -22,6 +22,12 @@ export default function fetch(app, { name, settings }) {
   if (agent) {
     app.log.info(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
     app.log.debug('Настройки SSH TUNNEL:', ssh);
+    agent
+      .on('error', app.log.error)
+      .on('verify', (fingerprint, callback) => {
+        app.log.info(`Server fingerprint is ${ fingerprint }`);
+        callback(); // pass an error to indicate a bad fingerprint
+      });
   }
 
   return (request, route) => new Promise((resolve, reject) => {
