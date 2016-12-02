@@ -8,7 +8,7 @@
   "scripts": {
     "setup": "npm install --no-optional && npm run compile",
     "watch": "npm run clean && npm run watch:babel & npm run watch:other",
-    "deploy": "npm run version:patch && git push --tags origin HEAD:master",
+    "deploy": "npm run version:patch && git push --tags origin HEAD",
     "compile": "npm run clean && npm run compile:babel && npm run compile:other && git add -A build",
     "clean": "rimraf build/*",
     "test": "mocha -R spec --timeout 5000 test/index.js test/**/*.spec.js",
