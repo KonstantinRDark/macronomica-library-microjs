@@ -63,7 +63,7 @@ exports.default = app => {
         return dfd.promise;
       } catch (error) {
         app.log.error(`Ошибка при вызове маршрута`, { pin, error });
-        return dfd.reject(err);
+        return dfd.reject(error);
       }
     }
   };
