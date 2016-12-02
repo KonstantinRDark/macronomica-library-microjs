@@ -86,28 +86,18 @@ function listenHttp(app, plugin, onClose, _ref) {
       req.query = _qs2.default.parse(req.url.query);
 
       if (req.url.pathname !== _constants.SERVER_PREFIX) {
-        const error = {
+        app.log.warn({
           code: 'error.transport.http.listen/url.not.found',
           message: 'Не корректный маршрут запроса'
-        };
-
-        const outJson = JSON.stringify({
-          [_constants.RESPONSE_PROPERTY_STATUS]: _constants.RESPONSE_STATUS_ERROR,
-          [_constants.RESPONSE_PROPERTY_RESULT]: error
         });
 
-        res.writeHead(404, {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'private, max-age=0, no-cache, no-store',
-          'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
-        });
-        res.statusMessage = 'Not found';
-        return res.end(outJson);
+        return response404(res, 'error.transport.http.listen/url.not.found');
       }
 
       (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, err => {
         if (err) {
-          return app.logger.error(err);
+          app.log.error(err);
+          return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
         const pin = _extends({}, req.body || {}, req.query, {
           transport: {
@@ -116,6 +106,11 @@ function listenHttp(app, plugin, onClose, _ref) {
             time: Date.now()
           }
         });
+
+        if (pin.role === 'plugin') {
+          app.log.warn(`Вызов приватного метода`, pin);
+          return response404(res, {});
+        }
 
         app.act(pin, (error, result) => {
           const code = error ? 500 : 200;
@@ -137,5 +132,20 @@ function listenHttp(app, plugin, onClose, _ref) {
       });
     }
   };
+}
+
+function response404(res, result) {
+  const json = JSON.stringify({
+    [_constants.RESPONSE_PROPERTY_STATUS]: _constants.RESPONSE_STATUS_ERROR,
+    [_constants.RESPONSE_PROPERTY_RESULT]: result
+  });
+
+  res.writeHead(404, {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'private, max-age=0, no-cache, no-store',
+    'Content-Length': _buffer2.default.Buffer.byteLength(json)
+  });
+
+  res.statusMessage = 'Not found';
 }
 //# sourceMappingURL=listen.js.map

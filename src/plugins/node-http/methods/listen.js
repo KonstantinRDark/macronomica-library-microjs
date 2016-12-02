@@ -63,28 +63,18 @@ export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, p
       req.query = qs.parse(req.url.query);
 
       if (req.url.pathname !== SERVER_PREFIX) {
-        const error = {
+        app.log.warn({
           code   : 'error.transport.http.listen/url.not.found',
           message: 'Не корректный маршрут запроса'
-        };
-
-        const outJson = JSON.stringify({
-          [ RESPONSE_PROPERTY_STATUS ]: RESPONSE_STATUS_ERROR,
-          [ RESPONSE_PROPERTY_RESULT ]: error
         });
 
-        res.writeHead(404, {
-          'Content-Type'  : 'application/json',
-          'Cache-Control' : 'private, max-age=0, no-cache, no-store',
-          'Content-Length': buffer.Buffer.byteLength(outJson)
-        });
-        res.statusMessage = 'Not found';
-        return res.end(outJson);
+        return response404(res, 'error.transport.http.listen/url.not.found');
       }
 
       iterate(req.method === 'POST' ? preprocessors : [], req, res, (err) => {
         if (err) {
-          return app.logger.error(err);
+          app.log.error(err);
+          return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
         const pin = {
           ...(req.body || {}),
@@ -95,6 +85,11 @@ export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, p
             time  : Date.now()
           }
         };
+
+        if (pin.role === 'plugin') {
+          app.log.warn(`Вызов приватного метода`, pin);
+          return response404(res, {});
+        }
 
         app.act(pin, (error, result) => {
           const code = error ? 500 : 200;
@@ -118,3 +113,17 @@ export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, p
   };
 }
 
+function response404(res, result) {
+  const json = JSON.stringify({
+    [ RESPONSE_PROPERTY_STATUS ]: RESPONSE_STATUS_ERROR,
+    [ RESPONSE_PROPERTY_RESULT ]: result
+  });
+
+  res.writeHead(404, {
+    'Content-Type'  : 'application/json',
+    'Cache-Control' : 'private, max-age=0, no-cache, no-store',
+    'Content-Length': buffer.Buffer.byteLength(json)
+  });
+
+  res.statusMessage = 'Not found';
+}
