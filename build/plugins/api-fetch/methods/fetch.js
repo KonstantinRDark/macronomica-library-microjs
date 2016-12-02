@@ -22,24 +22,24 @@ const ERROR_CODE_PREFIX = 'error.http.client';
 
 function fetch(microjs, _ref) {
   let name = _ref.name,
-      settings = _objectWithoutProperties(_ref, ['name']);
+      settings = _ref.settings;
+  let url = settings.url;
+  var _settings$headers = settings.headers;
+  let headers = _settings$headers === undefined ? {} : _settings$headers;
+  var _settings$prefix = settings.prefix;
+  let prefix = _settings$prefix === undefined ? _constants.CLIENT_PREFIX : _settings$prefix,
+      agent = settings.agent;
+
 
   return (request, route) => new Promise((resolve, reject) => {
-    const api = request.api;
-    var _request$headers = request.headers;
+    const api = request.api,
+          msg = _objectWithoutProperties(request, ['api']);
 
-    const headers = _request$headers === undefined ? {} : _request$headers,
-          msg = _objectWithoutProperties(request, ['api', 'headers']);
-
-    const host = settings.host;
-    var _settings$prefix = settings.prefix;
-    const prefix = _settings$prefix === undefined ? _constants.CLIENT_PREFIX : _settings$prefix;
-
-    const port = settings.port ? `:${ settings.port }` : '';
     const method = 'POST';
 
-    (0, _nodeFetch2.default)(`http://${ host }${ port }${ prefix }`, {
+    (0, _nodeFetch2.default)(url + prefix, {
       method,
+      agent,
       headers: _extends({ 'Content-Type': _constants.CLIENT_CONTENT_TYPE }, headers),
       body: JSON.stringify(msg)
     }).then(handleSuccess({ request, resolve, reject }), handleError({ request, reject }));

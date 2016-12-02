@@ -10,15 +10,21 @@ import {
 
 const ERROR_CODE_PREFIX = 'error.http.client';
 
-export default function fetch(microjs, { name, ...settings }) {
+export default function fetch(microjs, { name, settings }) {
+  let {
+    url,
+    headers = {},
+    prefix = CLIENT_PREFIX,
+    agent
+  } = settings;
+
   return (request, route) => new Promise((resolve, reject) => {
-    const { api, headers = {}, ...msg } = request;
-    const { host, prefix = CLIENT_PREFIX } = settings;
-    const port = settings.port ? `:${ settings.port }` : '';
+    const { api, ...msg } = request;
     const method = 'POST';
 
-    middleware(`http://${ host }${ port }${ prefix }`, {
+    middleware(url + prefix, {
       method,
+      agent,
       headers: { 'Content-Type': CLIENT_CONTENT_TYPE, ...headers },
       body   : JSON.stringify(msg)
     })

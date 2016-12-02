@@ -1,11 +1,13 @@
 import fetch from './methods/fetch'
+import parseSettings from './utils/parse-settings'
 
-export default function ApiFetchPlugin({ name, ...settings } = {}) {
+export default function ApiFetchPlugin(app, { name, settings } = {}) {
+  settings = parseSettings(app, settings);
+
   return (app, { onClose }) => {
     const apiPin = `api:${ name }`;
-    const executeApi = fetch(app, { name, ...settings });
 
-    app.add(apiPin, executeApi);
+    app.add(apiPin, fetch(app, { name, settings }));
 
     onClose(() => app.del(apiPin));
 

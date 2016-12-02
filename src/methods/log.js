@@ -112,7 +112,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
   app.on('plugin.logger.use', () => usePluginLogger = true);
   app.on('plugin.logger.unuse', () => usePluginLogger = false);
 
-  process.on('uncaughtException', logger.error);
+  process.on('uncaughtException', logger.fatal);
 
   return logger;
 

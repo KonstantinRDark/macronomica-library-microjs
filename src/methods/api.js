@@ -11,5 +11,5 @@ export default app => {
    * @param {object} [settings]
    * @returns {app}
    */
-  return (name, settings = {}) => app.use(ApiFetchPlugin({ name, ...settings }));
+  return (name, settings = {}) => app.use(ApiFetchPlugin(app, { name, settings }));
 };
