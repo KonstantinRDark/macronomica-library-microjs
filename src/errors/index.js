@@ -12,7 +12,7 @@ import internalError from './internal-error';
 import internalErrorPromise from './internal-error-promise';
 import propertyIsRequiredError from './property-is-required-error';
 import propertyMustBeTypeError from './property-must-be-type-error';
-import propertyMustBeNotEmptyError from './property-must-be-not-empty-array-error';
+import propertyMustBeNotEmptyArrayError from './property-must-be-not-empty-array-error';
 
 export {
   error,
@@ -20,7 +20,7 @@ export {
   internalErrorPromise,
   propertyIsRequiredError,
   propertyMustBeTypeError,
-  propertyMustBeNotEmptyError,
+  propertyMustBeNotEmptyArrayError,
   ERROR_SEPARATOR,
   
   ERROR_INTERNAL_ERROR,

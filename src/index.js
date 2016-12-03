@@ -8,7 +8,7 @@ import {
   internalError,
   propertyIsRequiredError,
   propertyMustBeTypeError,
-  propertyMustBeNotEmptyError,
+  propertyMustBeNotEmptyArrayError,
   ERROR_SEPARATOR,
   
   ERROR_INTERNAL_ERROR,
@@ -49,7 +49,7 @@ export {
   internalError,
   propertyIsRequiredError,
   propertyMustBeTypeError,
-  propertyMustBeNotEmptyError,
+  propertyMustBeNotEmptyArrayError,
   ERROR_SEPARATOR,
   
   ERROR_INTERNAL_ERROR,

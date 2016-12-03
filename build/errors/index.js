@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ERROR_PROPERTY_MUST_BE_NOT_EMPTY_ARRAY = exports.ERROR_PROPERTY_MUST_BE = exports.ERROR_PROPERTY_IS_REQUIRED = exports.ERROR_INTERNAL_ERROR = exports.ERROR_SEPARATOR = exports.propertyMustBeNotEmptyError = exports.propertyMustBeTypeError = exports.propertyIsRequiredError = exports.internalErrorPromise = exports.internalError = exports.error = undefined;
+exports.ERROR_PROPERTY_MUST_BE_NOT_EMPTY_ARRAY = exports.ERROR_PROPERTY_MUST_BE = exports.ERROR_PROPERTY_IS_REQUIRED = exports.ERROR_INTERNAL_ERROR = exports.ERROR_SEPARATOR = exports.propertyMustBeNotEmptyArrayError = exports.propertyMustBeTypeError = exports.propertyIsRequiredError = exports.internalErrorPromise = exports.internalError = exports.error = undefined;
 
 var _error = require('./error');
 
@@ -36,7 +36,7 @@ exports.internalError = _internalError2.default;
 exports.internalErrorPromise = _internalErrorPromise2.default;
 exports.propertyIsRequiredError = _propertyIsRequiredError2.default;
 exports.propertyMustBeTypeError = _propertyMustBeTypeError2.default;
-exports.propertyMustBeNotEmptyError = _propertyMustBeNotEmptyArrayError2.default;
+exports.propertyMustBeNotEmptyArrayError = _propertyMustBeNotEmptyArrayError2.default;
 exports.ERROR_SEPARATOR = _error.ERROR_SEPARATOR;
 exports.ERROR_INTERNAL_ERROR = _error.ERROR_INTERNAL_ERROR;
 exports.ERROR_PROPERTY_IS_REQUIRED = _error.ERROR_PROPERTY_IS_REQUIRED;
