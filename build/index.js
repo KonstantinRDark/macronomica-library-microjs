@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ERROR_PROPERTY_MUST_BE_NOT_EMPTY_ARRAY = exports.ERROR_PROPERTY_MUST_BE = exports.ERROR_PROPERTY_IS_REQUIRED = exports.ERROR_INTERNAL_ERROR = exports.ERROR_SEPARATOR = exports.propertyMustBeNotEmptyArrayError = exports.propertyMustBeTypeError = exports.propertyIsRequiredError = exports.internalError = exports.error = exports.genid = exports.defer = exports.iterate = exports.WinstonLogPlugin = exports.LEVEL_DEFAULT = exports.LEVEL_FATAL = exports.LEVEL_ERROR = exports.LEVEL_WARN = exports.LEVEL_DEBUG = exports.LEVEL_TRACE = exports.LEVEL_INFO = exports.LEVEL_OFF = exports.LEVEL_ALL = undefined;
+exports.ERROR_PROPERTY_MUST_BE_NOT_EMPTY_ARRAY = exports.ERROR_PROPERTY_MUST_BE = exports.ERROR_PROPERTY_IS_REQUIRED = exports.ERROR_INTERNAL_ERROR = exports.ERROR_SEPARATOR = exports.propertyMustBeNotEmptyArrayError = exports.propertyMustBeTypeError = exports.propertyIsRequiredError = exports.internalErrorPromise = exports.internalError = exports.error = exports.genid = exports.defer = exports.iterate = exports.WinstonLogPlugin = exports.LEVEL_DEFAULT = exports.LEVEL_FATAL = exports.LEVEL_ERROR = exports.LEVEL_WARN = exports.LEVEL_DEBUG = exports.LEVEL_TRACE = exports.LEVEL_INFO = exports.LEVEL_OFF = exports.LEVEL_ALL = undefined;
 
 var _app = require('./app');
 
@@ -46,6 +46,7 @@ exports.defer = _defer2.default;
 exports.genid = _genid2.default;
 exports.error = _errors.error;
 exports.internalError = _errors.internalError;
+exports.internalErrorPromise = _errors.internalErrorPromise;
 exports.propertyIsRequiredError = _errors.propertyIsRequiredError;
 exports.propertyMustBeTypeError = _errors.propertyMustBeTypeError;
 exports.propertyMustBeNotEmptyArrayError = _errors.propertyMustBeNotEmptyArrayError;

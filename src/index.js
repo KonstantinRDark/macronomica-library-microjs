@@ -6,6 +6,7 @@ import iterate from './utils/iterate';
 import {
   error,
   internalError,
+  internalErrorPromise,
   propertyIsRequiredError,
   propertyMustBeTypeError,
   propertyMustBeNotEmptyArrayError,
@@ -47,6 +48,7 @@ export {
   
   error,
   internalError,
+  internalErrorPromise,
   propertyIsRequiredError,
   propertyMustBeTypeError,
   propertyMustBeNotEmptyArrayError,
