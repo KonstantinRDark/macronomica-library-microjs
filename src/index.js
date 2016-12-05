@@ -9,6 +9,7 @@ import {
   internalErrorPromise,
   propertyIsRequiredError,
   propertyMustBeTypeError,
+  propertyMustBeTypesError,
   propertyMustBeNotEmptyArrayError,
   ERROR_SEPARATOR,
   
@@ -51,6 +52,7 @@ export {
   internalErrorPromise,
   propertyIsRequiredError,
   propertyMustBeTypeError,
+  propertyMustBeTypesError,
   propertyMustBeNotEmptyArrayError,
   ERROR_SEPARATOR,
   
