@@ -142,6 +142,7 @@ class Microjs extends _events2.default {
     this.run = (0, _run2.default)(this);
     initialize(this, settings);
     this.on('running', onRunning);
+    process.on('SIGINT', this.end);
   }
 
   /**

@@ -105,6 +105,7 @@ export default class Microjs extends EventEmitter {
     super();
     initialize(this, settings);
     this.on('running', onRunning);
+    process.on('SIGINT', this.end);
   }
 
   log = log(this);
