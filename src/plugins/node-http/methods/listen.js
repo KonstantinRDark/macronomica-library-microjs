@@ -25,7 +25,7 @@ const preprocessors = [
 
 export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, port }) {
   return function listenHttpRoute() {
-    if ([ 'localhost', '0.0.0.0', ].includes(port)) {
+    if ([ 'localhost' ].includes(port)) {
       port = SERVER_PORT;
     }
     port = port || SERVER_PORT;

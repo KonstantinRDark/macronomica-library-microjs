@@ -48,7 +48,7 @@ function listenHttp(app, plugin, onClose, _ref) {
       port = _ref.port;
 
   return function listenHttpRoute() {
-    if (['localhost', '0.0.0.0'].includes(port)) {
+    if (['localhost'].includes(port)) {
       port = _constants.SERVER_PORT;
     }
     port = port || _constants.SERVER_PORT;
