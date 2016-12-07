@@ -23,7 +23,7 @@ export default function run(app) {
    */
   return cb => {
     const useServer = !!app.settings.listen;
-    const { transport = 'http', ...otherSettings } = app.settings || {};
+    const { transport = 'http', ...otherSettings } = app.settings.listen || {};
 
     if (runDeferred) {
       return runDeferred.promise;

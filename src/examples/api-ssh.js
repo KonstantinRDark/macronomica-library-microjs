@@ -11,10 +11,8 @@ const client = Micro({ level: LEVEL_ALL })
 
 client
   .run()
-  .then(client => Promise.all([
-    client.act({ api: 'media', cmd: 'ping' }).then(client.log.info),
-    client.act({ api: 'users', cmd: 'ping' }).then(client.log.info),
-  ]))
+  .then(client => client.act({ api: 'media', cmd: 'ping' }).then(client.log.info))
+  .then(client => client.act({ api: 'users', cmd: 'ping' }).then(client.log.info))
   .catch(client.log.error)
   .then(() => client.end())
 ;

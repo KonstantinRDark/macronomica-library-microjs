@@ -42,19 +42,18 @@ const type = 'http';
 
 const preprocessors = [jsonBodyParser, urlencodedParser];
 
-function listenHttp(app, plugin, onClose, _ref) {
-  var _ref$host = _ref.host;
-  let host = _ref$host === undefined ? _constants.SERVER_HOST : _ref$host,
-      port = _ref.port;
+function listenHttp(app, plugin, onClose) {
+  let settings = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   return function listenHttpRoute() {
-    if (['localhost'].includes(port)) {
-      port = _constants.SERVER_PORT;
-    }
-    port = port || _constants.SERVER_PORT;
-
     const server = _http2.default.createServer(handleRequest);
+    var _settings$host = settings.host;
+    const host = _settings$host === undefined ? _constants.SERVER_HOST : _settings$host;
+    var _settings$port = settings.port;
+    const port = _settings$port === undefined ? _constants.SERVER_PORT : _settings$port;
 
+
+    app.log.debug('Настройки HTTP сервера', settings);
     server.on('error', app.log.error);
     server.on('connection', function (socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.

@@ -1,6 +1,6 @@
 export const SERVER_PREFIX = '/act';
 export const SERVER_ENCODING = 'utf8';
-export const SERVER_HOST = '127.0.0.1';
+export const SERVER_HOST = '0.0.0.0';
 export const SERVER_PORT = 8000;
 
 export const CLIENT_PREFIX = SERVER_PREFIX;

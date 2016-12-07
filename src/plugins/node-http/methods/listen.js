@@ -23,15 +23,12 @@ const preprocessors = [
   urlencodedParser
 ];
 
-export default function listenHttp(app, plugin, onClose, { host = SERVER_HOST, port }) {
+export default function listenHttp(app, plugin, onClose, settings = {}) {
   return function listenHttpRoute() {
-    if ([ 'localhost' ].includes(port)) {
-      port = SERVER_PORT;
-    }
-    port = port || SERVER_PORT;
-
     const server = http.createServer(handleRequest);
+    const { host = SERVER_HOST, port = SERVER_PORT } = settings;
 
+    app.log.debug('Настройки HTTP сервера', settings);
     server.on('error', app.log.error);
     server.on('connection', function(socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.

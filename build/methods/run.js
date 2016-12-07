@@ -49,7 +49,7 @@ function run(app) {
   return cb => {
     const useServer = !!app.settings.listen;
 
-    var _ref = app.settings || {},
+    var _ref = app.settings.listen || {},
         _ref$transport = _ref.transport;
 
     const transport = _ref$transport === undefined ? 'http' : _ref$transport,
