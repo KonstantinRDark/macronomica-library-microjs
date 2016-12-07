@@ -1,4 +1,4 @@
-# Приложение обертка для запуска микросервисов
+# Библиотека Microjs для микросервисов
 * **Source**: [Git](https://github.com/macronomica/macronomica-library-microjs/tree/1.x.x)
 * **Language**: JavaScript
 * **Engine**: [Node.js v6.5.0](https://nodejs.org/dist/latest-v6.x/)
