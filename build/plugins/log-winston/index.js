@@ -48,6 +48,7 @@ exports.default = function () {
           loggerSettings = _objectWithoutProperties(_config$get, ['clientOpts']);
 
       logger.add(_winston2.default.transports.Elasticsearch, _extends({}, loggerSettings, {
+        level: level || micro.log.level,
         clientOpts: _extends({}, clientOpts)
       }));
     } else {
