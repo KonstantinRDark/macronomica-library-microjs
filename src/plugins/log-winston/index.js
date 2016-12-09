@@ -1,4 +1,6 @@
+import config from 'config';
 import winston from 'winston';
+import 'winston-elasticsearch';
 import genid from './../../utils/genid';
 
 export default ({ level, ...settings } = {}) => {
@@ -11,9 +13,13 @@ export default ({ level, ...settings } = {}) => {
       ...settings
     });
 
-    logger.add(winston.transports.Console, ({
-      label: micro.id
-    }));
+    if (config.has('plugins.winston-elasticsearch')) {
+      logger.add(winston.transports.Elasticsearch, config.get('plugins.winston-elasticsearch'));
+    } else {
+      logger.add(winston.transports.Console, ({
+        label: micro.id
+      }));
+    }
 
     micro.emit('plugin.logger.use');
     micro.on('log', ({ level, message, payload }) => logger[ level ](message, payload));

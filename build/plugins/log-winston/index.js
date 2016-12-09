@@ -6,9 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _config = require('config');
+
+var _config2 = _interopRequireDefault(_config);
+
 var _winston = require('winston');
 
 var _winston2 = _interopRequireDefault(_winston);
+
+require('winston-elasticsearch');
 
 var _genid = require('./../../utils/genid');
 
@@ -34,9 +40,13 @@ exports.default = function () {
       levels: micro.log.LEVELS
     }, settings));
 
-    logger.add(_winston2.default.transports.Console, {
-      label: micro.id
-    });
+    if (_config2.default.has('plugins.winston-elasticsearch')) {
+      logger.add(_winston2.default.transports.Elasticsearch, _config2.default.get('plugins.winston-elasticsearch'));
+    } else {
+      logger.add(_winston2.default.transports.Console, {
+        label: micro.id
+      });
+    }
 
     micro.emit('plugin.logger.use');
     micro.on('log', (_ref3) => {
