@@ -19,7 +19,6 @@ export default ({ level, ...settings } = {}) => {
       logger.add(winston.transports.Elasticsearch, {
         ...loggerSettings,
         clientOpts: {
-          log: level || micro.log.level,
           ...clientOpts
         }
       });
