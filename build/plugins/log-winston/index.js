@@ -41,9 +41,17 @@ exports.default = function () {
     }, settings));
 
     if (_config2.default.has('plugins.winston-elasticsearch')) {
-      logger.add(_winston2.default.transports.Elasticsearch, _extends({
-        log: level || micro.log.level
-      }, _config2.default.get('plugins.winston-elasticsearch')));
+      var _config$get = _config2.default.get('plugins.winston-elasticsearch'),
+          _config$get$clientOpt = _config$get.clientOpts;
+
+      let clientOpts = _config$get$clientOpt === undefined ? {} : _config$get$clientOpt,
+          loggerSettings = _objectWithoutProperties(_config$get, ['clientOpts']);
+
+      logger.add(_winston2.default.transports.Elasticsearch, _extends({}, loggerSettings, {
+        clientOpts: _extends({
+          log: level || micro.log.level
+        }, clientOpts)
+      }));
     } else {
       logger.add(_winston2.default.transports.Console, {
         label: micro.id

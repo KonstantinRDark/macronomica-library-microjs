@@ -14,9 +14,14 @@ export default ({ level, ...settings } = {}) => {
     });
 
     if (config.has('plugins.winston-elasticsearch')) {
+      let { clientOpts = {}, ...loggerSettings } = config.get('plugins.winston-elasticsearch');
+
       logger.add(winston.transports.Elasticsearch, {
-        log: level || micro.log.level,
-        ...config.get('plugins.winston-elasticsearch')
+        ...loggerSettings,
+        clientOpts: {
+          log: level || micro.log.level,
+          ...clientOpts
+        }
       });
     } else {
       logger.add(winston.transports.Console, ({
