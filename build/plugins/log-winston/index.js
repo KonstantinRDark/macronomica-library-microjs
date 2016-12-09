@@ -41,7 +41,9 @@ exports.default = function () {
     }, settings));
 
     if (_config2.default.has('plugins.winston-elasticsearch')) {
-      logger.add(_winston2.default.transports.Elasticsearch, _config2.default.get('plugins.winston-elasticsearch'));
+      logger.add(_winston2.default.transports.Elasticsearch, _extends({
+        log: level || micro.log.level
+      }, _config2.default.get('plugins.winston-elasticsearch')));
     } else {
       logger.add(_winston2.default.transports.Console, {
         label: micro.id
