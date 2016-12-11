@@ -14,27 +14,38 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-const transformer = function transformer(logData) {
-  const transformed = {};
-  transformed['@timestamp'] = logData.timestamp ? logData.timestamp : new Date().toISOString();
-  transformed.message = logData.message;
-  transformed.severity = logData.level;
+const transformer = function transformer(_ref) {
+  var _ref$timestamp = _ref.timestamp;
+  let timestamp = _ref$timestamp === undefined ? new Date().toISOString() : _ref$timestamp,
+      message = _ref.message,
+      severity = _ref.level;
+  var _ref$meta = _ref.meta;
+  let meta = _ref$meta === undefined ? {} : _ref$meta;
 
-  var _logData$meta = logData.meta;
+  const pin = meta.pin,
+        action = meta.action,
+        plugin = meta.plugin,
+        other = _objectWithoutProperties(meta, ['pin', 'action', 'plugin']);
 
-  const pin = _logData$meta.pin,
-        action = _logData$meta.action,
-        plugin = _logData$meta.plugin,
-        other = _objectWithoutProperties(_logData$meta, ['pin', 'action', 'plugin']);
+  const fields = _extends({}, other);
 
-  transformed.fields = _extends({
-    pin: (0, _lodash2.default)(pin) ? _jsonic2.default.stringify(pin) : pin,
-    plugin: (0, _lodash2.default)(plugin) ? _jsonic2.default.stringify(plugin) : plugin,
-    action: (0, _lodash2.default)(action) ? _jsonic2.default.stringify(action) : action
-  }, other);
+  add(fields, 'pin', pin);
+  add(fields, 'plugin', plugin);
+  add(fields, 'action', action);
 
-  return transformed;
+  return {
+    '@timestamp': timestamp,
+    message,
+    severity,
+    fields
+  };
 };
 
 module.exports = transformer;
+
+function add(fields, name, value) {
+  if (value) {
+    fields[name] = (0, _lodash2.default)(value) ? _jsonic2.default.stringify(value) : value;
+  }
+}
 //# sourceMappingURL=elasticsearch-transformer.js.map
