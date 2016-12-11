@@ -53,7 +53,7 @@ function listenHttp(app, plugin, onClose) {
     const port = _settings$port === undefined ? _constants.SERVER_PORT : _settings$port;
 
 
-    app.log.debug('Настройки HTTP сервера', settings);
+    app.log.debug('Настройки HTTP сервера', { plugin: { host, port } });
     server.on('error', app.log.error);
     server.on('connection', function (socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.

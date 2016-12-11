@@ -19,6 +19,7 @@ export default ({ level, ...settings } = {}) => {
       logger.add(winston.transports.Elasticsearch, {
         consistency    : false,
         mappingTemplate: require('./elasticsearch-template.json'),
+        transformer    : require('./elasticsearch-transformer'),
         ...loggerSettings,
         level          : level || micro.log.level,
         clientOpts     : {

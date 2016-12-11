@@ -28,7 +28,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
     const server = http.createServer(handleRequest);
     const { host = SERVER_HOST, port = SERVER_PORT } = settings;
 
-    app.log.debug('Настройки HTTP сервера', settings);
+    app.log.debug('Настройки HTTP сервера', { plugin: { host, port } });
     server.on('error', app.log.error);
     server.on('connection', function(socket) {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
