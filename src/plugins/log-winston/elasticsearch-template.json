@@ -1,0 +1,36 @@
+{
+  "template": "logs-*",
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "index": {
+      "refresh_interval": "5s",
+      "query": { "default_field": "message" },
+      "routing": { "allocation.total_shards_per_node": 1 }
+    }
+  },
+  "mappings": {
+    "_default_": {
+      "_all": { "enabled": false, "omit_norms": true },
+      "_source": { "enabled": true },
+      "dynamic_templates": [
+        {
+          "fields_template" : {
+            "mapping": { "type": "string", "index": "not_analyzed" },
+            "path_match": "fields.*"
+          }
+        }
+      ],
+      "properties": {
+        "@timestamp": { "type": "date", "index": "not_analyzed" },
+        "@version": { "type": "string", "index": "not_analyzed" },
+        "message": { "type": "string", "index": "analyzed" },
+        "severity": { "type": "string", "index": "not_analyzed" },
+        "fields": {
+          "type": "object",
+          "dynamic": true
+        }
+      }
+    }
+  }
+}

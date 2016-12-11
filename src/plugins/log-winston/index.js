@@ -13,13 +13,19 @@ export default ({ level, ...settings } = {}) => {
       ...settings
     });
 
-    if (config.has('plugins.winston-elasticsearch')) {
+    if (process.env.NODE_ENV === 'production' && config.has('plugins.winston-elasticsearch')) {
       let { clientOpts = {}, ...loggerSettings } = config.get('plugins.winston-elasticsearch');
 
       logger.add(winston.transports.Elasticsearch, {
+        consistency    : false,
+        mappingTemplate: require('./elasticsearch-template.json'),
         ...loggerSettings,
-        level : level || micro.log.level,
-        clientOpts: {
+        level          : level || micro.log.level,
+        clientOpts     : {
+          log: [{
+            type  : 'stdio',
+            levels: ['error', 'warning']
+          }],
           ...clientOpts
         }
       });

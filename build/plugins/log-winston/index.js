@@ -40,16 +40,24 @@ exports.default = function () {
       levels: micro.log.LEVELS
     }, settings));
 
-    if (_config2.default.has('plugins.winston-elasticsearch')) {
+    if (process.env.NODE_ENV === 'production' && _config2.default.has('plugins.winston-elasticsearch')) {
       var _config$get = _config2.default.get('plugins.winston-elasticsearch'),
           _config$get$clientOpt = _config$get.clientOpts;
 
       let clientOpts = _config$get$clientOpt === undefined ? {} : _config$get$clientOpt,
           loggerSettings = _objectWithoutProperties(_config$get, ['clientOpts']);
 
-      logger.add(_winston2.default.transports.Elasticsearch, _extends({}, loggerSettings, {
+      logger.add(_winston2.default.transports.Elasticsearch, _extends({
+        consistency: false,
+        mappingTemplate: require('./elasticsearch-template.json')
+      }, loggerSettings, {
         level: level || micro.log.level,
-        clientOpts: _extends({}, clientOpts)
+        clientOpts: _extends({
+          log: [{
+            type: 'stdio',
+            levels: ['error', 'warning']
+          }]
+        }, clientOpts)
       }));
     } else {
       logger.add(_winston2.default.transports.Console, {
