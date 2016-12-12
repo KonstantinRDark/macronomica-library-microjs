@@ -72,7 +72,7 @@ function listenHttp(app, plugin, onClose) {
         if (err && err.message !== 'Not running') {
           return reject(err);
         }
-        app.log.trace('Остановлен Node Http сервер', { plugin: { host, port } });
+        app.log.info('Остановлен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     }), 'unshift');
@@ -82,7 +82,7 @@ function listenHttp(app, plugin, onClose) {
         if (err) {
           return reject(err);
         }
-        app.log.trace('Запущен Node Http сервер', { plugin: { host, port } });
+        app.log.info('Запущен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     });
