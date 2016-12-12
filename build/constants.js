@@ -15,5 +15,5 @@ const LEVEL_WARN = exports.LEVEL_WARN = 'warn';
 const LEVEL_ERROR = exports.LEVEL_ERROR = 'error';
 const LEVEL_FATAL = exports.LEVEL_FATAL = 'fatal';
 
-const LEVEL_DEFAULT = exports.LEVEL_DEFAULT = LEVEL_DEBUG;
+const LEVEL_DEFAULT = exports.LEVEL_DEFAULT = process.env.NODE_ENV !== 'development' ? LEVEL_INFO : 'DEBUG' in process.env ? LEVEL_DEBUG : LEVEL_TRACE;
 //# sourceMappingURL=constants.js.map

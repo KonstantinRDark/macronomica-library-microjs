@@ -30,7 +30,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
 
     app.log.debug('Настройки HTTP сервера', { plugin: { host, port } });
     server.on('error', app.log.error);
-    server.on('connection', function(socket) {
+    server.on('connection', (socket) => {
       socket.setNoDelay(); // Отключаем алгоритм Нагла.
     });
 
@@ -39,7 +39,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
         if (err && err.message !== 'Not running') {
           return reject(err);
         }
-        app.log.info('Остановлен Node Http сервер', { plugin: { host, port } });
+        app.log.trace('Остановлен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     }), 'unshift');
@@ -49,7 +49,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
         if (err) {
           return reject(err);
         }
-        app.log.info('Запущен Node Http сервер', { plugin: { host, port } });
+        app.log.trace('Запущен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     });
@@ -60,9 +60,8 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
       req.query = qs.parse(req.url.query);
 
       if (req.url.pathname !== SERVER_PREFIX) {
-        app.log.warn({
-          code   : 'error.transport.http.listen/url.not.found',
-          message: 'Не корректный маршрут запроса'
+        app.log.warn('Не корректный маршрут запроса', {
+          error: { code: 'error.transport.http.listen/url.not.found' }
         });
 
         return response404(res, 'error.transport.http.listen/url.not.found');
@@ -84,7 +83,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
         };
 
         if (pin.role === 'plugin') {
-          app.log.warn(`Вызов приватного метода`, pin);
+          app.log.warn(`Вызов приватного метода`, { pin });
           return response404(res, {});
         }
 

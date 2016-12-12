@@ -29,7 +29,6 @@ export default function run(app) {
       return runDeferred.promise;
     }
 
-    app.log.info(`started at ${ dateIsoString(app.time.started) }`);
     runDeferred = defer(cb);
 
     // Проверяем наличие транспорта для сервера

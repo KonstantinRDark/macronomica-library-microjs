@@ -10,4 +10,6 @@ export const LEVEL_WARN = 'warn';
 export const LEVEL_ERROR = 'error';
 export const LEVEL_FATAL = 'fatal';
 
-export const LEVEL_DEFAULT = LEVEL_DEBUG;
+export const LEVEL_DEFAULT = process.env.NODE_ENV !== 'development'
+  ? LEVEL_INFO
+  : ('DEBUG' in process.env ? LEVEL_DEBUG : LEVEL_TRACE);

@@ -33,7 +33,7 @@ function fetch(app, _ref) {
 
 
   if (agent) {
-    app.log.info(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
+    app.log.trace(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
     app.log.debug('Настройки SSH TUNNEL:', ssh);
     agent.on('error', app.log.error).on('verify', (fingerprint, callback) => {
       app.log.info(`Server fingerprint is ${ fingerprint }`);

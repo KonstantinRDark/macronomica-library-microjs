@@ -46,7 +46,7 @@ exports.default = app => {
         name: cb.name
       };
 
-      app.log.info(`Добавление нового маршрута`, { pin, action });
+      app.log.trace(`Добавление нового маршрута`, { pin, action });
 
       app.manager.add((0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin, { pin, action, callback: cb });
 

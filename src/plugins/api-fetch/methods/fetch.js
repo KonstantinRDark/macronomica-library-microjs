@@ -20,7 +20,7 @@ export default function fetch(app, { name, settings }) {
   } = settings;
 
   if (agent) {
-    app.log.info(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
+    app.log.trace(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
     app.log.debug('Настройки SSH TUNNEL:', ssh);
     agent
       .on('error', app.log.error)

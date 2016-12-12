@@ -16,9 +16,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {Promise<undefined>}
  */
 function runAddSubscribers(app) {
-  app.log.info('============================ add-actions ===========================');
+  app.log.trace('============================ add-actions ===========================');
   return (0, _runSubscribers2.default)(app, app.subscribers.add, subscriber => subscriber(app)).then(result => {
-    app.log.info('========================== add-actions-end =========================');
+    app.log.trace('========================== add-actions-end =========================');
     return result;
   });
 }

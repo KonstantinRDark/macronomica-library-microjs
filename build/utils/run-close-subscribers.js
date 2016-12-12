@@ -16,9 +16,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {Promise<undefined>}
  */
 function runCloseSubscribers(app) {
-  app.log.info('========================== app-close-start =========================');
+  app.log.trace('========================== app-close-start =========================');
   return (0, _runSubscribers2.default)(app, app.subscribers.end, subscriber => subscriber(app)).then(result => {
-    app.log.info('=========================== app-close-end ==========================');
+    app.log.trace('=========================== app-close-end ==========================');
     return result;
   });
 }

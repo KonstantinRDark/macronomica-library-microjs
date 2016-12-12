@@ -1,11 +1,11 @@
 import fetch from 'node-fetch';
-import Micro, { LEVEL_INFO } from './../';
+import Micro from './../';
 
 const host = '127.0.0.1';
 const port = 8000;
 const listen = { host, port };
 const prefix = '/act';
-const micro = Micro({ level: LEVEL_INFO, listen });
+const micro = Micro({ listen });
 
 micro
   .run()

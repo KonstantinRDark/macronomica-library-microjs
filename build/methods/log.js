@@ -9,6 +9,10 @@ var _util = require('util');
 
 var _util2 = _interopRequireDefault(_util);
 
+var _lodash = require('lodash.isplainobject');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _constants = require('./../constants');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -129,7 +133,9 @@ exports.default = function (app) {
    * @returns {function(string, payload)}
    */
   function log(level) {
-    return (message, payload) => {
+    return function (message) {
+      let payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       if (LEVELS[logger.level] < LEVELS[level]) {
         return logger;
       }
@@ -159,6 +165,13 @@ exports.default = function (app) {
       return logger;
 
       function emitOne(message) {
+        if ((0, _lodash2.default)(payload)) {
+          payload = Object.assign(payload, {
+            appId: app.id,
+            appName: app.name
+          });
+        }
+
         if (usePluginLogger) {
           app.emit('log', { level, message, payload });
           app.emit(`log.${ level }`, { level, message, payload });

@@ -1,4 +1,5 @@
 import Util from 'util';
+import isPlainObject from 'lodash.isplainobject';
 import {
   LEVEL_DEFAULT,
   LEVEL_ALL,
@@ -121,7 +122,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
    * @returns {function(string, payload)}
    */
   function log(level) {
-    return (message, payload) => {
+    return (message, payload = {}) => {
       if (LEVELS[ logger.level ] < LEVELS[ level ]) {
         return logger;
       }
@@ -202,6 +203,13 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
       return logger;
 
       function emitOne(message) {
+        if (isPlainObject(payload)) {
+          payload = Object.assign(payload, {
+            appId  : app.id,
+            appName: app.name
+          });
+        }
+
         if (usePluginLogger) {
           app.emit('log', { level, message, payload });
           app.emit(`log.${ level }`, { level, message, payload });

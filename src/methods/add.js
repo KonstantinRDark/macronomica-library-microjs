@@ -29,7 +29,7 @@ export default app => {
         name: cb.name
       };
 
-      app.log.info(`Добавление нового маршрута`, { pin, action });
+      app.log.trace(`Добавление нового маршрута`, { pin, action });
 
       app.manager.add(isString(pin) ? jsonic(pin) : pin, { pin, action, callback: cb });
 

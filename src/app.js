@@ -40,6 +40,11 @@ export default class Microjs extends EventEmitter {
    * @type {string}
    */
   id = genid();
+  /**
+   * @namespace app.id
+   * @type {string}
+   */
+  name = process.env.APP_NAME || 'microjs';
 
   /**
    * @namespace app.state
@@ -105,7 +110,7 @@ export default class Microjs extends EventEmitter {
     super();
     initialize(this, settings);
     this.on('running', onRunning);
-    process.on('SIGINT', this.end);
+    process.on('SIGINT', () => this.end().then(process.exit, process.exit));
   }
 
   log = log(this);
@@ -125,6 +130,7 @@ export default class Microjs extends EventEmitter {
 function initialize(app, settings) {
   const {
     id = app.id,
+    name = app.name,
     level = app.log.level,
     plugins = [],
     modules = app.modules,
@@ -134,7 +140,7 @@ function initialize(app, settings) {
   app.log.level = level;
   app.setMaxListeners(maxListeners);
 
-  Object.assign(app, { id, settings });
+  Object.assign(app, { id, name, settings });
 
   app.use(app.defaultLogPlugin({ level }));
 
@@ -150,11 +156,10 @@ function initialize(app, settings) {
 function onRunning(app) {
   app.state = STATE_RUN;
   app.time.running = Date.now();
-  app.log.info([
-    '============================ app-running ===========================',
-    '# Instance Id: ' + app.id,
-    `# Started At : ${ dateIsoString(app.time.started) }`,
-    `# Running At : ${ dateIsoString(app.time.running) }`,
-    '========================== app-running-end =========================',
-  ]);
+  app.log.info('App running', {
+    app: {
+      startedAt: dateIsoString(app.time.started),
+      runningAt: dateIsoString(app.time.running)
+    }
+  });
 }

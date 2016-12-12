@@ -59,7 +59,6 @@ function run(app) {
       return runDeferred.promise;
     }
 
-    app.log.info(`started at ${ (0, _dateIsoString2.default)(app.time.started) }`);
     runDeferred = (0, _defer2.default)(cb);
 
     // Проверяем наличие транспорта для сервера

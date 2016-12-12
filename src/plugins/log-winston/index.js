@@ -1,4 +1,3 @@
-import config from 'config';
 import winston from 'winston';
 import 'winston-elasticsearch';
 import genid from './../../utils/genid';
@@ -6,7 +5,7 @@ import genid from './../../utils/genid';
 export default ({ level, ...settings } = {}) => {
   return (micro, { onClose }) => {
     const plugin = { id: genid() };
-
+    const config = require('config');
     let logger = new (winston.Logger)({
       level : level || micro.log.level,
       levels: micro.log.LEVELS,

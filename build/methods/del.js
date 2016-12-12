@@ -35,7 +35,7 @@ exports.default = app => {
     const action = route.action;
 
 
-    app.log.info(`Удаление маршрута`, { pin, action });
+    app.log.trace(`Удаление маршрута`, { pin, action });
 
     app.manager.remove(pin);
 

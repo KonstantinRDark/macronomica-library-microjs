@@ -6,10 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _config = require('config');
-
-var _config2 = _interopRequireDefault(_config);
-
 var _winston = require('winston');
 
 var _winston2 = _interopRequireDefault(_winston);
@@ -34,14 +30,14 @@ exports.default = function () {
     let onClose = _ref2.onClose;
 
     const plugin = { id: (0, _genid2.default)() };
-
+    const config = require('config');
     let logger = new _winston2.default.Logger(_extends({
       level: level || micro.log.level,
       levels: micro.log.LEVELS
     }, settings));
 
-    if (process.env.NODE_ENV === 'production' && _config2.default.has('plugins.winston-elasticsearch')) {
-      var _config$get = _config2.default.get('plugins.winston-elasticsearch'),
+    if (process.env.NODE_ENV === 'production' && config.has('plugins.winston-elasticsearch')) {
+      var _config$get = config.get('plugins.winston-elasticsearch'),
           _config$get$clientOpt = _config$get.clientOpts;
 
       let clientOpts = _config$get$clientOpt === undefined ? {} : _config$get$clientOpt,

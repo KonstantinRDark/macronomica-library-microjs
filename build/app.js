@@ -101,15 +101,6 @@ class Microjs extends _events2.default {
    */
 
   /**
-   * @namespace app
-   * @memberof app.on
-   */
-  /**
-   * @namespace app
-   * @memberof app.emit
-   */
-
-  /**
    * @namespace app.id
    * @type {string}
    */
@@ -118,6 +109,7 @@ class Microjs extends _events2.default {
 
     super();
     this.id = (0, _genid2.default)();
+    this.name = process.env.APP_NAME || 'microjs';
     this.state = _constants.STATE_START;
     this.manager = (0, _patrun2.default)({ gex: true });
     this.defaultTransportPlugin = _nodeHttp2.default;
@@ -142,7 +134,7 @@ class Microjs extends _events2.default {
     this.run = (0, _run2.default)(this);
     initialize(this, settings);
     this.on('running', onRunning);
-    process.on('SIGINT', this.end);
+    process.on('SIGINT', () => this.end().then(process.exit, process.exit));
   }
 
   /**
@@ -170,6 +162,20 @@ class Microjs extends _events2.default {
    * @namespace app.state
    * @type {string}
    */
+
+  /**
+   * @namespace app
+   * @memberof app.on
+   */
+  /**
+   * @namespace app
+   * @memberof app.emit
+   */
+
+  /**
+   * @namespace app.id
+   * @type {string}
+   */
 }
 
 exports.default = Microjs; /**
@@ -180,6 +186,8 @@ exports.default = Microjs; /**
 function initialize(app, settings) {
   var _settings$id = settings.id;
   const id = _settings$id === undefined ? app.id : _settings$id;
+  var _settings$name = settings.name;
+  const name = _settings$name === undefined ? app.name : _settings$name;
   var _settings$level = settings.level;
   const level = _settings$level === undefined ? app.log.level : _settings$level;
   var _settings$plugins = settings.plugins;
@@ -193,7 +201,7 @@ function initialize(app, settings) {
   app.log.level = level;
   app.setMaxListeners(maxListeners);
 
-  Object.assign(app, { id, settings });
+  Object.assign(app, { id, name, settings });
 
   app.use(app.defaultLogPlugin({ level }));
 
@@ -209,6 +217,11 @@ function initialize(app, settings) {
 function onRunning(app) {
   app.state = _constants.STATE_RUN;
   app.time.running = Date.now();
-  app.log.info(['============================ app-running ===========================', '# Instance Id: ' + app.id, `# Started At : ${ (0, _dateIsoString2.default)(app.time.started) }`, `# Running At : ${ (0, _dateIsoString2.default)(app.time.running) }`, '========================== app-running-end =========================']);
+  app.log.info('App running', {
+    app: {
+      startedAt: (0, _dateIsoString2.default)(app.time.started),
+      runningAt: (0, _dateIsoString2.default)(app.time.running)
+    }
+  });
 }
 //# sourceMappingURL=app.js.map

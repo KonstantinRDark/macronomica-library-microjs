@@ -5,10 +5,10 @@ import runSubscribers from './run-subscribers';
  * @returns {Promise<undefined>}
  */
 export default function runCloseSubscribers(app) {
-  app.log.info('========================== app-close-start =========================');
+  app.log.trace('========================== app-close-start =========================');
   return runSubscribers(app, app.subscribers.end, subscriber => subscriber(app))
     .then(result => {
-      app.log.info('=========================== app-close-end ==========================');
+      app.log.trace('=========================== app-close-end ==========================');
       return result;
     });
 }

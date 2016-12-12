@@ -14,7 +14,7 @@ const host = '127.0.0.1';
 const port = 8000;
 const listen = { host, port };
 const prefix = '/act';
-const micro = (0, _2.default)({ level: _.LEVEL_INFO, listen });
+const micro = (0, _2.default)({ listen });
 
 micro.run().then(() => {
   return (0, _nodeFetch2.default)(`http://${ host }:${ port }${ prefix }`, { method: 'POST',
