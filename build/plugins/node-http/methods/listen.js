@@ -32,6 +32,14 @@ var _iterate = require('./../../../utils/iterate');
 
 var _iterate2 = _interopRequireDefault(_iterate);
 
+var _genid = require('./../../../utils/genid');
+
+var _genid2 = _interopRequireDefault(_genid);
+
+var _updateDuration = require('./../../../utils/update-duration');
+
+var _updateDuration2 = _interopRequireDefault(_updateDuration);
+
 var _constants = require('./../constants');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -79,38 +87,43 @@ function listenHttp(app, plugin, onClose) {
       });
     });
 
-    function handleRequest(req, res) {
+    function handleRequest(req, res, next) {
       req._originalUrl = req.url;
       req.url = _url2.default.parse(req.url);
       req.query = _qs2.default.parse(req.url.query);
 
       if (req.url.pathname !== _constants.SERVER_PREFIX) {
-        app.log.warn('Не корректный маршрут запроса', {
-          error: { code: 'error.transport.http.listen/url.not.found' }
-        });
-
+        app.log.info(`[404:${ req.method }:error.transport.http.listen/url.not.found]`);
         return response404(res, 'error.transport.http.listen/url.not.found');
       }
 
       (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, err => {
         if (err) {
           app.log.error(err);
+          app.log.info(`[404:${ req.method }:error.transport.http.listen/preprocessors.parse]`);
           return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
-        const pin = _extends({}, req.body || {}, req.query, {
-          transport: {
-            type,
-            origin: req.headers['user-agent'],
-            time: Date.now()
+        const request = {
+          id: (0, _genid2.default)(),
+          time: {
+            hrtime: process.hrtime(),
+            start: Date.now()
           }
-        });
+        };
+        const transport = {
+          type,
+          origin: req.headers['user-agent'],
+          time: Date.now()
+        };
+        const pin = _extends({}, req.body || {}, req.query);
 
         if (pin.role === 'plugin') {
-          app.log.warn(`Вызов приватного метода`, { pin });
+          app.log.warn(`Вызов приватного метода`, { pin, transport });
+          app.log.info(`[404:${ req.method }:error.transport.http.listen/call.private.method]`);
           return response404(res, {});
         }
 
-        app.act(pin, (error, result) => {
+        app.act(_extends({}, pin, { request, transport }), (error, result) => {
           const code = error ? 500 : 200;
           const status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
 
@@ -124,6 +137,9 @@ function listenHttp(app, plugin, onClose) {
             // 'Cache-Control' : 'private, max-age=0, no-cache, no-store',
             'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
           });
+
+          (0, _updateDuration2.default)(request);
+          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, { pin });
 
           res.end(outJson);
         });
