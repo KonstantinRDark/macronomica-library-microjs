@@ -136,6 +136,15 @@ function listenHttp(app, plugin, onClose) {
         }
 
         app.act(_extends({}, pin, { request, transport }), (error, result) => {
+          if (!!error && error.code === 'error.common/act.not.found') {
+            app.log.info(`[404:${ req.method }:error.transport.http.listen/act.not.found]`, {
+              code: '404',
+              status: _constants.RESPONSE_STATUS_ERROR,
+              method: req.method
+            });
+            return response404(res, error);
+          }
+
           const code = error ? 500 : 200;
           const status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
 

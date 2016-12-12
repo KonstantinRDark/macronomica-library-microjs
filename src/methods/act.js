@@ -30,8 +30,11 @@ export default app => {
       const route = app.manager.find(msg);
 
       if (!route) {
-        app.log.trace(`Вызов не существующего маршрута`, pin);
-        return dfd.reject(`Вызов не существующего маршрута: ${ JSON.stringify(pin) }`);
+        app.log.info(`Вызов не существующего маршрута`, { pin });
+        return dfd.reject({
+          code   : 'error.common/act.not.found',
+          message: 'Вызов не существующего маршрута'
+        });
       }
 
       try {
@@ -45,7 +48,7 @@ export default app => {
 
         return dfd.promise;
       } catch (error) {
-        app.log.error(`Ошибка при вызове маршрута`, { pin, error });
+        app.log.error(`Ошибка при вызове маршрута`, { pin, error: error.toString() });
         return dfd.reject(error);
       }
     }

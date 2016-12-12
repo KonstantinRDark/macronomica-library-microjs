@@ -108,6 +108,15 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
         }
 
         app.act({ ...pin, request, transport }, (error, result) => {
+          if (!!error && error.code === 'error.common/act.not.found') {
+            app.log.info(`[404:${ req.method }:error.transport.http.listen/act.not.found]`, {
+              code  : '404',
+              status: RESPONSE_STATUS_ERROR,
+              method: req.method
+            });
+            return response404(res, error);
+          }
+
           const code = error ? 500 : 200;
           const status = error ? RESPONSE_STATUS_ERROR : RESPONSE_STATUS_SUCCESS;
 
