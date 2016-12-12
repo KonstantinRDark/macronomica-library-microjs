@@ -41,7 +41,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
         if (err && err.message !== 'Not running') {
           return reject(err);
         }
-        app.log.trace('Остановлен Node Http сервер', { plugin: { host, port } });
+        app.log.info('Остановлен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     }), 'unshift');
@@ -51,7 +51,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
         if (err) {
           return reject(err);
         }
-        app.log.trace('Запущен Node Http сервер', { plugin: { host, port } });
+        app.log.info('Запущен Node Http сервер', { plugin: { host, port } });
         resolve();
       });
     });
