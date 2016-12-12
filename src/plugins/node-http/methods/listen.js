@@ -163,4 +163,5 @@ function response404(res, result) {
   });
 
   res.statusMessage = 'Not found';
+  res.end(json);
 }
