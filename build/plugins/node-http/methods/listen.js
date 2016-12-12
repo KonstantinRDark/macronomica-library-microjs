@@ -93,14 +93,22 @@ function listenHttp(app, plugin, onClose) {
       req.query = _qs2.default.parse(req.url.query);
 
       if (req.url.pathname !== _constants.SERVER_PREFIX) {
-        app.log.info(`[404:${ req.method }:error.transport.http.listen/url.not.found]`);
+        app.log.info(`[404:${ req.method }:error.transport.http.listen/url.not.found]`, {
+          code: '404',
+          status: _constants.RESPONSE_STATUS_ERROR,
+          method: req.method
+        });
         return response404(res, 'error.transport.http.listen/url.not.found');
       }
 
       (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, err => {
         if (err) {
           app.log.error(err);
-          app.log.info(`[404:${ req.method }:error.transport.http.listen/preprocessors.parse]`);
+          app.log.info(`[404:${ req.method }:error.transport.http.listen/preprocessors.parse]`, {
+            code: '404',
+            status: _constants.RESPONSE_STATUS_ERROR,
+            method: req.method
+          });
           return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
         const request = {
@@ -119,7 +127,11 @@ function listenHttp(app, plugin, onClose) {
 
         if (pin.role === 'plugin') {
           app.log.warn(`Вызов приватного метода`, { pin, transport });
-          app.log.info(`[404:${ req.method }:error.transport.http.listen/call.private.method]`);
+          app.log.info(`[404:${ req.method }:error.transport.http.listen/call.private.method]`, {
+            code: '404',
+            status: _constants.RESPONSE_STATUS_ERROR,
+            method: req.method
+          });
           return response404(res, {});
         }
 
@@ -139,7 +151,12 @@ function listenHttp(app, plugin, onClose) {
           });
 
           (0, _updateDuration2.default)(request);
-          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, { pin });
+          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, {
+            code,
+            status,
+            method: req.method,
+            pin
+          });
 
           res.end(outJson);
         });

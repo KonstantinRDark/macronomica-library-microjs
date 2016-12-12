@@ -62,14 +62,22 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
       req.query = qs.parse(req.url.query);
 
       if (req.url.pathname !== SERVER_PREFIX) {
-        app.log.info(`[404:${ req.method }:error.transport.http.listen/url.not.found]`);
+        app.log.info(`[404:${ req.method }:error.transport.http.listen/url.not.found]`, {
+          code  : '404',
+          status: RESPONSE_STATUS_ERROR,
+          method: req.method
+        });
         return response404(res, 'error.transport.http.listen/url.not.found');
       }
 
       iterate(req.method === 'POST' ? preprocessors : [], req, res, (err) => {
         if (err) {
           app.log.error(err);
-          app.log.info(`[404:${ req.method }:error.transport.http.listen/preprocessors.parse]`);
+          app.log.info(`[404:${ req.method }:error.transport.http.listen/preprocessors.parse]`, {
+            code  : '404',
+            status: RESPONSE_STATUS_ERROR,
+            method: req.method
+          });
           return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
         const request = {
@@ -91,7 +99,11 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
 
         if (pin.role === 'plugin') {
           app.log.warn(`Вызов приватного метода`, { pin, transport });
-          app.log.info(`[404:${ req.method }:error.transport.http.listen/call.private.method]`);
+          app.log.info(`[404:${ req.method }:error.transport.http.listen/call.private.method]`, {
+            code  : '404',
+            status: RESPONSE_STATUS_ERROR,
+            method: req.method
+          });
           return response404(res, {});
         }
 
@@ -112,7 +124,12 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
           });
 
           updateDuration(request);
-          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, { pin });
+          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, {
+            code,
+            status,
+            method: req.method,
+            pin
+          });
 
           res.end(outJson);
         });
