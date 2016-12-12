@@ -112,7 +112,9 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
             app.log.info(`[404:${ req.method }:error.transport.http.listen/act.not.found]`, {
               code  : '404',
               status: RESPONSE_STATUS_ERROR,
-              method: req.method
+              method: req.method,
+              pin,
+              transport
             });
             return response404(res, error);
           }
@@ -137,7 +139,8 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
             code,
             status,
             method: req.method,
-            pin
+            pin,
+            transport
           });
 
           res.end(outJson);
