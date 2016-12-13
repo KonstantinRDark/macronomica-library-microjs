@@ -1,6 +1,6 @@
 {
   "name": "@microjs/microjs",
-  "version": "1.1.2",
+  "version": "1.1.1",
   "private": true,
   "description": "Библиотека для запуска микросервисов",
   "main": "index.js",
@@ -16,7 +16,7 @@
     "watch:other": "cpx \"src/**/*.json\" build -w -v",
     "compile:babel": "babel ./src/ -d build/ --source-maps",
     "compile:other": "cpx \"src/**/*.json\" build",
-    "postversion": "git tag -d latest && git tag -a latest",
+    "postversion": "git tag -d latest && git tag -a latest -m \"latest\"",
     "version:patch": "npm run compile && npm version patch",
     "version:minor": "npm run compile && npm version minor",
     "version:major": "npm run compile && npm version major"
