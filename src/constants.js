@@ -1,5 +1,7 @@
 export const STATE_START = 'start';
 export const STATE_RUN = 'run';
+export const ACT_TIMEOUT = 5000;
+export const END_TIMEOUT = 5000;
 
 export const LEVEL_ALL = 'all';
 export const LEVEL_OFF = 'off';

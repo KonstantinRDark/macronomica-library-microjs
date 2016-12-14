@@ -12,6 +12,8 @@ var _runCloseSubscribers = require('./../utils/run-close-subscribers');
 
 var _runCloseSubscribers2 = _interopRequireDefault(_runCloseSubscribers);
 
+var _constants = require('./../constants');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -32,7 +34,15 @@ exports.default = app => {
 
     dfd = (0, _defer2.default)(cb);
 
-    (0, _runCloseSubscribers2.default)(app).then(dfd.resolve).catch(dfd.reject);
+    let timerId = setTimeout(() => dfd.reject(new Error('error.common/end.timeout')), _constants.END_TIMEOUT);
+
+    (0, _runCloseSubscribers2.default)(app).then(() => {
+      clearTimeout(timerId);
+      dfd.resolve();
+    }).catch(error => {
+      clearTimeout(timerId);
+      dfd.resolve(error);
+    });
 
     return dfd.promise;
   };

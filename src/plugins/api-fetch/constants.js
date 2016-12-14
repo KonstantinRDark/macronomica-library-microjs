@@ -1,3 +1,7 @@
+export const API_TIMEOUT = process.env.API_TIMEOUT || 5000;
+export const CLIENT_SECRET = process.env.INTERNAL_SECRET || 'sdvlm40294gmsovMW4HGNBAsvdv4vvw4';
+export const CLIENT_TRANSPORT_HEADER = 'x-microjs-transport';
+export const CLIENT_REQUEST_HEADER = 'x-microjs-request';
 export const CLIENT_CONTENT_TYPE = 'application/json';
 export const CLIENT_PREFIX = '/act';
 

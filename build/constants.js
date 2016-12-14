@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 const STATE_START = exports.STATE_START = 'start';
 const STATE_RUN = exports.STATE_RUN = 'run';
+const ACT_TIMEOUT = exports.ACT_TIMEOUT = 5000;
+const END_TIMEOUT = exports.END_TIMEOUT = 5000;
 
 const LEVEL_ALL = exports.LEVEL_ALL = 'all';
 const LEVEL_OFF = exports.LEVEL_OFF = 'off';

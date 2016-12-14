@@ -12,6 +12,10 @@ var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
 
+var _jsonwebtoken = require('jsonwebtoken');
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+
 var _buffer = require('buffer');
 
 var _buffer2 = _interopRequireDefault(_buffer);
@@ -28,17 +32,13 @@ var _url = require('url');
 
 var _url2 = _interopRequireDefault(_url);
 
+var _makeRequest = require('./../../../utils/make-request');
+
+var _makeRequest2 = _interopRequireDefault(_makeRequest);
+
 var _iterate = require('./../../../utils/iterate');
 
 var _iterate2 = _interopRequireDefault(_iterate);
-
-var _genid = require('./../../../utils/genid');
-
-var _genid2 = _interopRequireDefault(_genid);
-
-var _updateDuration = require('./../../../utils/update-duration');
-
-var _updateDuration2 = _interopRequireDefault(_updateDuration);
 
 var _constants = require('./../constants');
 
@@ -111,19 +111,24 @@ function listenHttp(app, plugin, onClose) {
           });
           return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
-        const request = {
-          id: (0, _genid2.default)(),
-          time: {
-            hrtime: process.hrtime(),
-            start: Date.now()
-          }
-        };
         const transport = {
           type,
           origin: req.headers['user-agent'],
+          method: req.method,
           time: Date.now()
         };
+
+        if (_constants.SERVER_TRANSPORT_HEADER in req.headers) {
+          Object.assign(transport, _jsonwebtoken2.default.verify(req.headers[_constants.SERVER_TRANSPORT_HEADER], _constants.SERVER_SECRET).transport);
+        }
+
+        transport.trace = [...(transport.trace || []), app.name];
+
         const pin = _extends({}, req.body || {}, req.query);
+        const request = (0, _makeRequest2.default)(app, _extends({
+          transport,
+          request: _constants.SERVER_REQUEST_HEADER in req.headers ? _jsonwebtoken2.default.verify(req.headers[_constants.SERVER_REQUEST_HEADER], _constants.SERVER_SECRET).request : null
+        }, pin));
 
         if (pin.role === 'plugin') {
           app.log.warn(`Вызов приватного метода`, { pin, transport });
@@ -135,7 +140,7 @@ function listenHttp(app, plugin, onClose) {
           return response404(res, {});
         }
 
-        app.act(_extends({}, pin, { request, transport }), (error, result) => {
+        app.act(request, (error, result) => {
           if (!!error && error.code === 'error.common/act.not.found') {
             app.log.info(`[404:${ req.method }:error.transport.http.listen/act.not.found]`, {
               code: '404',
@@ -161,8 +166,9 @@ function listenHttp(app, plugin, onClose) {
             'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
           });
 
-          (0, _updateDuration2.default)(request);
-          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, {
+          request.updateDuration();
+
+          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.request.time.duration }`, {
             code,
             status,
             method: req.method,

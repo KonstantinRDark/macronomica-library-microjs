@@ -8,9 +8,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.default = fetch;
 
+var _jsonwebtoken = require('jsonwebtoken');
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+
 var _nodeFetch = require('node-fetch');
 
 var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
+
+var _makeRequest = require('./../../../utils/make-request');
 
 var _constants = require('./../constants');
 
@@ -43,15 +49,22 @@ function fetch(app, _ref) {
 
   return (request, route) => new Promise((resolve, reject) => {
     const api = request.api,
-          msg = _objectWithoutProperties(request, ['api']);
-
-    const method = 'POST';
+          transport = request.transport,
+          req = request.request,
+          msg = _objectWithoutProperties(request, ['api', 'transport', 'request']);
 
     (0, _nodeFetch2.default)(url + prefix, {
-      method,
       agent,
-      headers: _extends({ 'Content-Type': _constants.CLIENT_CONTENT_TYPE }, headers),
-      body: JSON.stringify(msg)
+      method: 'POST',
+      timeout: _constants.API_TIMEOUT,
+      headers: _extends({
+        'Content-Type': _constants.CLIENT_CONTENT_TYPE
+      }, headers, {
+
+        [_constants.CLIENT_TRANSPORT_HEADER]: _jsonwebtoken2.default.sign({ transport }, _constants.CLIENT_SECRET),
+        [_constants.CLIENT_REQUEST_HEADER]: _jsonwebtoken2.default.sign({ request: req }, _constants.CLIENT_SECRET)
+      }),
+      body: JSON.stringify((0, _makeRequest.clear)(msg))
     }).then(handleSuccess({ request, resolve, reject }), handleError({ request, reject }));
   });
 }

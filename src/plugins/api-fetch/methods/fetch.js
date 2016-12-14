@@ -1,5 +1,11 @@
+import jwt from 'jsonwebtoken';
 import middleware from 'node-fetch';
+import { clear } from './../../../utils/make-request';
 import {
+  API_TIMEOUT,
+  CLIENT_SECRET,
+  CLIENT_TRANSPORT_HEADER,
+  CLIENT_REQUEST_HEADER,
   CLIENT_PREFIX,
   CLIENT_CONTENT_TYPE,
   RESPONSE_PROPERTY_STATUS,
@@ -31,14 +37,20 @@ export default function fetch(app, { name, settings }) {
   }
 
   return (request, route) => new Promise((resolve, reject) => {
-    const { api, ...msg } = request;
-    const method = 'POST';
+    const { api, transport, request:req, ...msg } = request;
 
     middleware(url + prefix, {
-      method,
       agent,
-      headers: { 'Content-Type': CLIENT_CONTENT_TYPE, ...headers },
-      body   : JSON.stringify(msg)
+      method : 'POST',
+      timeout: API_TIMEOUT,
+      headers: {
+        'Content-Type': CLIENT_CONTENT_TYPE,
+        ...headers,
+        
+        [ CLIENT_TRANSPORT_HEADER ]: jwt.sign({ transport }, CLIENT_SECRET),
+        [ CLIENT_REQUEST_HEADER ]  : jwt.sign({ request: req }, CLIENT_SECRET)
+      },
+      body: JSON.stringify(clear(msg))
     })
       .then(
         handleSuccess({ request, resolve, reject }),

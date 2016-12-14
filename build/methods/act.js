@@ -4,17 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _lodash = require('lodash.isstring');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _jsonic = require('jsonic');
-
-var _jsonic2 = _interopRequireDefault(_jsonic);
-
 var _defer = require('./../utils/defer');
 
 var _defer2 = _interopRequireDefault(_defer);
+
+var _makeRequest = require('./../utils/make-request');
+
+var _makeRequest2 = _interopRequireDefault(_makeRequest);
 
 var _constants = require('./../constants');
 
@@ -33,42 +29,52 @@ exports.default = app => {
    */
   return (pin, cb) => {
     if (app.state === _constants.STATE_RUN) {
-      return exec();
+      return exec(app, pin, cb);
     }
-    let dfd = (0, _defer2.default)(exec);
+
+    let dfd = (0, _defer2.default)(() => exec(app, pin, cb));
 
     app.on('running', () => setTimeout(dfd.resolve, 10));
 
     return dfd.promise;
-
-    function exec() {
-      const dfd = (0, _defer2.default)(cb);
-      const msg = (0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin;
-      const route = app.manager.find(msg);
-
-      if (!route) {
-        app.log.info(`Вызов не существующего маршрута`, { pin });
-        return dfd.reject({
-          code: 'error.common/act.not.found',
-          message: 'Вызов не существующего маршрута'
-        });
-      }
-
-      try {
-        let promise = route.callback(msg, route);
-
-        if (!promise || typeof promise.then !== 'function') {
-          promise = Promise.resolve(promise);
-        }
-
-        promise.then(dfd.resolve).catch(dfd.reject);
-
-        return dfd.promise;
-      } catch (error) {
-        app.log.error(`Ошибка при вызове маршрута`, { pin, error: error.toString() });
-        return dfd.reject(error);
-      }
-    }
   };
 };
+
+function exec(app, pin, cb) {
+  const dfd = (0, _defer2.default)(cb);
+  const request = (0, _makeRequest2.default)(app, pin);
+  const route = app.manager.find(request);
+
+  if (!route) {
+    app.log.info(`Вызов не существующего маршрута`, { pin });
+    return dfd.reject({
+      code: 'error.common/act.not.found',
+      message: 'Вызов не существующего маршрута'
+    });
+  }
+
+  const timerId = setTimeout(() => dfd.reject(new Error('error.common/act.timeout')), _constants.ACT_TIMEOUT);
+
+  try {
+    let promise = route.callback(request, route);
+
+    if (!promise || typeof promise.then !== 'function') {
+      promise = Promise.resolve(promise);
+    }
+
+    promise.then(result => {
+      clearTimeout(timerId);
+      dfd.resolve(result);
+    }).catch(error => {
+      clearTimeout(timerId);
+      dfd.resolve(error);
+    });
+
+    return dfd.promise;
+  } catch (error) {
+    app.log.error(`Ошибка при вызове маршрута`, { pin, error: error.toString() });
+    clearTimeout(timerId);
+    return dfd.reject(error);
+  }
+}
 //# sourceMappingURL=act.js.map

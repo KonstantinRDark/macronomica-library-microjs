@@ -1,12 +1,16 @@
 import http from 'http';
+import jwt from 'jsonwebtoken';
 import buffer from 'buffer';
 import qs from 'qs';
 import bodyParser from 'body-parser';
 import url from 'url';
+import makeRequest from './../../../utils/make-request';
 import iterate from './../../../utils/iterate';
-import genid from './../../../utils/genid';
-import updateDuration from './../../../utils/update-duration';
 import {
+  SERVER_SECRET,
+  SERVER_TRANSPORT_HEADER,
+  SERVER_REQUEST_HEADER,
+  
   SERVER_PREFIX,
   SERVER_HOST,
   SERVER_PORT,
@@ -80,22 +84,33 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
           });
           return response404(res, 'error.transport.http.listen/preprocessors.parse');
         }
-        const request = {
-          id: genid(),
-          time: {
-            hrtime: process.hrtime(),
-            start : Date.now()
-          }
-        };
         const transport = {
           type,
           origin: req.headers[ 'user-agent' ],
+          method: req.method,
           time  : Date.now()
         };
+        
+        if (SERVER_TRANSPORT_HEADER in req.headers) {
+          Object.assign(transport, jwt.verify(req.headers[ SERVER_TRANSPORT_HEADER ], SERVER_SECRET).transport);
+        }
+        
+        transport.trace = [
+          ...(transport.trace || []),
+          app.name
+        ];
+        
         const pin = {
           ...(req.body || {}),
           ...req.query
         };
+        const request = makeRequest(app, {
+          transport,
+          request: (SERVER_REQUEST_HEADER in req.headers)
+            ? jwt.verify(req.headers[ SERVER_REQUEST_HEADER ], SERVER_SECRET).request
+            : null,
+          ...pin
+        });
 
         if (pin.role === 'plugin') {
           app.log.warn(`Вызов приватного метода`, { pin, transport });
@@ -107,7 +122,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
           return response404(res, {});
         }
 
-        app.act({ ...pin, request, transport }, (error, result) => {
+        app.act(request, (error, result) => {
           if (!!error && error.code === 'error.common/act.not.found') {
             app.log.info(`[404:${ req.method }:error.transport.http.listen/act.not.found]`, {
               code  : '404',
@@ -133,9 +148,10 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
             // 'Cache-Control' : 'private, max-age=0, no-cache, no-store',
             'Content-Length': buffer.Buffer.byteLength(outJson)
           });
-
-          updateDuration(request);
-          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.time.duration }`, {
+  
+          request.updateDuration();
+          
+          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.request.time.duration }`, {
             code,
             status,
             method: req.method,

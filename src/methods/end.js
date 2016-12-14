@@ -1,5 +1,6 @@
 import defer from './../utils/defer';
 import runCloseSubscribers from './../utils/run-close-subscribers';
+import { END_TIMEOUT } from './../constants';
 
 /**
  * @param {app} app
@@ -18,10 +19,18 @@ export default app => {
     }
 
     dfd = defer(cb);
-
+    
+    let timerId = setTimeout(() => dfd.reject(new Error('error.common/end.timeout')), END_TIMEOUT);
+    
     runCloseSubscribers(app)
-      .then(dfd.resolve)
-      .catch(dfd.reject);
+      .then(() => {
+        clearTimeout(timerId);
+        dfd.resolve();
+      })
+      .catch((error) => {
+        clearTimeout(timerId);
+        dfd.resolve(error);
+      });
 
     return dfd.promise;
   };

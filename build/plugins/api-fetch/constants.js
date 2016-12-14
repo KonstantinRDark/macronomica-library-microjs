@@ -3,6 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+const API_TIMEOUT = exports.API_TIMEOUT = process.env.API_TIMEOUT || 5000;
+const CLIENT_SECRET = exports.CLIENT_SECRET = process.env.INTERNAL_SECRET || 'sdvlm40294gmsovMW4HGNBAsvdv4vvw4';
+const CLIENT_TRANSPORT_HEADER = exports.CLIENT_TRANSPORT_HEADER = 'x-microjs-transport';
+const CLIENT_REQUEST_HEADER = exports.CLIENT_REQUEST_HEADER = 'x-microjs-request';
 const CLIENT_CONTENT_TYPE = exports.CLIENT_CONTENT_TYPE = 'application/json';
 const CLIENT_PREFIX = exports.CLIENT_PREFIX = '/act';
 
