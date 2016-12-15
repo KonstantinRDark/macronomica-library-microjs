@@ -48,7 +48,7 @@ export default function fetch(app, { name, settings }) {
         ...headers,
         
         [ CLIENT_TRANSPORT_HEADER ]: jwt.sign({ transport }, CLIENT_SECRET),
-        [ CLIENT_REQUEST_HEADER ]  : jwt.sign({ request: req }, CLIENT_SECRET)
+        [ CLIENT_REQUEST_HEADER ]  : jwt.sign({ request: { id: req.id } }, CLIENT_SECRET)
       },
       body: JSON.stringify(clear(msg))
     })

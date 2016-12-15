@@ -62,7 +62,7 @@ function fetch(app, _ref) {
       }, headers, {
 
         [_constants.CLIENT_TRANSPORT_HEADER]: _jsonwebtoken2.default.sign({ transport }, _constants.CLIENT_SECRET),
-        [_constants.CLIENT_REQUEST_HEADER]: _jsonwebtoken2.default.sign({ request: req }, _constants.CLIENT_SECRET)
+        [_constants.CLIENT_REQUEST_HEADER]: _jsonwebtoken2.default.sign({ request: { id: req.id } }, _constants.CLIENT_SECRET)
       }),
       body: JSON.stringify((0, _makeRequest.clear)(msg))
     }).then(handleSuccess({ request, resolve, reject }), handleError({ request, reject }));

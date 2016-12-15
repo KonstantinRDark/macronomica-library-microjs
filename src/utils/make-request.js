@@ -40,11 +40,11 @@ export default (app, raw) => {
     transport,
     request: {
       id  : genid(),
+      ...request,
       time: {
         hrtime: process.hrtime(),
         start : Date.now()
-      },
-      ...request,
+      }
     },
     ...msg,
     updateDuration,
