@@ -70,12 +70,13 @@ exports.default = (app, raw) => {
   return Object.assign(req, _extends({
     transport,
     request: _extends({
-      id: (0, _genid2.default)(),
+      id: (0, _genid2.default)()
+    }, request, {
       time: {
         hrtime: process.hrtime(),
         start: Date.now()
       }
-    }, request)
+    })
   }, msg, {
     updateDuration,
     act: function () {
