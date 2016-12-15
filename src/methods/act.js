@@ -1,5 +1,5 @@
 import defer from './../utils/defer';
-import makeRequest from './../utils/make-request';
+import makeRequest, { clear } from './../utils/make-request';
 import { ACT_TIMEOUT, STATE_RUN } from './../constants';
 
 /**
@@ -29,7 +29,7 @@ export default app => {
 function exec(app, pin, cb) {
   const dfd = defer(cb);
   const request = makeRequest(app, pin);
-  const route = app.manager.find(request);
+  const route = app.manager.find(clear(request));
   
   if (!route) {
     app.log.info(`Вызов не существующего маршрута`, { pin });

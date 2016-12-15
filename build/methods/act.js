@@ -43,7 +43,7 @@ exports.default = app => {
 function exec(app, pin, cb) {
   const dfd = (0, _defer2.default)(cb);
   const request = (0, _makeRequest2.default)(app, pin);
-  const route = app.manager.find(request);
+  const route = app.manager.find((0, _makeRequest.clear)(request));
 
   if (!route) {
     app.log.info(`Вызов не существующего маршрута`, { pin });
