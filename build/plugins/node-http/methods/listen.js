@@ -97,7 +97,7 @@ function listenHttp(app, plugin, onClose) {
 
       if (req.url.pathname !== _constants.SERVER_PREFIX) {
         app.log.error(`[${ error404Message }/url.not.found]`, {
-          error: _url2.default
+          error: req.url
         });
         return response404(res, `${ error404Message }/url.not.found`);
       }

@@ -70,7 +70,7 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
 
       if (req.url.pathname !== SERVER_PREFIX) {
         app.log.error(`[${ error404Message }/url.not.found]`, {
-          error: url
+          error: req.url
         });
         return response404(res, `${ error404Message }/url.not.found`);
       }
