@@ -138,13 +138,13 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
         const error = metaInstanceError
           ? meta.error
           : messageInstanceError ? message : new Error(message);
-        message = `${ app.name }:${ app.id }:${ level }:${ err.message }`;
+        message = error.message;
         meta.error = getDetailsError(app, error, meta);
       }
 
       if (level === LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
         const error = metaInstanceError ? meta.error : message;
-        message = `${ app.name }:${ app.id }:${ level }:${ err.message }`;
+        message = error.message;
         meta.error = getDetailsError(app, error, meta);
       }
 
@@ -157,7 +157,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
       return logger;
 
       function emitOne(message) {
-        Object.assign(meta, { appId: app.id, appName: app.name });
+        meta = Object.assign(meta, { appId: app.id, appName: app.name });
 
         if (usePluginLogger) {
           app.emit('log', { level, message, meta });
