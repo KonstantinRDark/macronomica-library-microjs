@@ -134,26 +134,29 @@ exports.default = function (app) {
    */
   function log(level) {
     return function (message) {
-      let payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      let meta = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       if (LEVELS[logger.level] < LEVELS[level]) {
         return logger;
       }
 
+      const messageInstanceError = message instanceof Error;
+      const metaInstanceError = (0, _lodash2.default)(meta) && meta.error instanceof Error;
+
       if (level === _constants.LEVEL_FATAL) {
-        const error = message instanceof Error ? message : new Error(message);
+        const error = metaInstanceError ? meta.error : messageInstanceError ? message : new Error(message);
         let stack = error.stack || '';
         stack = stack.replace(/^.*?\n/, '\n').replace(/\n/g, '\n          ');
 
-        message = ['############################', `# Fatal Error`, '# Instance  : ' + app.id, '# Started At: ' + app.time.started, '# ==========================', '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(payload, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
+        message = ['############################', `# Fatal Error`, '# Instance  : ' + app.id, '# Started At: ' + app.time.started, '# ==========================', '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(meta, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
       }
 
-      if (level === _constants.LEVEL_ERROR && message instanceof Error) {
-        const error = message;
+      if (level === _constants.LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
+        const error = metaInstanceError ? meta.error : message;
         let stack = error.stack || '';
         stack = stack.replace(/^.*?\n/, '\n').replace(/\n/g, '\n          ');
 
-        message = ['############################', `# Error`, '# ========================== ', '  Instance  : ' + app.id, '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(payload, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
+        message = ['############################', `# Error`, '# ========================== ', '  Instance  : ' + app.id, '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(meta, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
       }
 
       if (Array.isArray(message)) {
@@ -165,21 +168,21 @@ exports.default = function (app) {
       return logger;
 
       function emitOne(message) {
-        if ((0, _lodash2.default)(payload)) {
-          payload = Object.assign(payload, {
+        if ((0, _lodash2.default)(meta)) {
+          meta = Object.assign(meta, {
             appId: app.id,
             appName: app.name
           });
         }
 
         if (usePluginLogger) {
-          app.emit('log', { level, message, payload });
-          app.emit(`log.${ level }`, { level, message, payload });
+          app.emit('log', { level, message, meta });
+          app.emit(`log.${ level }`, { level, message, meta });
         } else {
           const args = [`${ level }: [${ app.id }]`, message];
 
-          if (!!payload) {
-            args.push(JSON.stringify(payload, '', 4));
+          if (!!meta) {
+            args.push(JSON.stringify(meta, '', 4));
           }
 
           switch (level) {

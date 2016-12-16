@@ -28,6 +28,6 @@ module.exports = transformer;
 
 function add(fields, name, value) {
   if (value) {
-    fields[ name ] = isPlainObject(value) ? jsonic.stringify(value) : value;
+    fields[ name ] = JSON.stringify(value);
   }
 }

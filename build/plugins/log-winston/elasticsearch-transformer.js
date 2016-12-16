@@ -45,7 +45,7 @@ module.exports = transformer;
 
 function add(fields, name, value) {
   if (value) {
-    fields[name] = (0, _lodash2.default)(value) ? _jsonic2.default.stringify(value) : value;
+    fields[name] = JSON.stringify(value);
   }
 }
 //# sourceMappingURL=elasticsearch-transformer.js.map

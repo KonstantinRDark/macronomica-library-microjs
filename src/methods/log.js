@@ -122,13 +122,18 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
    * @returns {function(string, payload)}
    */
   function log(level) {
-    return (message, payload = {}) => {
+    return (message, meta = {}) => {
       if (LEVELS[ logger.level ] < LEVELS[ level ]) {
         return logger;
       }
 
+      const messageInstanceError = message instanceof Error;
+      const metaInstanceError = isPlainObject(meta) && meta.error instanceof Error;
+
       if (level === LEVEL_FATAL) {
-        const error = message instanceof Error ? message : new Error(message);
+        const error = metaInstanceError
+          ? meta.error
+          : messageInstanceError ? message : new Error(message);
         let stack = error.stack || '';
         stack = stack
           .replace(/^.*?\n/, '\n')
@@ -143,7 +148,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           '# ==========================',
           '  Message   : ' + error.message,
           '  Code      : ' + error.code,
-          '  Payload   : ' + Util.inspect(payload, { depth: null }),
+          '  Payload   : ' + Util.inspect(meta, { depth: null }),
           '  Details   : ' + Util.inspect(error.details, { depth: null }),
           '  When      : ' + (new Date()).toISOString(),
           '  Stack     : ' + stack,
@@ -161,8 +166,8 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
         ].join('\n');
       }
 
-      if (level === LEVEL_ERROR && message instanceof Error) {
-        const error = message;
+      if (level === LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
+        const error = metaInstanceError ? meta.error : message;
         let stack = error.stack || '';
         stack = stack
           .replace(/^.*?\n/, '\n')
@@ -176,7 +181,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           '  Instance  : ' + app.id,
           '  Message   : ' + error.message,
           '  Code      : ' + error.code,
-          '  Payload   : ' + Util.inspect(payload, { depth: null }),
+          '  Payload   : ' + Util.inspect(meta, { depth: null }),
           '  Details   : ' + Util.inspect(error.details, { depth: null }),
           '  When      : ' + (new Date()).toISOString(),
           '  Stack     : ' + stack,
@@ -203,21 +208,21 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
       return logger;
 
       function emitOne(message) {
-        if (isPlainObject(payload)) {
-          payload = Object.assign(payload, {
+        if (isPlainObject(meta)) {
+          meta = Object.assign(meta, {
             appId  : app.id,
             appName: app.name
           });
         }
 
         if (usePluginLogger) {
-          app.emit('log', { level, message, payload });
-          app.emit(`log.${ level }`, { level, message, payload });
+          app.emit('log', { level, message, meta });
+          app.emit(`log.${ level }`, { level, message, meta });
         } else {
           const args = [ `${ level }: [${ app.id }]`, message ];
 
-          if (!!payload) {
-            args.push(JSON.stringify(payload, '', 4));
+          if (!!meta) {
+            args.push(JSON.stringify(meta, '', 4));
           }
 
           switch (level) {

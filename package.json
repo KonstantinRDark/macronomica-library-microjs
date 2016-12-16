@@ -16,9 +16,10 @@
     "watch:other": "cpx \"src/**/*.json\" build -w -v",
     "compile:babel": "babel ./src/ -d build/ --source-maps",
     "compile:other": "cpx \"src/**/*.json\" build",
-    "postversion": "npm run rm-latest && npm run add-latest",
     "rm-latest": "git tag -d latest && git push --delete origin latest",
     "add-latest": "git tag -a latest -m \"latest\" && git push --tags origin HEAD",
+    "postversion": "version:latest",
+    "version:latest": "npm run rm-latest && npm run add-latest",
     "version:patch": "npm run compile && npm version patch",
     "version:minor": "npm run compile && npm version minor",
     "version:major": "npm run compile && npm version major"

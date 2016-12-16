@@ -72,7 +72,7 @@ function exec(app, pin, cb) {
 
     return dfd.promise;
   } catch (error) {
-    app.log.error(`Ошибка при вызове маршрута`, { pin, error: error.toString() });
+    app.log.error(`Ошибка при вызове маршрута`, { pin, error });
     clearTimeout(timerId);
     return dfd.reject(error);
   }
