@@ -140,8 +140,12 @@ exports.default = function (app) {
         return logger;
       }
 
+      if (!(0, _lodash2.default)(meta)) {
+        meta = meta instanceof Error ? { error: meta } : { payload: meta };
+      }
+
       const messageInstanceError = message instanceof Error;
-      const metaInstanceError = (0, _lodash2.default)(meta) && meta.error instanceof Error;
+      const metaInstanceError = meta.error instanceof Error;
 
       if (level === _constants.LEVEL_FATAL) {
         const error = metaInstanceError ? meta.error : messageInstanceError ? message : new Error(message);
@@ -168,12 +172,7 @@ exports.default = function (app) {
       return logger;
 
       function emitOne(message) {
-        if ((0, _lodash2.default)(meta)) {
-          meta = Object.assign(meta, {
-            appId: app.id,
-            appName: app.name
-          });
-        }
+        Object.assign(meta, { appId: app.id, appName: app.name });
 
         if (usePluginLogger) {
           app.emit('log', { level, message, meta });

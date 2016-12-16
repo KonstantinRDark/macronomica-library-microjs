@@ -16,7 +16,7 @@ exports.default = function (app, outError) {
   let info = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   const e = (0, _error2.default)(_extends({ message: _error.ERROR_INTERNAL_ERROR }, info));
-  app.log.error(e.message, outError);
+  app.log.error(e.message, { error: outError });
   return e;
 };
 //# sourceMappingURL=internal-error.js.map

@@ -127,8 +127,12 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
         return logger;
       }
 
+      if (!isPlainObject(meta)) {
+        meta = meta instanceof Error ? { error: meta } : { payload: meta };
+      }
+
       const messageInstanceError = message instanceof Error;
-      const metaInstanceError = isPlainObject(meta) && meta.error instanceof Error;
+      const metaInstanceError = meta.error instanceof Error;
 
       if (level === LEVEL_FATAL) {
         const error = metaInstanceError
@@ -208,12 +212,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
       return logger;
 
       function emitOne(message) {
-        if (isPlainObject(meta)) {
-          meta = Object.assign(meta, {
-            appId  : app.id,
-            appName: app.name
-          });
-        }
+        Object.assign(meta, { appId: app.id, appName: app.name });
 
         if (usePluginLogger) {
           app.emit('log', { level, message, meta });
