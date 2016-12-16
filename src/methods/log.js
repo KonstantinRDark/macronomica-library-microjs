@@ -158,7 +158,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
           '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
           '##############################################################################################'
-        ];
+        ].join('\n');
       }
 
       if (level === LEVEL_ERROR && message instanceof Error) {
@@ -191,7 +191,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
           '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
           '##############################################################################################'
-        ];
+        ].join('\n');
       }
 
       if (Array.isArray(message)) {
