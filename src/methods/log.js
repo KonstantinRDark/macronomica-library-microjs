@@ -138,69 +138,14 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
         const error = metaInstanceError
           ? meta.error
           : messageInstanceError ? message : new Error(message);
-        let stack = error.stack || '';
-        stack = stack
-          .replace(/^.*?\n/, '\n')
-          .replace(/\n/g, '\n          ')
-        ;
-
-        message = [
-          '############################',
-          `# Fatal Error`,
-          '# Instance  : ' + app.id,
-          '# Started At: ' + app.time.started,
-          '# ==========================',
-          '  Message   : ' + error.message,
-          '  Code      : ' + error.code,
-          '  Payload   : ' + Util.inspect(meta, { depth: null }),
-          '  Details   : ' + Util.inspect(error.details, { depth: null }),
-          '  When      : ' + (new Date()).toISOString(),
-          '  Stack     : ' + stack,
-          '  Node      : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
-          '              ' + Util.inspect(process.features).replace(/\s+/g, ' '),
-          '              ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
-          '  Process   : ',
-          '              pid=' + process.pid,
-          '              arch=' + process.arch,
-          '              platform=' + process.platform,
-          '              path=' + process.execPath,
-          '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
-          '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
-          '############################'
-        ].join('\n');
+        message = `${ app.name }:${ app.id }:${ level }:${ err.message }`;
+        meta.error = getDetailsError(app, error, meta);
       }
 
       if (level === LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
         const error = metaInstanceError ? meta.error : message;
-        let stack = error.stack || '';
-        stack = stack
-          .replace(/^.*?\n/, '\n')
-          .replace(/\n/g, '\n          ')
-        ;
-
-        message = [
-          '############################',
-          `# Error`,
-          '# ========================== ',
-          '  Instance  : ' + app.id,
-          '  Message   : ' + error.message,
-          '  Code      : ' + error.code,
-          '  Payload   : ' + Util.inspect(meta, { depth: null }),
-          '  Details   : ' + Util.inspect(error.details, { depth: null }),
-          '  When      : ' + (new Date()).toISOString(),
-          '  Stack     : ' + stack,
-          '  Node      : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
-          '              ' + Util.inspect(process.features).replace(/\s+/g, ' '),
-          '              ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
-          '  Process   : ',
-          '              pid=' + process.pid,
-          '              arch=' + process.arch,
-          '              platform=' + process.platform,
-          '              path=' + process.execPath,
-          '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
-          '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
-          '############################'
-        ].join('\n');
+        message = `${ app.name }:${ app.id }:${ level }:${ err.message }`;
+        meta.error = getDetailsError(app, error, meta);
       }
 
       if (Array.isArray(message)) {
@@ -239,4 +184,36 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
       }
     };
   }
+};
+
+function getDetailsError(app, error, meta) {
+  let stack = error.stack || '';
+  stack = stack
+    .replace(/^.*?\n/, '\n')
+    .replace(/\n/g, '\n\s+')
+  ;
+
+  return [
+    '############################',
+    `# Instance  : ${ app.name }:${ app.id }`,
+    '# Started At: ' + app.time.started,
+    '# ==========================',
+    '  Message   : ' + error.message,
+    '  Code      : ' + error.code,
+    '  Payload   : ' + Util.inspect(meta, { depth: null }),
+    '  Details   : ' + Util.inspect(error.details, { depth: null }),
+    '  When      : ' + (new Date()).toISOString(),
+    '  Stack     : ' + stack,
+    '  Node      : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
+    '              ' + Util.inspect(process.features).replace(/\s+/g, ' '),
+    '              ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
+    '  Process   : ',
+    '              pid=' + process.pid,
+    '              arch=' + process.arch,
+    '              platform=' + process.platform,
+    '              path=' + process.execPath,
+    '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
+    '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
+    '############################'
+  ].join('\n');
 }

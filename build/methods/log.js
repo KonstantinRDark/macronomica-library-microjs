@@ -149,18 +149,14 @@ exports.default = function (app) {
 
       if (level === _constants.LEVEL_FATAL) {
         const error = metaInstanceError ? meta.error : messageInstanceError ? message : new Error(message);
-        let stack = error.stack || '';
-        stack = stack.replace(/^.*?\n/, '\n').replace(/\n/g, '\n          ');
-
-        message = ['############################', `# Fatal Error`, '# Instance  : ' + app.id, '# Started At: ' + app.time.started, '# ==========================', '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(meta, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
+        message = `${ app.name }:${ app.id }:${ level }:${ err.message }`;
+        meta.error = getDetailsError(app, error, meta);
       }
 
       if (level === _constants.LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
         const error = metaInstanceError ? meta.error : message;
-        let stack = error.stack || '';
-        stack = stack.replace(/^.*?\n/, '\n').replace(/\n/g, '\n          ');
-
-        message = ['############################', `# Error`, '# ========================== ', '  Instance  : ' + app.id, '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(meta, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
+        message = `${ app.name }:${ app.id }:${ level }:${ err.message }`;
+        meta.error = getDetailsError(app, error, meta);
       }
 
       if (Array.isArray(message)) {
@@ -200,4 +196,11 @@ exports.default = function (app) {
     };
   }
 };
+
+function getDetailsError(app, error, meta) {
+  let stack = error.stack || '';
+  stack = stack.replace(/^.*?\n/, '\n').replace(/\n/g, '\n\s+');
+
+  return ['############################', `# Instance  : ${ app.name }:${ app.id }`, '# Started At: ' + app.time.started, '# ==========================', '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(meta, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
+}
 //# sourceMappingURL=log.js.map
