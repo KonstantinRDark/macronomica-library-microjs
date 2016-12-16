@@ -136,11 +136,11 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
         ;
 
         message = [
-          '##############################################################################################',
+          '############################',
           `# Fatal Error`,
           '# Instance  : ' + app.id,
           '# Started At: ' + app.time.started,
-          '# =========================================================================================== ',
+          '# ==========================',
           '  Message   : ' + error.message,
           '  Code      : ' + error.code,
           '  Payload   : ' + Util.inspect(payload, { depth: null }),
@@ -157,7 +157,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           '              path=' + process.execPath,
           '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
           '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
-          '##############################################################################################'
+          '############################'
         ].join('\n');
       }
 
@@ -170,9 +170,9 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
         ;
 
         message = [
-          '##############################################################################################',
+          '############################',
           `# Error`,
-          '# =========================================================================================== ',
+          '# ========================== ',
           '  Instance  : ' + app.id,
           '  Message   : ' + error.message,
           '  Code      : ' + error.code,
@@ -190,7 +190,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           '              path=' + process.execPath,
           '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
           '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
-          '##############################################################################################'
+          '############################'
         ].join('\n');
       }
 
