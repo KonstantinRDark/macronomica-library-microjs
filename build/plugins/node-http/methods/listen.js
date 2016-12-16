@@ -88,28 +88,24 @@ function listenHttp(app, plugin, onClose) {
     });
 
     function handleRequest(req, res, next) {
+      const errorMessage = `${ _constants.RESPONSE_STATUS_ERROR }.transport.http.listen`;
+      const error404Message = `404:${ errorMessage }`;
+
       req._originalUrl = req.url;
       req.url = _url2.default.parse(req.url);
       req.query = _qs2.default.parse(req.url.query);
 
       if (req.url.pathname !== _constants.SERVER_PREFIX) {
-        app.log.info(`[404:${ req.method }:error.transport.http.listen/url.not.found]`, {
-          code: '404',
-          status: _constants.RESPONSE_STATUS_ERROR,
-          method: req.method
+        app.log.error(`[${ error404Message }/url.not.found]`, {
+          error: _url2.default
         });
-        return response404(res, 'error.transport.http.listen/url.not.found');
+        return response404(res, `${ error404Message }/url.not.found`);
       }
 
       (0, _iterate2.default)(req.method === 'POST' ? preprocessors : [], req, res, err => {
         if (err) {
-          app.log.error(err);
-          app.log.info(`[404:${ req.method }:error.transport.http.listen/preprocessors.parse]`, {
-            code: '404',
-            status: _constants.RESPONSE_STATUS_ERROR,
-            method: req.method
-          });
-          return response404(res, 'error.transport.http.listen/preprocessors.parse');
+          app.log.error(`[${ error404Message }/preprocessors.parse]`, { error: err });
+          return response404(res, `${ error404Message }/preprocessors.parse`);
         }
         const transport = {
           type,
@@ -132,27 +128,27 @@ function listenHttp(app, plugin, onClose) {
 
         if (pin.role === 'plugin') {
           app.log.warn(`Вызов приватного метода`, { pin, transport });
-          app.log.info(`[404:${ req.method }:error.transport.http.listen/call.private.method]`, {
-            code: '404',
-            status: _constants.RESPONSE_STATUS_ERROR,
-            method: req.method
+          app.log.info(`[${ error404Message }/call.private.method]`, {
+            error: error404Message,
+            pin
           });
           return response404(res, {});
         }
 
+        const meta = {
+          requestId: request.request.id,
+          request: { code, status, method: req.method },
+          pin
+        };
+
         app.act(request, (error, result) => {
           if (!!error && error.code === 'error.common/act.not.found') {
-            app.log.info(`[404:${ req.method }:error.transport.http.listen/act.not.found]`, {
-              code: '404',
-              status: _constants.RESPONSE_STATUS_ERROR,
-              method: req.method,
-              pin,
-              transport
-            });
+            app.log.error(`[${ error404Message }/act.not.found]`, _extends({}, meta, { error }));
             return response404(res, error);
           }
 
           const code = error ? 500 : 200;
+          const level = error ? 'error' : 'info';
           const status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
 
           const outJson = JSON.stringify({
@@ -168,13 +164,13 @@ function listenHttp(app, plugin, onClose) {
 
           request.updateDuration();
 
-          app.log.info(`[${ code }:${ req.method }:${ status }] ${ request.request.time.duration }`, {
-            code,
-            status,
-            method: req.method,
-            pin,
-            transport
-          });
+          const message = `[${ code }:${ req.method }:${ status }] ${ request.request.time.duration }`;
+
+          if (code === 500) {
+            meta.error = error;
+          }
+
+          app.log[level](message, meta);
 
           res.end(outJson);
         });
