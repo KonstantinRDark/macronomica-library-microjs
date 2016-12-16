@@ -32,14 +32,17 @@ function exec(app, pin, cb) {
   const route = app.manager.find(clear(request));
   
   if (!route) {
-    app.log.info(`Вызов не существующего маршрута`, { pin });
+    app.log.info(`Вызов не существующего маршрута`, { pin, request });
     return dfd.reject({
       code   : 'error.common/act.not.found',
       message: 'Вызов не существующего маршрута'
     });
   }
   
-  const timerId = setTimeout(() => dfd.reject(new Error('error.common/act.timeout')), ACT_TIMEOUT);
+  const timerId = setTimeout(() => {
+    app.log.warn(`error.common/act.timeout`, { pin, request, action: route.action });
+    dfd.reject(new Error('error.common/act.timeout'));
+  }, ACT_TIMEOUT);
   
   try {
     let promise = route.callback(request, route);
@@ -60,7 +63,7 @@ function exec(app, pin, cb) {
     
     return dfd.promise;
   } catch (error) {
-    app.log.error(`Ошибка при вызове маршрута`, { pin, error });
+    app.log.error(`Ошибка при вызове маршрута`, { pin, error, request, action: route.action });
     clearTimeout(timerId);
     return dfd.reject(error);
   }

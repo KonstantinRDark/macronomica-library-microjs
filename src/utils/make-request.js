@@ -47,18 +47,17 @@ export default (app, raw) => {
       }
     },
     ...msg,
-    updateDuration,
+    duration,
     act: (...rest) => app.act(...rest)
   });
   
-  function updateDuration() {
+  function duration() {
     const [ seconds, nanoseconds ] = process.hrtime(req.request.time.hrtime);
     req.request.time.end = Date.now();
-    req.request.time.duration = round((seconds * 1000) + (nanoseconds * 1e-6), -3) + 'ms';
-    return req;
+    return req.request.time.duration = round((seconds * 1000) + (nanoseconds * 1e-6), -3) + 'ms';
   }
 };
 
-function clear({ appId, appName, log, updateDuration, act, transport, request, ...msg } = {}) {
+function clear({ appId, appName, log, duration, act, transport, request, ...msg } = {}) {
   return msg;
 }

@@ -157,7 +157,9 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
       return logger;
 
       function emitOne(message) {
-        meta = Object.assign(meta, { appId: app.id, appName: app.name });
+        meta = Object.assign(meta, {
+          app: { id: app.id, name: app.name }
+        });
 
         if (usePluginLogger) {
           app.emit('log', { level, message, meta });

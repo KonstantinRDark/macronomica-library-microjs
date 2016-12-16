@@ -127,10 +127,10 @@ function listenHttp(app, plugin, onClose) {
         }, pin));
 
         if (pin.role === 'plugin') {
-          app.log.warn(`Вызов приватного метода`, { pin, transport });
+          app.log.warn(`Вызов приватного метода`, { pin, request });
           app.log.info(`[${ error404Message }/call.private.method]`, {
             error: error404Message,
-            pin
+            pin, request
           });
           return response404(res, {});
         }
@@ -140,8 +140,7 @@ function listenHttp(app, plugin, onClose) {
           const level = error ? 'error' : 'info';
           const status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
           const meta = {
-            requestId: request.request.id,
-            request: { code, status, method: req.method },
+            request,
             pin
           };
 
@@ -161,9 +160,7 @@ function listenHttp(app, plugin, onClose) {
             'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
           });
 
-          request.updateDuration();
-
-          const message = `[${ code }:${ req.method }:${ status }] ${ request.request.time.duration }`;
+          const message = `[${ code }:${ req.method }:${ status }] ${ request.duration() }`;
 
           if (code === 500) {
             meta.error = error;

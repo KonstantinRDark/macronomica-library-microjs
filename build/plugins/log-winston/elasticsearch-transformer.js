@@ -2,16 +2,6 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _lodash = require('lodash.isplainobject');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _jsonic = require('jsonic');
-
-var _jsonic2 = _interopRequireDefault(_jsonic);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 const transformer = function transformer(_ref) {
@@ -25,7 +15,9 @@ const transformer = function transformer(_ref) {
   const pin = meta.pin,
         action = meta.action,
         plugin = meta.plugin,
-        other = _objectWithoutProperties(meta, ['pin', 'action', 'plugin']);
+        app = meta.app,
+        request = meta.request,
+        other = _objectWithoutProperties(meta, ['pin', 'action', 'plugin', 'app', 'request']);
 
   const fields = _extends({}, other);
 
@@ -34,10 +26,15 @@ const transformer = function transformer(_ref) {
   add(fields, 'action', action);
 
   return {
-    '@timestamp': timestamp,
     message,
     severity,
-    fields
+    app,
+    fields,
+    '@timestamp': timestamp,
+    request: !request ? undefined : {
+      id: request.id,
+      duration: request.duration()
+    }
   };
 };
 

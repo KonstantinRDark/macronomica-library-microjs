@@ -1,13 +1,10 @@
-import isPlainObject from 'lodash.isplainobject';
-import jsonic from 'jsonic';
-
 const transformer = function transformer({
   timestamp = new Date().toISOString(),
   message,
   level:severity,
   meta = {}
 }) {
-  const { pin, action, plugin, ...other } = meta;
+  const { pin, action, plugin, app, request, ...other } = meta;
   const fields = {
     ...other
   };
@@ -17,10 +14,15 @@ const transformer = function transformer({
   add(fields, 'action', action);
   
   return {
-    '@timestamp': timestamp,
     message,
     severity,
-    fields
+    app,
+    fields,
+    '@timestamp': timestamp,
+    request     : !request ? undefined : {
+      id      : request.id,
+      duration: request.duration()
+    }
   };
 };
 

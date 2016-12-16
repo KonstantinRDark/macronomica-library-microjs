@@ -78,13 +78,13 @@ exports.default = (app, raw) => {
       }
     })
   }, msg, {
-    updateDuration,
+    duration,
     act: function () {
       return app.act(...arguments);
     }
   }));
 
-  function updateDuration() {
+  function duration() {
     var _process$hrtime = process.hrtime(req.request.time.hrtime),
         _process$hrtime2 = _slicedToArray(_process$hrtime, 2);
 
@@ -92,8 +92,7 @@ exports.default = (app, raw) => {
           nanoseconds = _process$hrtime2[1];
 
     req.request.time.end = Date.now();
-    req.request.time.duration = (0, _mdnDecimalAdjust.round)(seconds * 1000 + nanoseconds * 1e-6, -3) + 'ms';
-    return req;
+    return req.request.time.duration = (0, _mdnDecimalAdjust.round)(seconds * 1000 + nanoseconds * 1e-6, -3) + 'ms';
   }
 };
 
@@ -103,11 +102,11 @@ function clear() {
   let appId = _ref.appId,
       appName = _ref.appName,
       log = _ref.log,
-      updateDuration = _ref.updateDuration,
+      duration = _ref.duration,
       act = _ref.act,
       transport = _ref.transport,
       request = _ref.request,
-      msg = _objectWithoutProperties(_ref, ['appId', 'appName', 'log', 'updateDuration', 'act', 'transport', 'request']);
+      msg = _objectWithoutProperties(_ref, ['appId', 'appName', 'log', 'duration', 'act', 'transport', 'request']);
 
   return msg;
 }
