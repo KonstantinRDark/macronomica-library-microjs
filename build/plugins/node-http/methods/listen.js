@@ -140,11 +140,12 @@ function listenHttp(app, plugin, onClose) {
           const level = error ? 'error' : 'info';
           const status = error ? _constants.RESPONSE_STATUS_ERROR : _constants.RESPONSE_STATUS_SUCCESS;
           const meta = {
-            request,
+            request: request.request,
             pin
           };
 
           if (!!error && error.code === 'error.common/act.not.found') {
+            request.duration();
             app.log.error(`[${ error404Message }/act.not.found]`, _extends({}, meta, { error }));
             return response404(res, error);
           }
@@ -160,7 +161,7 @@ function listenHttp(app, plugin, onClose) {
             'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
           });
 
-          const message = `[${ code }:${ req.method }:${ status }] ${ request.duration() }`;
+          const message = `[${ code }:${ req.method }:${ status }] ${ request.duration() }ms`;
 
           if (code === 500) {
             meta.error = error;

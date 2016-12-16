@@ -92,7 +92,7 @@ exports.default = (app, raw) => {
           nanoseconds = _process$hrtime2[1];
 
     req.request.time.end = Date.now();
-    return req.request.time.duration = (0, _mdnDecimalAdjust.round)(seconds * 1000 + nanoseconds * 1e-6, -3) + 'ms';
+    return req.request.time.duration = (0, _mdnDecimalAdjust.round)(seconds * 1000 + nanoseconds * 1e-6, -3);
   }
 };
 

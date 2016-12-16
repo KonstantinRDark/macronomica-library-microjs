@@ -54,7 +54,7 @@ export default (app, raw) => {
   function duration() {
     const [ seconds, nanoseconds ] = process.hrtime(req.request.time.hrtime);
     req.request.time.end = Date.now();
-    return req.request.time.duration = round((seconds * 1000) + (nanoseconds * 1e-6), -3) + 'ms';
+    return req.request.time.duration = round((seconds * 1000) + (nanoseconds * 1e-6), -3);
   }
 };
 

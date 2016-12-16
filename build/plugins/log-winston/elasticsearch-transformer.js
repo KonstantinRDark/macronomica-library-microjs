@@ -31,10 +31,7 @@ const transformer = function transformer(_ref) {
     app,
     fields,
     '@timestamp': timestamp,
-    request: !request ? undefined : {
-      id: request.id,
-      duration: request.duration()
-    }
+    request: !request ? undefined : request
   };
 };
 

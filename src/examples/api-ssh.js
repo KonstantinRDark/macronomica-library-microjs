@@ -12,9 +12,9 @@ const client = Micro({ level: LEVEL_ALL })
 
 client
   .run()
-  .then(() => client.act({ api: 'geo', cmd: 'ping' }).then(result => client.log.info(`api:geo - result`)))
-  .then(() => client.act({ api: 'media', cmd: 'ping' }).then(result => client.log.info(`api:media - result`)))
-  .then(() => client.act({ api: 'users', cmd: 'ping' }).then(result => client.log.info(`api:users - result`)))
+  .then(() => client.act({ api: 'geo', cmd: 'ping' }).then(result => client.log.info(`api:geo - ${ result }`)))
+  .then(() => client.act({ api: 'media', cmd: 'ping' }).then(result => client.log.info(`api:media - ${ result }`)))
+  .then(() => client.act({ api: 'users', cmd: 'ping' }).then(result => client.log.info(`api:users - ${ result }`)))
   .catch(client.log.error)
   .then(() => client.end())
 ;
