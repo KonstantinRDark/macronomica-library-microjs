@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _defer = require('./../utils/defer');
 
 var _defer2 = _interopRequireDefault(_defer);
@@ -44,9 +46,13 @@ function exec(app, pin, cb) {
   const dfd = (0, _defer2.default)(cb);
   const request = (0, _makeRequest2.default)(app, pin);
   const route = app.manager.find((0, _makeRequest.clear)(request));
+  const meta = {
+    pin: (0, _makeRequest.clear)(request),
+    request: request.request
+  };
 
   if (!route) {
-    app.log.info(`Вызов не существующего маршрута`, { pin, request: request.request });
+    app.log.info(`Вызов не существующего маршрута`, meta);
     return dfd.reject({
       code: 'error.common/act.not.found',
       message: 'Вызов не существующего маршрута'
@@ -54,7 +60,7 @@ function exec(app, pin, cb) {
   }
 
   const timerId = setTimeout(() => {
-    app.log.warn(`error.common/act.timeout`, { pin, request: request.request, action: route.action });
+    app.log.warn(`error.common/act.timeout`, _extends({}, meta, { action: route.action }));
     dfd.reject(new Error('error.common/act.timeout'));
   }, _constants.ACT_TIMEOUT);
 
