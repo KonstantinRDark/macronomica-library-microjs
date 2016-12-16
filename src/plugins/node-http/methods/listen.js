@@ -118,21 +118,22 @@ export default function listenHttp(app, plugin, onClose, settings = {}) {
           return response404(res, {});
         }
 
-        const meta = {
-          requestId: request.request.id,
-          request  : { code, status, method: req.method },
-          pin
-        };
+
 
         app.act(request, (error, result) => {
+          const code = error ? 500 : 200;
+          const level = error ? 'error' : 'info';
+          const status = error ? RESPONSE_STATUS_ERROR : RESPONSE_STATUS_SUCCESS;
+          const meta = {
+            requestId: request.request.id,
+            request  : { code, status, method: req.method },
+            pin
+          };
+
           if (!!error && error.code === 'error.common/act.not.found') {
             app.log.error(`[${ error404Message }/act.not.found]`, { ...meta, error });
             return response404(res, error);
           }
-
-          const code = error ? 500 : 200;
-          const level = error ? 'error' : 'info';
-          const status = error ? RESPONSE_STATUS_ERROR : RESPONSE_STATUS_SUCCESS;
 
           const outJson = JSON.stringify({
             [ RESPONSE_PROPERTY_STATUS ]: status,
