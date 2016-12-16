@@ -28,11 +28,30 @@
         },
         "actionId": { "type": "string", "index": "analyzed" },
         "request" : {
-          "type"      : "object",
-          "enabled"   : true,
+          "type": "object",
+          "enabled": true,
           "properties": {
-            "id"      : { "type": "string", "index": "analyzed" },
-            "duration": { "type": "float", "index": true }
+            "id": {
+              "index": "analyzed",
+              "type": "string"
+            },
+            "time": {
+              "type": "object",
+              "enabled": true,
+              "properties": {
+                "duration": {
+                  "index": "analyzed",
+                  "type": "float"
+                },
+                "hrtime": {
+                  "enabled": false
+                },
+                "start": {
+                  "index": "analyzed",
+                  "type": "date"
+                }
+              }
+            }
           }
         },
         "fields": { "type": "object" }
