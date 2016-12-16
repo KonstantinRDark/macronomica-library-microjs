@@ -66,8 +66,8 @@ exports.default = function () {
     micro.on('log', (_ref3) => {
       let level = _ref3.level,
           message = _ref3.message,
-          payload = _ref3.payload;
-      return logger[level](message, payload);
+          meta = _ref3.meta;
+      return logger[level](message, meta);
     });
 
     return plugin;

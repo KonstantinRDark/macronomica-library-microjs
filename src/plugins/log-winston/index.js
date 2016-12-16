@@ -36,7 +36,7 @@ export default ({ level, ...settings } = {}) => {
     }
 
     micro.emit('plugin.logger.use');
-    micro.on('log', ({ level, message, payload }) => logger[ level ](message, payload));
+    micro.on('log', ({ level, message, meta }) => logger[ level ](message, meta));
 
     return plugin;
   }

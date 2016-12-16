@@ -174,11 +174,7 @@ exports.default = function (app) {
           app.emit('log', { level, message, meta });
           app.emit(`log.${ level }`, { level, message, meta });
         } else {
-          const args = [`${ level }: [${ app.id }]`, message];
-
-          if (!!meta) {
-            args.push(JSON.stringify(meta, '', 4));
-          }
+          const args = [`${ level }: [${ app.id }]`, message, JSON.stringify(meta, '', 4)];
 
           switch (level) {
             case _constants.LEVEL_ERROR:
