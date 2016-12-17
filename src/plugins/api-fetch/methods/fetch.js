@@ -53,15 +53,15 @@ export default function fetch(app, { name, settings }) {
       body: JSON.stringify(clear(msg))
     })
       .then(
-        handleSuccess({ request, resolve, reject }),
-        handleError({ request, reject })
+        handleSuccess(app, { request, resolve, reject }),
+        handleError(app, { request, reject })
       );
   });
 }
 
-function handleSuccess({ request, resolve, reject }) {
+function handleSuccess(app, { request, resolve, reject }) {
   return response => {
-    const _handleError = handleError({ request, reject });
+    const _handleError = handleError(app, { request, reject });
 
     response
       .json()
@@ -85,11 +85,14 @@ function handleSuccess({ request, resolve, reject }) {
           }
 
           // Если что-то непонятное - вызовем обработчик с ошибкой
-          return _handleError({
-            code   : `${ ERROR_CODE_PREFIX }/unknown.response.structure`,
-            message: `Ответ клиента неизвестной структуры`,
-            details: json
+  
+          app.log.error('Ответ клиента неизвестной структуры', {
+            error: {
+              code   : `${ ERROR_CODE_PREFIX }/unknown.response.structure`,
+              details: json
+            }
           });
+          return reject(new Error(`${ ERROR_CODE_PREFIX }/unknown.response.structure`));
         },
         // Если ошибка парсинга - вызовем обработчик ошибок
         _handleError
@@ -97,8 +100,9 @@ function handleSuccess({ request, resolve, reject }) {
   };
 }
 
-function handleError({ request, reject }) {
+function handleError(app, { request, reject }) {
   return e => {
+    app.log.error(e);
     let error;
 
     switch (e.code) {
@@ -109,11 +113,7 @@ function handleError({ request, reject }) {
           message: `Клиент по запросу (${ request.id }) недоступен`
         };
         break;
-      default: error = {
-        code   : e.code || e.status,
-        message: e.message || e.statusText,
-        details: e.details || undefined
-      };
+      default: error = e;
     }
 
     reject(error);
