@@ -37,6 +37,7 @@ exports.default = app => {
     }
 
     app.subscribers.add.push(__add);
+    app.subscribers.end.push(() => app.del(pin));
 
     return app;
 
