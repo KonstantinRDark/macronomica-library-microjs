@@ -65,17 +65,17 @@ function fetch(app, _ref) {
         [_constants.CLIENT_REQUEST_HEADER]: _jsonwebtoken2.default.sign({ request: { id: req.id } }, _constants.CLIENT_SECRET)
       }),
       body: JSON.stringify((0, _makeRequest.clear)(msg))
-    }).then(handleSuccess({ request, resolve, reject }), handleError({ request, reject }));
+    }).then(handleSuccess(app, { request, resolve, reject }), handleError(app, { request, reject }));
   });
 }
 
-function handleSuccess(_ref2) {
+function handleSuccess(app, _ref2) {
   let request = _ref2.request,
       resolve = _ref2.resolve,
       reject = _ref2.reject;
 
   return response => {
-    const _handleError = handleError({ request, reject });
+    const _handleError = handleError(app, { request, reject });
 
     response.json().then(
     // Если ответ корректно распарсился
@@ -98,22 +98,26 @@ function handleSuccess(_ref2) {
       }
 
       // Если что-то непонятное - вызовем обработчик с ошибкой
-      return _handleError({
-        code: `${ ERROR_CODE_PREFIX }/unknown.response.structure`,
-        message: `Ответ клиента неизвестной структуры`,
-        details: json
+
+      app.log.error('Ответ клиента неизвестной структуры', {
+        error: {
+          code: `${ ERROR_CODE_PREFIX }/unknown.response.structure`,
+          details: json
+        }
       });
+      return reject(new Error(`${ ERROR_CODE_PREFIX }/unknown.response.structure`));
     },
     // Если ошибка парсинга - вызовем обработчик ошибок
     _handleError);
   };
 }
 
-function handleError(_ref3) {
+function handleError(app, _ref3) {
   let request = _ref3.request,
       reject = _ref3.reject;
 
   return e => {
+    app.log.error(e);
     let error;
 
     switch (e.code) {
@@ -125,11 +129,7 @@ function handleError(_ref3) {
         };
         break;
       default:
-        error = {
-          code: e.code || e.status,
-          message: e.message || e.statusText,
-          details: e.details || undefined
-        };
+        error = e;
     }
 
     reject(error);
