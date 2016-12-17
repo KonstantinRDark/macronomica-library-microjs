@@ -62,7 +62,7 @@ function exec(app, pin, cb) {
       })
       .catch((error) => {
         clearTimeout(timerId);
-        dfd.resolve(error);
+        dfd.reject(error);
       });
     
     return dfd.promise;
