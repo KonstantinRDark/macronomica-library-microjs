@@ -124,7 +124,8 @@ exports.default = function (app) {
   app.on('plugin.logger.use', () => usePluginLogger = true);
   app.on('plugin.logger.unuse', () => usePluginLogger = false);
 
-  process.on('uncaughtException', logger.fatal);
+  process.on('uncaughtException', error => logger.fatal('uncaughtException', error));
+  process.on('unhandledRejection', error => logger.warn('unhandledRejection', error));
 
   return logger;
 
