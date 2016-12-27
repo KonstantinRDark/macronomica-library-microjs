@@ -49,7 +49,7 @@ const TimeoutError = (0, _typed2.default)({
   message: '{name}: Превышено время выполнения (timeout={timeout}) запроса',
   type: `${ ERROR_TYPE }.timeout`,
   timeout: _constants.ACT_TIMEOUT,
-  code: 504
+  code: 408
 });
 
 /**

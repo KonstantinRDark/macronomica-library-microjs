@@ -21,7 +21,7 @@ const TimeoutError = TypedError({
   message: '{name}: Превышено время выполнения (timeout={timeout}) запроса',
   type   : `${ ERROR_TYPE }.timeout`,
   timeout: ACT_TIMEOUT,
-  code   : 504
+  code   : 408
 });
 
 /**
