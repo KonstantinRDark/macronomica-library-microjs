@@ -1,6 +1,28 @@
+import TypedError from 'error/typed';
+import WrappedError from 'error/wrapped';
 import defer from './../utils/defer';
 import makeRequest, { clear } from './../utils/make-request';
 import { ACT_TIMEOUT, STATE_RUN } from './../constants';
+
+const ERROR_TYPE = 'micro.act';
+
+const ActInternalError = WrappedError({
+  message: '{name}: {origMessage}',
+  type   : `${ ERROR_TYPE }.internal`
+});
+
+const ActNotFoundError = TypedError({
+  message: '{name}: Вызов не существующего маршрута',
+  type   : `${ ERROR_TYPE }.not.found`,
+  code   : 404
+});
+
+const TimeoutError = TypedError({
+  message: '{name}: Превышено время выполнения (timeout={timeout}) запроса',
+  type   : `${ ERROR_TYPE }.timeout`,
+  timeout: ACT_TIMEOUT,
+  code   : 504
+});
 
 /**
  * @param {app} app
@@ -36,19 +58,22 @@ function exec(app, pin, cb) {
   };
 
   if (!route) {
-    app.log.info(`Вызов не существующего маршрута`, meta);
-    return dfd.reject({
-      code   : 'error.common/act.not.found',
-      message: 'Вызов не существующего маршрута'
-    });
+    const error = ActNotFoundError();
+    app.log.warn(error.message, meta);
+    return dfd.reject(error);
   }
   
   const timerId = setTimeout(() => {
-    app.log.warn(`error.common/act.timeout`, { ...meta, action: route.action });
-    dfd.reject(new Error('error.common/act.timeout'));
+    const wrapped = TimeoutError();
+    app.log.warn(wrapped.message, { ...meta, action: route.action });
+    dfd.reject(wrapped);
   }, ACT_TIMEOUT);
   
   try {
+    app.log.info(`[${ meta.request.id }] Вызов маршрута (action=${ route.action.id })`, {
+      ...meta,
+      action: route.action
+    });
     let promise = route.callback(request, route);
     
     if (!promise || typeof promise.then !== 'function') {
@@ -65,14 +90,17 @@ function exec(app, pin, cb) {
         dfd.reject(error);
       });
     
-    return dfd.promise;
   } catch (error) {
-    app.log.error(`Ошибка при вызове маршрута`, {
-      pin, error,
-      request: request.request,
-      action : route.action
-    });
+    const wrapped = ActInternalError(error);
     clearTimeout(timerId);
-    return dfd.reject(error);
+
+    app.log.error(wrapped, {
+      pin,
+      request: request.request
+    });
+
+    dfd.reject(wrapped);
+  } finally {
+    return dfd.promise;
   }
 }

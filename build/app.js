@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _events = require('events');
 
 var _events2 = _interopRequireDefault(_events);
@@ -201,7 +205,7 @@ function initialize(app, settings) {
   app.log.level = level;
   app.setMaxListeners(maxListeners);
 
-  Object.assign(app, { id, name, settings });
+  (0, _assign2.default)(app, { id, name, settings });
 
   app.use(app.defaultLogPlugin({ level }));
 
@@ -217,7 +221,7 @@ function initialize(app, settings) {
 function onRunning(app) {
   app.state = _constants.STATE_RUN;
   app.time.running = Date.now();
-  app.log.info('App running', {
+  app.log.info(`Запущено приложение (name=${ app.name },id=${ app.id })`, {
     app: {
       startedAt: (0, _dateIsoString2.default)(app.time.started),
       runningAt: (0, _dateIsoString2.default)(app.time.running)

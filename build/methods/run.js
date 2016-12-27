@@ -4,7 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
 exports.default = run;
 
@@ -25,8 +35,6 @@ var _runAddSubscribers = require('./../utils/run-add-subscribers');
 var _runAddSubscribers2 = _interopRequireDefault(_runAddSubscribers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 /**
  * @param {app} app                                 // Экземпляр библиотеки
@@ -53,7 +61,8 @@ function run(app) {
         _ref$transport = _ref.transport;
 
     const transport = _ref$transport === undefined ? 'http' : _ref$transport,
-          otherSettings = _objectWithoutProperties(_ref, ['transport']);
+          otherSettings = (0, _objectWithoutProperties3.default)(_ref, ['transport']);
+
 
     if (runDeferred) {
       return runDeferred.promise;
@@ -64,7 +73,7 @@ function run(app) {
     // Проверяем наличие транспорта для сервера
     if (useServer && typeof transport[transport] !== 'function') {
       // если не найден транспорт - добавим в плагины транспорт по умолчанию
-      app.use(app.defaultTransportPlugin(_extends({}, otherSettings)));
+      app.use(app.defaultTransportPlugin((0, _extends3.default)({}, otherSettings)));
     }
 
     // Запустим всех подписчиков на этап инициализации
@@ -74,7 +83,7 @@ function run(app) {
     // Запустим прослушку транспорта для сервера
     .then(() => {
       if (!useServer) {
-        return Promise.resolve();
+        return _promise2.default.resolve();
       }
 
       return transports[transport]();

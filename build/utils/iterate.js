@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _getIterator2 = require('babel-runtime/core-js/get-iterator');
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
 var _getNextCallback = require('./get-next-callback');
 
 var _getNextCallback2 = _interopRequireDefault(_getNextCallback);
@@ -15,7 +19,7 @@ exports.default = function (raw) {
     args[_key - 1] = arguments[_key];
   }
 
-  return iterate(raw[Symbol.iterator](), ...args);
+  return iterate((0, _getIterator3.default)(raw), ...args);
 };
 
 function iterate(iterator) {

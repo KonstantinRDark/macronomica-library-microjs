@@ -4,7 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _error = require('./error');
 
@@ -15,7 +17,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = function (app, outError) {
   let info = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  const e = (0, _error2.default)(_extends({ message: _error.ERROR_INTERNAL_ERROR }, info));
+  const e = (0, _error2.default)((0, _extends3.default)({ message: _error.ERROR_INTERNAL_ERROR }, info));
   app.log.error(e.message, { error: outError });
   return e;
 };

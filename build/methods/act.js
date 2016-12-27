@@ -4,7 +4,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _typed = require('error/typed');
+
+var _typed2 = _interopRequireDefault(_typed);
+
+var _wrapped = require('error/wrapped');
+
+var _wrapped2 = _interopRequireDefault(_wrapped);
 
 var _defer = require('./../utils/defer');
 
@@ -18,10 +32,31 @@ var _constants = require('./../constants');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const ERROR_TYPE = 'micro.act';
+
+const ActInternalError = (0, _wrapped2.default)({
+  message: '{name}: {origMessage}',
+  type: `${ ERROR_TYPE }.internal`
+});
+
+const ActNotFoundError = (0, _typed2.default)({
+  message: '{name}: Вызов не существующего маршрута',
+  type: `${ ERROR_TYPE }.not.found`,
+  code: 404
+});
+
+const TimeoutError = (0, _typed2.default)({
+  message: '{name}: Превышено время выполнения (timeout={timeout}) запроса',
+  type: `${ ERROR_TYPE }.timeout`,
+  timeout: _constants.ACT_TIMEOUT,
+  code: 504
+});
+
 /**
  * @param {app} app
  * @returns {function:app}
  */
+
 exports.default = app => {
   /**
    * @namespace app.act
@@ -52,23 +87,25 @@ function exec(app, pin, cb) {
   };
 
   if (!route) {
-    app.log.info(`Вызов не существующего маршрута`, meta);
-    return dfd.reject({
-      code: 'error.common/act.not.found',
-      message: 'Вызов не существующего маршрута'
-    });
+    const error = ActNotFoundError();
+    app.log.warn(error.message, meta);
+    return dfd.reject(error);
   }
 
   const timerId = setTimeout(() => {
-    app.log.warn(`error.common/act.timeout`, _extends({}, meta, { action: route.action }));
-    dfd.reject(new Error('error.common/act.timeout'));
+    const wrapped = TimeoutError();
+    app.log.warn(wrapped.message, (0, _extends3.default)({}, meta, { action: route.action }));
+    dfd.reject(wrapped);
   }, _constants.ACT_TIMEOUT);
 
   try {
+    app.log.info(`[${ meta.request.id }] Вызов маршрута (action=${ route.action.id })`, (0, _extends3.default)({}, meta, {
+      action: route.action
+    }));
     let promise = route.callback(request, route);
 
     if (!promise || typeof promise.then !== 'function') {
-      promise = Promise.resolve(promise);
+      promise = _promise2.default.resolve(promise);
     }
 
     promise.then(result => {
@@ -78,16 +115,18 @@ function exec(app, pin, cb) {
       clearTimeout(timerId);
       dfd.reject(error);
     });
-
-    return dfd.promise;
   } catch (error) {
-    app.log.error(`Ошибка при вызове маршрута`, {
-      pin, error,
-      request: request.request,
-      action: route.action
-    });
+    const wrapped = ActInternalError(error);
     clearTimeout(timerId);
-    return dfd.reject(error);
+
+    app.log.error(wrapped, {
+      pin,
+      request: request.request
+    });
+
+    dfd.reject(wrapped);
+  } finally {
+    return dfd.promise;
   }
 }
 //# sourceMappingURL=act.js.map

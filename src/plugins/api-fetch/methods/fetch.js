@@ -1,3 +1,5 @@
+import WrappedError from 'error/wrapped';
+import TypedError from 'error/typed';
 import jwt from 'jsonwebtoken';
 import middleware from 'node-fetch';
 import { clear } from './../../../utils/make-request';
@@ -10,16 +12,52 @@ import {
   CLIENT_CONTENT_TYPE,
   RESPONSE_PROPERTY_STATUS,
   RESPONSE_PROPERTY_RESULT,
-  RESPONSE_STATUS_SUCCESS,
-  RESPONSE_STATUS_ERROR
+  RESPONSE_STATUS_SUCCESS
 } from './../constants';
 
-const ERROR_CODE_PREFIX = 'error.http.client';
+const ERROR_TYPE = 'micro.plugin.fetch';
+
+const InternalError = WrappedError({
+  message: [
+    '{name}: Внутренняя ошибка по запросу [{request}]{url}',
+    '{name}: {origMessage}',
+  ].join('\n'),
+  type   : `${ ERROR_TYPE }.internal`,
+  url    : null,
+  request: null
+});
+
+const ServiceNotAvailableError = WrappedError({
+  message: [
+    '{name}: Сервис недоступен по запросу [{request}]{url}',
+    '{name}: {origMessage}',
+  ].join('\n'),
+  type   : `${ ERROR_TYPE }.service.not.available`,
+  url    : null,
+  request: null
+});
+
+const ParseResponseError = WrappedError({
+  message: [
+    '{name}: Ошибка парсинга ответа по запросу [{request}]{url}',
+    '{name}: {origMessage}',
+  ].join('\n'),
+  type   : `${ ERROR_TYPE }.parse.response`,
+  url    : null,
+  request: null
+});
+
+const TimeoutError = TypedError({
+  message: '{name}: Превышено время ожидания (timeout={timeout}) запроса [{request}]{url}',
+  type   : `${ ERROR_TYPE }.timeout`,
+  timeout: API_TIMEOUT,
+  code   : 504
+});
 
 export default function fetch(app, { name, settings }) {
   let {
     url,
-    headers = {},
+    headers:outerHeaders = {},
     prefix = CLIENT_PREFIX,
     ssh,
     agent
@@ -28,94 +66,98 @@ export default function fetch(app, { name, settings }) {
   if (agent) {
     app.log.trace(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
     app.log.debug('Настройки SSH TUNNEL:', ssh);
-    agent
-      .on('error', app.log.error)
-      .on('verify', (fingerprint, callback) => {
-        app.log.trace(`Server fingerprint is ${ fingerprint }`);
-        callback(); // pass an error to indicate a bad fingerprint
-      });
+    agent.on('error', error => app.log.error(WrappedError({
+      message: '{name}: {origMessage}',
+      type   : 'micro.plugin.fetch.ssh.internal'
+    })(error)));
   }
 
-  return (request, route) => new Promise((resolve, reject) => {
-    const { api, transport, request:req, ...msg } = request;
+  return (request, route) => {
+    const { api, transport, ...msg } = request;
+    const meta = {
+      api,
+      route,
+      request : request.request,
+      body    : clear(msg),
+      url     : url + prefix,
+      useAgent: !!agent,
+      timeout : API_TIMEOUT
+    };
+    const headers = {
+      'Content-Type': CLIENT_CONTENT_TYPE,
+      ...outerHeaders,
 
-    middleware(url + prefix, {
+      [ CLIENT_TRANSPORT_HEADER ]: jwt.sign({ transport }, CLIENT_SECRET),
+      [ CLIENT_REQUEST_HEADER ]  : jwt.sign({ request: { id: meta.request.id } }, CLIENT_SECRET)
+    };
+    const options = {
       agent,
+      headers,
       method : 'POST',
       timeout: API_TIMEOUT,
-      headers: {
-        'Content-Type': CLIENT_CONTENT_TYPE,
-        ...headers,
-        
-        [ CLIENT_TRANSPORT_HEADER ]: jwt.sign({ transport }, CLIENT_SECRET),
-        [ CLIENT_REQUEST_HEADER ]  : jwt.sign({ request: { id: req.id } }, CLIENT_SECRET)
-      },
-      body: JSON.stringify(clear(msg))
-    })
-      .then(
-        handleSuccess(app, { request, resolve, reject }),
-        handleError(app, { request, reject })
+      body   : JSON.stringify(meta.body)
+    };
+
+    try {
+      return middleware(url + prefix, options).then(
+        handleSuccess(request, meta),
+        handleError(request, meta)
       );
+    } catch (e) {
+      return handleError(request, meta)(e);
+    }
+  };
+}
+
+function handleSuccess(request, meta) {
+  return response => new Promise(async (resolve, reject) => {
+    try {
+      const json = await response.json();
+
+      // Если ответ корректно распарсился
+      // Разберем ответ - данная структура обязательна для клиентских ответов
+      const {
+        [ RESPONSE_PROPERTY_STATUS ]:status,
+        [ RESPONSE_PROPERTY_RESULT ]:result
+      } = (json || {});
+
+      // Если статус результата - успех, то завершим работу вернув результат
+      if (status === RESPONSE_STATUS_SUCCESS) {
+        return resolve(result);
+      }
+
+      // Если статус результата - ошибка, то вызовем обработчик ошибок
+      return reject(result);
+    } catch (e) {
+      // Если ошибка парсинга - вызовем обработчик ошибок
+      const { url } = meta;
+      const error = ParseResponseError(e, { url, request: request.request.id });
+      request.log.error(error.message, { error, ...meta });
+      return reject(result);
+    }
   });
 }
 
-function handleSuccess(app, { request, resolve, reject }) {
-  return response => {
-    const _handleError = handleError(app, { request, reject });
-
-    response
-      .json()
-      .then(
-        // Если ответ корректно распарсился
-        (json = {}) => {
-          // Разберем ответ - данная структура обязательна для клиентских ответов
-          const {
-            [ RESPONSE_PROPERTY_STATUS ]:status,
-            [ RESPONSE_PROPERTY_RESULT ]:result
-          } = json;
-
-          // Если статус результата - успех, то завершим работу вернув результат
-          if (status === RESPONSE_STATUS_SUCCESS) {
-            return resolve(result);
-          }
-
-          // Если статус результата - ошибка, то вызовем обработчик ошибок
-          if (status === RESPONSE_STATUS_ERROR) {
-            return _handleError(result);
-          }
-
-          // Если что-то непонятное - вызовем обработчик с ошибкой
-  
-          app.log.error('Ответ клиента неизвестной структуры', {
-            error: {
-              code   : `${ ERROR_CODE_PREFIX }/unknown.response.structure`,
-              details: json
-            }
-          });
-          return reject(new Error(`${ ERROR_CODE_PREFIX }/unknown.response.structure`));
-        },
-        // Если ошибка парсинга - вызовем обработчик ошибок
-        _handleError
-      );
-  };
-}
-
-function handleError(app, { request, reject }) {
-  return e => {
-    app.log.error(e);
+function handleError(request, meta) {
+  return e => new Promise((resolve, reject) => {
+    const erropt = { url: meta.url, request: request.request.id };
     let error;
+
+    if (e.name === 'FetchError') {
+      switch (e.type) {
+        // Возникает при таймауте запроса
+        case 'request-timeout': error = TimeoutError(erropt); break;
+      }
+    }
 
     switch (e.code) {
       // Возникает когда нет сервиса к которому обращаемся
-      case 'ECONNREFUSED':
-        error = {
-          code   : `${ ERROR_CODE_PREFIX }/service.not.available`,
-          message: `Клиент по запросу (${ request.id }) недоступен`
-        };
+      case 'ECONNREFUSED': error = ServiceNotAvailableError(e, erropt);
         break;
-      default: error = e;
+      default: error = InternalError(e, erropt);
     }
 
+    request.log.error(error.message, meta);
     reject(error);
-  };
+  });
 }

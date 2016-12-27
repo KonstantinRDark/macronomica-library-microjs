@@ -140,13 +140,13 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           ? meta.error
           : messageInstanceError ? message : new Error(message);
         message = error.message;
-        meta.error = getDetailsError(app, error, meta);
+        meta.error = getFatalError(app, error, meta);
       }
 
       if (level === LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
         const error = metaInstanceError ? meta.error : message;
         message = error.message;
-        meta.error = getDetailsError(app, error, meta);
+        meta.error = getError(app, error, meta);
       }
 
       if (Array.isArray(message)) {
@@ -167,7 +167,7 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
           app.emit(`log.${ level }`, { level, message, meta });
         } else {
           const args = [
-            `${ level }: [${ app.id }]`,
+            `${ level }`,
             message,
             JSON.stringify(meta, '', 4)
           ];
@@ -189,34 +189,43 @@ export default (app, { level = LEVEL_DEFAULT } = {}) => {
   }
 };
 
-function getDetailsError(app, error, meta) {
-  let stack = error.stack || '';
-  stack = stack
-    .replace(/^.*?\n/, '\n')
-    .replace(/\n/g, '\n\s+')
-  ;
-
+function getError(app, error, meta) {
   return [
-    '############################',
-    `# Instance  : ${ app.name }:${ app.id }`,
-    '# Started At: ' + app.time.started,
-    '# ==========================',
-    '  Message   : ' + error.message,
-    '  Code      : ' + error.code,
-    '  Payload   : ' + Util.inspect(meta, { depth: null }),
-    '  Details   : ' + Util.inspect(error.details, { depth: null }),
-    '  When      : ' + (new Date()).toISOString(),
-    '  Stack     : ' + stack,
-    '  Node      : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
-    '              ' + Util.inspect(process.features).replace(/\s+/g, ' '),
-    '              ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
-    '  Process   : ',
-    '              pid=' + process.pid,
-    '              arch=' + process.arch,
-    '              platform=' + process.platform,
-    '              path=' + process.execPath,
-    '              argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
-    '              env=' + Util.inspect(process.env).replace(/\n/g, ''),
-    '############################'
+    `Error instanceof ${ error.name }`,
+    '#######################################',
+    `# Instance   : ${ app.name }`,
+    `# Instance Id: ${ app.id }`,
+    '# Started At : ' + (new Date(app.time.started)).toISOString(),
+    '# =====================================',
+    '  Message    : ' + error.message,
+    '  When       : ' + (new Date()).toISOString(),
+    '  Stack      : ' + error.stack || '',
+    '#######################################'
+  ].join('\n');
+}
+function getFatalError(app, error, meta) {
+  return [
+    `Fatal instanceof ${ error.name }`,
+    '#######################################',
+    `# Instance   : ${ app.name }`,
+    `# Instance Id: ${ app.id }`,
+    '# Started At : ' + (new Date(app.time.started)).toISOString(),
+    '# =====================================',
+    '  Message    : ' + error.message,
+    '  Payload    : ' + Util.inspect(meta, { depth: null }),
+    '  Details    : ' + Util.inspect(error.details, { depth: null }),
+    '  When       : ' + (new Date()).toISOString(),
+    '  Stack      : ' + error.stack || '',
+    '  Node       : ' + Util.inspect(process.versions).replace(/\s+/g, ' '),
+    '               ' + Util.inspect(process.features).replace(/\s+/g, ' '),
+    '               ' + Util.inspect(process.moduleLoadList).replace(/\s+/g, ' '),
+    '  Process    : ',
+    '               pid=' + process.pid,
+    '               arch=' + process.arch,
+    '               platform=' + process.platform,
+    '               path=' + process.execPath,
+    '               argv=' + Util.inspect(process.argv).replace(/\n/g, ''),
+    '               env=' + Util.inspect(process.env).replace(/\n/g, ''),
+    '#######################################'
   ].join('\n');
 }

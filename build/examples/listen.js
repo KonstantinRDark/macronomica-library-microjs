@@ -1,5 +1,9 @@
 'use strict';
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _nodeFetch = require('node-fetch');
 
 var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
@@ -19,7 +23,7 @@ const micro = (0, _2.default)({ listen });
 micro.run().then(() => {
   return (0, _nodeFetch2.default)(`http://${ host }:${ port }${ prefix }`, { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cmd: 'ping' })
+    body: (0, _stringify2.default)({ cmd: 'ping' })
   }).then(response => response.json()).then(micro.log.info).then(result => micro.end()).catch(micro.log.error);
 }).catch(micro.log.error);
 //# sourceMappingURL=listen.js.map

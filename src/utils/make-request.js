@@ -36,7 +36,7 @@ export default (app, raw) => {
     get log() { return app.log },
   };
 
-  return Object.assign(req, {
+  Object.assign(req, {
     transport,
     request: {
       id  : genid(),
@@ -48,9 +48,21 @@ export default (app, raw) => {
     },
     ...msg,
     duration,
-    act: (...rest) => app.act(...rest)
+    act: (pin) => {
+      if (isString(pin)) {
+        pin = jsonic(pin);
+      }
+
+      return app.act({
+        ...pin,
+        request  : req.request,
+        transport: req.transport,
+      });
+    }
   });
-  
+
+  return req;
+
   function duration() {
     const [ seconds, nanoseconds ] = process.hrtime(req.request.time.hrtime);
     req.request.time.end = Date.now();

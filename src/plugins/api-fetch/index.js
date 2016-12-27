@@ -9,8 +9,6 @@ export default function ApiFetchPlugin(app, { name, settings } = {}) {
 
     app.add(apiPin, fetch(app, { name, settings }));
 
-    onClose(() => app.del(apiPin));
-
     return Promise.resolve();
   };
 }

@@ -5,9 +5,21 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.clear = undefined;
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
 var _lodash = require('lodash.isstring');
 
@@ -26,8 +38,6 @@ var _genid2 = _interopRequireDefault(_genid);
 var _mdnDecimalAdjust = require('./mdn-decimal-adjust');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 const TRANSPORT = {
   type: 'inner',
@@ -49,9 +59,9 @@ exports.default = (app, raw) => {
   var _raw$transport = _raw.transport;
   const transport = _raw$transport === undefined ? TRANSPORT : _raw$transport;
   var _raw$request = _raw.request;
-
   const request = _raw$request === undefined ? {} : _raw$request,
-        msg = _objectWithoutProperties(_raw, ['appId', 'appName', 'log', 'transport', 'request']);
+        msg = (0, _objectWithoutProperties3.default)(_raw, ['appId', 'appName', 'log', 'transport', 'request']);
+
 
   const req = {
     get appId() {
@@ -67,9 +77,9 @@ exports.default = (app, raw) => {
     }
   };
 
-  return Object.assign(req, _extends({
+  (0, _assign2.default)(req, (0, _extends3.default)({
     transport,
-    request: _extends({
+    request: (0, _extends3.default)({
       id: (0, _genid2.default)()
     }, request, {
       time: {
@@ -79,14 +89,23 @@ exports.default = (app, raw) => {
     })
   }, msg, {
     duration,
-    act: function () {
-      return app.act(...arguments);
+    act: pin => {
+      if ((0, _lodash2.default)(pin)) {
+        pin = (0, _jsonic2.default)(pin);
+      }
+
+      return app.act((0, _extends3.default)({}, pin, {
+        request: req.request,
+        transport: req.transport
+      }));
     }
   }));
 
+  return req;
+
   function duration() {
     var _process$hrtime = process.hrtime(req.request.time.hrtime),
-        _process$hrtime2 = _slicedToArray(_process$hrtime, 2);
+        _process$hrtime2 = (0, _slicedToArray3.default)(_process$hrtime, 2);
 
     const seconds = _process$hrtime2[0],
           nanoseconds = _process$hrtime2[1];
@@ -106,7 +125,7 @@ function clear() {
       act = _ref.act,
       transport = _ref.transport,
       request = _ref.request,
-      msg = _objectWithoutProperties(_ref, ['appId', 'appName', 'log', 'duration', 'act', 'transport', 'request']);
+      msg = (0, _objectWithoutProperties3.default)(_ref, ['appId', 'appName', 'log', 'duration', 'act', 'transport', 'request']);
 
   return msg;
 }

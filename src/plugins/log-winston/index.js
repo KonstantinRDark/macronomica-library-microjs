@@ -1,6 +1,8 @@
+import util from 'util';
 import winston from 'winston';
 import 'winston-elasticsearch';
 import genid from './../../utils/genid';
+import formatter from './formatter';
 
 export default ({ level, ...settings } = {}) => {
   return (micro, { onClose }) => {
@@ -18,7 +20,7 @@ export default ({ level, ...settings } = {}) => {
       logger.add(winston.transports.Elasticsearch, {
         consistency    : false,
         mappingTemplate: require('./elasticsearch-template.json'),
-        transformer    : require('./elasticsearch-transformer'),
+        transformer    : formatter,
         ...loggerSettings,
         level          : level || micro.log.level,
         clientOpts     : {
@@ -31,7 +33,28 @@ export default ({ level, ...settings } = {}) => {
       });
     } else {
       logger.add(winston.transports.Console, ({
-        label: micro.id
+        label    : micro.id,
+        formatter: options => {
+          const {
+            severity,
+            message,
+            fields: { error, ...fields } = {},
+            '@timestamp':timestamp,
+            ...other
+          } = formatter(options);
+
+          other.fields = fields;
+
+          let result = [
+            util.format(`[${ severity }] ${ message }: %j`, other)
+          ];
+
+          if (error) {
+            result.push(util.format(`[${ severity }] %s`, error));
+          }
+
+          return result.join('\n');
+        }
       }));
     }
 

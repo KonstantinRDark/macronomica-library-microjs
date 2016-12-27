@@ -4,9 +4,25 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends2 = require('babel-runtime/helpers/extends');
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _typed = require('error/typed');
+
+var _typed2 = _interopRequireDefault(_typed);
+
+var _os = require('os');
+
+var _os2 = _interopRequireDefault(_os);
 
 var _path = require('path');
 
@@ -22,13 +38,29 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _constants = require('./../constants');
 
-var _error = require('./../errors/error');
-
-var _error2 = _interopRequireDefault(_error);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+const ERROR_TYPE = 'micro.plugin.fetch.ssh.options.incorrect';
+
+const SshSettingsIncorrectError = (0, _typed2.default)({
+  message: ['{name}: Не корректные настройки SSH API', 'Пример настроек', { url: 'sshUser@sshHost:sshPort@host:port' }].join(_os2.default.EOL),
+  type: `${ ERROR_TYPE }`
+});
+
+const SshSettingsUserNotFoundError = (0, _typed2.default)({
+  message: '{name}: Отсутвует SSH USER',
+  type: `${ ERROR_TYPE }.not.found.user`
+});
+
+const SshSettingsHostNotFoundError = (0, _typed2.default)({
+  message: '{name}: Отсутвует SSH HOST',
+  type: `${ ERROR_TYPE }.not.found.host`
+});
+
+const SshSettingsPortNotFoundError = (0, _typed2.default)({
+  message: '{name}: Отсутвует SSH PORT',
+  type: `${ ERROR_TYPE }.not.found.host`
+});
 
 exports.default = (app, settings) => {
   if ((0, _lodash2.default)(settings)) {
@@ -45,13 +77,13 @@ exports.default = (app, settings) => {
   var _settings$ssh = _settings.ssh;
   let ssh = _settings$ssh === undefined ? {} : _settings$ssh;
   var _settings$agent = _settings.agent;
-
   let agent = _settings$agent === undefined ? null : _settings$agent,
-      other = _objectWithoutProperties(_settings, ['url', 'host', 'port', 'ssh', 'agent']);
+      other = (0, _objectWithoutProperties3.default)(_settings, ['url', 'host', 'port', 'ssh', 'agent']);
+
 
   if (!!~url.indexOf('@')) {
     var _url$split = url.split('@'),
-        _url$split2 = _slicedToArray(_url$split, 3);
+        _url$split2 = (0, _slicedToArray3.default)(_url$split, 3);
 
     let sshUser = _url$split2[0],
         sshUrlOptions = _url$split2[1],
@@ -64,7 +96,7 @@ exports.default = (app, settings) => {
     }
 
     var _ref = sshUrlOptions ? sshUrlOptions.split(':') : [],
-        _ref2 = _slicedToArray(_ref, 2),
+        _ref2 = (0, _slicedToArray3.default)(_ref, 2),
         _ref2$ = _ref2[0];
 
     let sshHost = _ref2$ === undefined ? _constants.SSH_HOST : _ref2$;
@@ -73,27 +105,28 @@ exports.default = (app, settings) => {
 
 
     if (!sshUser && !sshHost && !sshPort) {
-      app.log.error('Не корректные настройки SSH API', settings);
-      app.log.error('Пример настроек', { url: 'sshUser@sshHost:sshPort@host:port' });
-      throw (0, _error2.default)({ action: 'parse-settings', message: _error.ERROR_SSH_SETTINGS_INCORRECT });
+      throw SshSettingsIncorrectError();
     }
 
     if (!sshUser || !sshHost || !sshPort) {
       let debugInfo = { sshOptions, sshUrlOptions, clientOptions, sshUser, sshHost, sshPort, settings };
+      let error;
+
       if (!sshUser) {
-        app.log.error('Отсутвует SSH USER', debugInfo);
+        error = SshSettingsUserNotFoundError();
       }
       if (!sshHost) {
-        app.log.error('Отсутвует SSH HOST', debugInfo);
+        error = SshSettingsHostNotFoundError();
       }
       if (!sshPort) {
-        app.log.error('Отсутвует SSH PORT', debugInfo);
+        error = SshSettingsPortNotFoundError();
       }
-      throw (0, _error2.default)({ action: 'parse-settings', message: _error.ERROR_SSH_SETTINGS_INCORRECT });
+      app.log.error(error.message, debugInfo);
+      throw error;
     }
 
     url = clientOptions;
-    ssh = _extends({
+    ssh = (0, _extends3.default)({
       host: sshHost,
       port: sshPort,
       username: sshUser,
@@ -105,7 +138,7 @@ exports.default = (app, settings) => {
   if (!!url && url.length) {
     var _url$split3 = url.split(':');
 
-    var _url$split4 = _slicedToArray(_url$split3, 2);
+    var _url$split4 = (0, _slicedToArray3.default)(_url$split3, 2);
 
     host = _url$split4[0];
     port = _url$split4[1];
@@ -115,6 +148,6 @@ exports.default = (app, settings) => {
     port = ':' + port;
   }
 
-  return _extends({ url: `${ protocol }://${ host }${ port }`, ssh, agent }, other);
+  return (0, _extends3.default)({ url: `${ protocol }://${ host }${ port }`, ssh, agent }, other);
 };
 //# sourceMappingURL=parse-settings.js.map

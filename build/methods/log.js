@@ -5,6 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LEVELS = undefined;
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _util = require('util');
 
 var _util2 = _interopRequireDefault(_util);
@@ -151,13 +159,13 @@ exports.default = function (app) {
       if (level === _constants.LEVEL_FATAL) {
         const error = metaInstanceError ? meta.error : messageInstanceError ? message : new Error(message);
         message = error.message;
-        meta.error = getDetailsError(app, error, meta);
+        meta.error = getFatalError(app, error, meta);
       }
 
       if (level === _constants.LEVEL_ERROR && (metaInstanceError || messageInstanceError)) {
         const error = metaInstanceError ? meta.error : message;
         message = error.message;
-        meta.error = getDetailsError(app, error, meta);
+        meta.error = getError(app, error, meta);
       }
 
       if (Array.isArray(message)) {
@@ -169,7 +177,7 @@ exports.default = function (app) {
       return logger;
 
       function emitOne(message) {
-        meta = Object.assign(meta, {
+        meta = (0, _assign2.default)(meta, {
           app: { id: app.id, name: app.name }
         });
 
@@ -177,7 +185,7 @@ exports.default = function (app) {
           app.emit('log', { level, message, meta });
           app.emit(`log.${ level }`, { level, message, meta });
         } else {
-          const args = [`${ level }: [${ app.id }]`, message, JSON.stringify(meta, '', 4)];
+          const args = [`${ level }`, message, (0, _stringify2.default)(meta, '', 4)];
 
           switch (level) {
             case _constants.LEVEL_ERROR:
@@ -196,10 +204,10 @@ exports.default = function (app) {
   }
 };
 
-function getDetailsError(app, error, meta) {
-  let stack = error.stack || '';
-  stack = stack.replace(/^.*?\n/, '\n').replace(/\n/g, '\n\s+');
-
-  return ['############################', `# Instance  : ${ app.name }:${ app.id }`, '# Started At: ' + app.time.started, '# ==========================', '  Message   : ' + error.message, '  Code      : ' + error.code, '  Payload   : ' + _util2.default.inspect(meta, { depth: null }), '  Details   : ' + _util2.default.inspect(error.details, { depth: null }), '  When      : ' + new Date().toISOString(), '  Stack     : ' + stack, '  Node      : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '              ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process   : ', '              pid=' + process.pid, '              arch=' + process.arch, '              platform=' + process.platform, '              path=' + process.execPath, '              argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '              env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '############################'].join('\n');
+function getError(app, error, meta) {
+  return [`Error instanceof ${ error.name }`, '#######################################', `# Instance   : ${ app.name }`, `# Instance Id: ${ app.id }`, '# Started At : ' + new Date(app.time.started).toISOString(), '# =====================================', '  Message    : ' + error.message, '  When       : ' + new Date().toISOString(), '  Stack      : ' + error.stack || '', '#######################################'].join('\n');
+}
+function getFatalError(app, error, meta) {
+  return [`Fatal instanceof ${ error.name }`, '#######################################', `# Instance   : ${ app.name }`, `# Instance Id: ${ app.id }`, '# Started At : ' + new Date(app.time.started).toISOString(), '# =====================================', '  Message    : ' + error.message, '  Payload    : ' + _util2.default.inspect(meta, { depth: null }), '  Details    : ' + _util2.default.inspect(error.details, { depth: null }), '  When       : ' + new Date().toISOString(), '  Stack      : ' + error.stack || '', '  Node       : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '               ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '               ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process    : ', '               pid=' + process.pid, '               arch=' + process.arch, '               platform=' + process.platform, '               path=' + process.execPath, '               argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '               env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '#######################################'].join('\n');
 }
 //# sourceMappingURL=log.js.map

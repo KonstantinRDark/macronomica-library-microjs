@@ -3,6 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 exports.default = ApiFetchPlugin;
 
 var _fetch = require('./methods/fetch');
@@ -30,9 +35,7 @@ function ApiFetchPlugin(app) {
 
     app.add(apiPin, (0, _fetch2.default)(app, { name, settings }));
 
-    onClose(() => app.del(apiPin));
-
-    return Promise.resolve();
+    return _promise2.default.resolve();
   };
 }
 //# sourceMappingURL=index.js.map

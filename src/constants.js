@@ -1,7 +1,18 @@
+import isNumber from 'lodash.isnumber';
+
+const {
+  DEF_TIMEOUT:defTimeout = 5000,
+  ACT_TIMEOUT:actTimeout = 5000,
+  END_TIMEOUT:endTimeout = 5000
+} = process.env;
+
+const DEF_TIMEOUT = isNumber(defTimeout) ? defTimeout : 5000;
+
+export const ACT_TIMEOUT = isNumber(actTimeout) ? actTimeout : DEF_TIMEOUT;
+export const END_TIMEOUT = isNumber(endTimeout) ? endTimeout : DEF_TIMEOUT;
+
 export const STATE_START = 'start';
 export const STATE_RUN = 'run';
-export const ACT_TIMEOUT = 5000;
-export const END_TIMEOUT = 5000;
 
 export const LEVEL_ALL = 'all';
 export const LEVEL_OFF = 'off';

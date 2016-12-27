@@ -156,7 +156,7 @@ function initialize(app, settings) {
 function onRunning(app) {
   app.state = STATE_RUN;
   app.time.running = Date.now();
-  app.log.info('App running', {
+  app.log.info(`Запущено приложение (name=${ app.name },id=${ app.id })`, {
     app: {
       startedAt: dateIsoString(app.time.started),
       runningAt: dateIsoString(app.time.running)
