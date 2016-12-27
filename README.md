@@ -18,7 +18,7 @@ micro
   .catch(micro.log.error);
 ```
 
-### Замена уровня логирования
+### Замена уровня логирования при инициализации
 ```javascript
 import Micro, { LEVEL_ERROR } from '@microjs/microjs';
 
@@ -46,6 +46,29 @@ Promise
   .all([ worker.run(), client.run() ])
   // Обратимся по API из client -> worker
   .then(([ worker, client ]) => client.act('api:worker, cmd:ping'))
+  // Выведем результат в лог
+  .then(client.log.info)
+  // Остановим запущенные приложения за ненадобностью
+  .then(() => Promise.all([ worker.end(), client.end() ]))
+  .catch(client.log.error);
+```
+### Удаленная смена уровня логирования
+```javascript
+import Micro from '@microjs/microjs';
+
+const host = '127.0.0.1';
+const port = 8000;
+const listen = { host, port };
+const worker = Micro({ listen });
+const client = Micro().api('worker', listen);
+
+Promise
+  // Запустим приложения
+  .all([ worker.run(), client.run() ])
+  // Обратимся по API из client -> worker, установим уровень логирования worker === warn
+  .then(() => client.act({ api: 'worker', cmd: 'level', level: LEVEL_WARN }))
+  // Обратимся по API из client -> worker
+  .then(() => client.act('api:worker, cmd:ping'))
   // Выведем результат в лог
   .then(client.log.info)
   // Остановим запущенные приложения за ненадобностью
