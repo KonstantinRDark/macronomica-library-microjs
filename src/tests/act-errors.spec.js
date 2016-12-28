@@ -1,9 +1,10 @@
 import TypedError from 'error/typed';
 import chai from 'chai';
 import Micro, { LEVEL_OFF, LEVEL_WARN } from '../';
+import { ACT_TIMEOUT } from '../constants';
 
 const should = chai.should();
-
+const innerTimeout = 100;
 const micro = Micro({ level: LEVEL_WARN });
 
 before(() => micro
@@ -19,8 +20,11 @@ before(() => micro
 
     reject(error({ userId: 1 }));
   }))
+  .add('cmd:act-timeout-inner-error', request => new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), innerTimeout + 10);
+  }))
   .add('cmd:act-timeout-error', request => new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 5100);
+    setTimeout(() => resolve(), ACT_TIMEOUT + 10);
   }))
   .run()
 );
@@ -43,8 +47,13 @@ describe('act-errors', function() {
     .catch(error => error.type.should.equal(`user.not.found`))
   );
 
-  it('#timeout error', () => micro
-      .act('cmd:act-timeout-error')
+  it('#timeout error to ACT_TIMEOUT', () => micro
+      .act({ cmd: 'act-timeout-error' })
+      .catch(error => error.type.should.equal(`micro.act.timeout`))
+  );
+
+  it('#timeout error to act', () => micro
+      .act({ cmd: 'act-timeout-inner-error', timeout: innerTimeout })
       .catch(error => error.type.should.equal(`micro.act.timeout`))
   );
 

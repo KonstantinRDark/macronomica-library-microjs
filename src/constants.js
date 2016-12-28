@@ -8,8 +8,8 @@ const {
 
 const DEF_TIMEOUT = isNumber(defTimeout) ? defTimeout : 5000;
 
-export const ACT_TIMEOUT = isNumber(actTimeout) ? actTimeout : DEF_TIMEOUT;
-export const END_TIMEOUT = isNumber(endTimeout) ? endTimeout : DEF_TIMEOUT;
+export const ACT_TIMEOUT = isNumber(+actTimeout) && !isNaN(+actTimeout) ? actTimeout : DEF_TIMEOUT;
+export const END_TIMEOUT = isNumber(+endTimeout) && !isNaN(+endTimeout) ? endTimeout : DEF_TIMEOUT;
 
 export const STATE_START = 'start';
 export const STATE_RUN = 'run';

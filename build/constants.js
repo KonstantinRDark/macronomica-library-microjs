@@ -22,8 +22,8 @@ const endTimeout = _process$env$END_TIME === undefined ? 5000 : _process$env$END
 
 const DEF_TIMEOUT = (0, _lodash2.default)(defTimeout) ? defTimeout : 5000;
 
-const ACT_TIMEOUT = exports.ACT_TIMEOUT = (0, _lodash2.default)(actTimeout) ? actTimeout : DEF_TIMEOUT;
-const END_TIMEOUT = exports.END_TIMEOUT = (0, _lodash2.default)(endTimeout) ? endTimeout : DEF_TIMEOUT;
+const ACT_TIMEOUT = exports.ACT_TIMEOUT = (0, _lodash2.default)(+actTimeout) && !isNaN(+actTimeout) ? actTimeout : DEF_TIMEOUT;
+const END_TIMEOUT = exports.END_TIMEOUT = (0, _lodash2.default)(+endTimeout) && !isNaN(+endTimeout) ? endTimeout : DEF_TIMEOUT;
 
 const STATE_START = exports.STATE_START = 'start';
 const STATE_RUN = exports.STATE_RUN = 'run';

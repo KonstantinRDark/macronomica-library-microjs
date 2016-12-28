@@ -20,7 +20,7 @@ const ActNotFoundError = TypedError({
 const TimeoutError = TypedError({
   message: '{name}: Превышено время выполнения (timeout={timeout}) запроса',
   type   : `${ ERROR_TYPE }.timeout`,
-  timeout: ACT_TIMEOUT,
+  timeout: null,
   code   : 408
 });
 
@@ -62,12 +62,16 @@ function exec(app, pin, cb) {
     app.log.warn(error.message, meta);
     return dfd.reject(error);
   }
+  const timeout = request.timeout || ACT_TIMEOUT;
+  let timerId;
   
-  const timerId = setTimeout(() => {
-    const wrapped = TimeoutError();
-    app.log.warn(wrapped.message, { ...meta, action: route.action });
-    dfd.reject(wrapped);
-  }, ACT_TIMEOUT);
+  if (+timeout !== -1) {
+    timerId = setTimeout(() => {
+      const wrapped = TimeoutError({ timeout });
+      app.log.warn(wrapped, { ...meta, action: route.action });
+      dfd.reject(wrapped);
+    }, timeout);
+  }
   
   try {
     app.log.info(`[${ meta.request.id }] Вызов маршрута (action=${ route.action.id })`, {
@@ -82,17 +86,17 @@ function exec(app, pin, cb) {
     
     promise
       .then(result => {
-        clearTimeout(timerId);
+        if (timerId) { clearTimeout(timerId) }
         dfd.resolve(result);
       })
       .catch((error) => {
-        clearTimeout(timerId);
+        if (timerId) { clearTimeout(timerId) }
         dfd.reject(error);
       });
     
   } catch (error) {
     const wrapped = ActInternalError(error);
-    clearTimeout(timerId);
+    if (timerId) { clearTimeout(timerId) }
 
     app.log.error(wrapped, {
       pin,

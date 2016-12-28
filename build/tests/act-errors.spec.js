@@ -16,10 +16,12 @@ var _ = require('../');
 
 var _2 = _interopRequireDefault(_);
 
+var _constants = require('../constants');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const should = _chai2.default.should();
-
+const innerTimeout = 100;
 const micro = (0, _2.default)({ level: _.LEVEL_WARN });
 
 before(() => micro.add('cmd:act-internal-error', request => {
@@ -32,8 +34,10 @@ before(() => micro.add('cmd:act-internal-error', request => {
   });
 
   reject(error({ userId: 1 }));
+})).add('cmd:act-timeout-inner-error', request => new _promise2.default((resolve, reject) => {
+  setTimeout(() => resolve(), innerTimeout + 10);
 })).add('cmd:act-timeout-error', request => new _promise2.default((resolve, reject) => {
-  setTimeout(() => resolve(), 5100);
+  setTimeout(() => resolve(), _constants.ACT_TIMEOUT + 10);
 })).run());
 after(() => micro.end());
 
@@ -45,6 +49,8 @@ describe('act-errors', function () {
 
   it('#catch error', () => micro.act('cmd:act-catch-error').catch(error => error.type.should.equal(`user.not.found`)));
 
-  it('#timeout error', () => micro.act('cmd:act-timeout-error').catch(error => error.type.should.equal(`micro.act.timeout`)));
+  it('#timeout error to ACT_TIMEOUT', () => micro.act({ cmd: 'act-timeout-error' }).catch(error => error.type.should.equal(`micro.act.timeout`)));
+
+  it('#timeout error to act', () => micro.act({ cmd: 'act-timeout-inner-error', timeout: innerTimeout }).catch(error => error.type.should.equal(`micro.act.timeout`)));
 });
 //# sourceMappingURL=act-errors.spec.js.map
