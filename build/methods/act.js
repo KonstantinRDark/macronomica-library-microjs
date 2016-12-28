@@ -20,6 +20,10 @@ var _wrapped = require('error/wrapped');
 
 var _wrapped2 = _interopRequireDefault(_wrapped);
 
+var _lodash = require('lodash.isnumber');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _defer = require('./../utils/defer');
 
 var _defer2 = _interopRequireDefault(_defer);
@@ -91,7 +95,7 @@ function exec(app, pin, cb) {
     app.log.warn(error.message, meta);
     return dfd.reject(error);
   }
-  const timeout = request.timeout || _constants.ACT_TIMEOUT;
+  const timeout = (0, _lodash2.default)(+request.timeout) && !isNaN(+request.timeout) ? +request.timeout : _constants.ACT_TIMEOUT;
   let timerId;
 
   if (+timeout !== -1) {

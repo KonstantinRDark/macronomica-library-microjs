@@ -1,5 +1,6 @@
 import TypedError from 'error/typed';
 import WrappedError from 'error/wrapped';
+import isNumber from 'lodash.isnumber';
 import defer from './../utils/defer';
 import makeRequest, { clear } from './../utils/make-request';
 import { ACT_TIMEOUT, STATE_RUN } from './../constants';
@@ -62,7 +63,9 @@ function exec(app, pin, cb) {
     app.log.warn(error.message, meta);
     return dfd.reject(error);
   }
-  const timeout = request.timeout || ACT_TIMEOUT;
+  const timeout = isNumber(+request.timeout) && !isNaN(+request.timeout)
+    ? +request.timeout
+    : ACT_TIMEOUT;
   let timerId;
   
   if (+timeout !== -1) {
