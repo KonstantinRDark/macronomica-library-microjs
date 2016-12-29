@@ -1,14 +1,28 @@
+import deepmerge from 'deepmerge'
+import isPlainObject from 'lodash.isplainobject'
 import fetch from './methods/fetch'
 import parseSettings from './utils/parse-settings'
+import getClientConfig from './utils/get-client-config'
+const clientsSettings = {};
 
-export default function ApiFetchPlugin(app, { name, settings } = {}) {
-  settings = parseSettings(app, settings);
+export default function ApiFetchPlugin(app, { name, settings = {} } = {}) {
+  clientsSettings[ app.id ] = clientsSettings[ app.id ] || {};
+  clientsSettings[ app.id ][ name ] = parseSettings(
+    app, name,
+    deepmerge(getClientConfig(app, name), settings)
+  );
 
   return (app, { onClose }) => {
-    const apiPin = `api:${ name }`;
 
-    app.add(apiPin, fetch(app, { name, settings }));
+    app.add({ role: 'plugin', cmd: 'clients' }, () =>
+      Promise.resolve(Object.keys(clientsSettings[ app.id ])));
 
-    return Promise.resolve();
+    app.add(`api:${ name }`, fetch(app, { name, settings: clientsSettings[ app.id ][ name ] }));
+
+    onClose(() => {
+      if (isPlainObject(clientsSettings[ app.id ][ name ])) {
+        delete clientsSettings[ app.id ][ name ];
+      }
+    });
   };
 }

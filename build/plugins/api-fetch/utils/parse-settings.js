@@ -24,6 +24,10 @@ var _os = require('os');
 
 var _os2 = _interopRequireDefault(_os);
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -36,36 +40,59 @@ var _lodash = require('lodash.isstring');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _lodash3 = require('lodash.isempty');
+
+var _lodash4 = _interopRequireDefault(_lodash3);
+
 var _constants = require('./../constants');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const ERROR_TYPE = 'micro.plugin.fetch.ssh.options.incorrect';
+const ERROR_TYPE = 'micro.plugin.api-fetch.settings';
 
 const SshSettingsIncorrectError = (0, _typed2.default)({
   message: ['{name}: Не корректные настройки SSH API', 'Пример настроек', { url: 'sshUser@sshHost:sshPort@host:port' }].join(_os2.default.EOL),
-  type: `${ ERROR_TYPE }`
+  type: `${ ERROR_TYPE }.ssh.incorrect`
 });
 
 const SshSettingsUserNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует SSH USER',
-  type: `${ ERROR_TYPE }.not.found.user`
+  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.user`
+});
+
+const SshSettingsPrivateKeyNotFoundError = (0, _typed2.default)({
+  message: '{name}: Отсутвует ssh private key in {path}',
+  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.private.key`,
+  path: null
 });
 
 const SshSettingsHostNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует SSH HOST',
-  type: `${ ERROR_TYPE }.not.found.host`
+  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.host`
 });
 
 const SshSettingsPortNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует SSH PORT',
-  type: `${ ERROR_TYPE }.not.found.host`
+  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.host`
 });
 
-exports.default = (app, settings) => {
+const SettingsNotFoundError = (0, _typed2.default)({
+  message: '{name}: Отсутвуют настройки для клиента {clientName}',
+  type: `${ ERROR_TYPE }.not.found`,
+  clientName: null
+});
+
+exports.default = (app, name, settings) => {
   if ((0, _lodash2.default)(settings)) {
     settings = { url: settings };
   }
+
+  if ((0, _lodash4.default)(settings)) {
+    const error = SettingsNotFoundError({ clientName: name });
+    app.log.error(error);
+    throw error;
+  }
+
   const protocol = 'http';
   var _settings = settings,
       _settings$url = _settings.url;
@@ -125,12 +152,18 @@ exports.default = (app, settings) => {
       throw error;
     }
 
+    const privateKey = _path2.default.resolve(_constants.SSH_KEY_PATH);
+
+    if (!_fs2.default.existsSync(privateKey)) {
+      throw SshSettingsPrivateKeyNotFoundError({ path: privateKey });
+    }
+
     url = clientOptions;
     ssh = (0, _extends3.default)({
       host: sshHost,
       port: sshPort,
       username: sshUser,
-      privateKey: _path2.default.resolve(_constants.SSH_KEY_PATH)
+      privateKey
     }, ssh);
     agent = (0, _httpSshAgent2.default)(ssh);
   }
