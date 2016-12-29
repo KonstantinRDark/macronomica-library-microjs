@@ -22,7 +22,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const should = _chai2.default.should();
 const innerTimeout = 100;
-const micro = (0, _2.default)({ level: _.LEVEL_WARN });
+const micro = (0, _2.default)({ level: _.LEVEL_OFF });
 
 before(() => micro.add('cmd:act-internal-error', request => {
   request.test.test;

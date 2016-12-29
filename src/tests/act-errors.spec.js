@@ -5,7 +5,7 @@ import { ACT_TIMEOUT } from '../constants';
 
 const should = chai.should();
 const innerTimeout = 100;
-const micro = Micro({ level: LEVEL_WARN });
+const micro = Micro({ level: LEVEL_OFF });
 
 before(() => micro
   .add('cmd:act-internal-error', request => {
