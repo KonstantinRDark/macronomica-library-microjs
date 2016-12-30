@@ -114,11 +114,13 @@ function fetch(app, _ref) {
       timeout: _constants.API_TIMEOUT
     };
     const headers = (0, _extends3.default)({
-      'Content-Type': _constants.CLIENT_CONTENT_TYPE
+      'Content-Type': _constants.CLIENT_CONTENT_TYPE,
+      'Referer': app.name,
+      'User-Agent': transport.origin
     }, outerHeaders, {
 
-      [_constants.CLIENT_TRANSPORT_HEADER]: _jsonwebtoken2.default.sign({ transport }, _constants.CLIENT_SECRET),
-      [_constants.CLIENT_REQUEST_HEADER]: _jsonwebtoken2.default.sign({ request: { id: meta.request.id } }, _constants.CLIENT_SECRET)
+      [_constants.CLIENT_TRANSPORT_HEADER]: getSignTransport(transport),
+      [_constants.CLIENT_REQUEST_HEADER]: getSignRequest(meta.request)
     });
     const options = {
       agent,
@@ -136,19 +138,36 @@ function fetch(app, _ref) {
   };
 }
 
+function getSignTransport() {
+  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  let transport = (0, _objectWithoutProperties3.default)(_ref2, []);
+
+  return _jsonwebtoken2.default.sign({ transport: (0, _extends3.default)({}, transport) }, _constants.CLIENT_SECRET);
+}
+
+function getSignRequest() {
+  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  let time = _ref3.time,
+      request = (0, _objectWithoutProperties3.default)(_ref3, ['time']);
+
+  return _jsonwebtoken2.default.sign({ request: (0, _extends3.default)({}, request) }, _constants.CLIENT_SECRET);
+}
+
 function handleSuccess(request, meta) {
   return response => new _promise2.default((() => {
-    var _ref2 = (0, _asyncToGenerator3.default)(function* (resolve, reject) {
+    var _ref4 = (0, _asyncToGenerator3.default)(function* (resolve, reject) {
       try {
         const json = yield response.json();
 
         // Если ответ корректно распарсился
         // Разберем ответ - данная структура обязательна для клиентских ответов
 
-        var _ref3 = json || {};
+        var _ref5 = json || {};
 
-        const status = _ref3[_constants.RESPONSE_PROPERTY_STATUS],
-              result = _ref3[_constants.RESPONSE_PROPERTY_RESULT];
+        const status = _ref5[_constants.RESPONSE_PROPERTY_STATUS],
+              result = _ref5[_constants.RESPONSE_PROPERTY_RESULT];
 
         // Если статус результата - успех, то завершим работу вернув результат
 
@@ -168,8 +187,8 @@ function handleSuccess(request, meta) {
       }
     });
 
-    return function (_x, _x2) {
-      return _ref2.apply(this, arguments);
+    return function (_x3, _x4) {
+      return _ref4.apply(this, arguments);
     };
   })());
 }

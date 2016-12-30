@@ -87,7 +87,9 @@ function exec(app, pin, cb) {
   const route = app.manager.find((0, _makeRequest.clear)(request));
   const meta = {
     pin: (0, _makeRequest.clear)(request),
-    request: request.request
+    action: !!route ? route.action : undefined,
+    request: request.request,
+    transport: request.transport
   };
 
   if (!route) {
@@ -106,10 +108,9 @@ function exec(app, pin, cb) {
     }, timeout);
   }
 
+  app.log.info(`[${ meta.request.id }] Маршрут (action=${ route.action.name || route.action.id })`, meta);
+
   try {
-    app.log.info(`[${ meta.request.id }] Вызов маршрута (action=${ route.action.id })`, (0, _extends3.default)({}, meta, {
-      action: route.action
-    }));
     let promise = route.callback(request, route);
 
     if (!promise || typeof promise.then !== 'function') {
@@ -133,14 +134,10 @@ function exec(app, pin, cb) {
       clearTimeout(timerId);
     }
 
-    app.log.error(wrapped, {
-      pin,
-      request: request.request
-    });
-
+    app.log.error(wrapped, meta);
     dfd.reject(wrapped);
-  } finally {
-    return dfd.promise;
   }
+
+  return dfd.promise;
 }
 //# sourceMappingURL=act.js.map

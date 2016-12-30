@@ -8,6 +8,10 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
@@ -49,8 +53,12 @@ function getTransport(app, req) {
   };
 
   if (_constants.SERVER_TRANSPORT_HEADER in req.headers) {
-    let transportInHeader = _jsonwebtoken2.default.verify(req.headers[_constants.SERVER_TRANSPORT_HEADER], _constants.SERVER_SECRET);
-    (0, _assign2.default)(transport, transportInHeader.transport);
+    var _jwt$verify$transport = _jsonwebtoken2.default.verify(req.headers[_constants.SERVER_TRANSPORT_HEADER], _constants.SERVER_SECRET).transport;
+
+    let type = _jwt$verify$transport.type,
+        other = (0, _objectWithoutProperties3.default)(_jwt$verify$transport, ['type']);
+
+    (0, _assign2.default)(transport, other);
   }
 
   transport.trace = [...(transport.trace || []), app.name];

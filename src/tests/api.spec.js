@@ -8,11 +8,11 @@ const port = 8000;
 const WorkerName = 'worker';
 const listen = { host, port };
 
-const worker = Micro({ name: WorkerName, listen, level: LEVEL_OFF })
+const worker = Micro({ name: WorkerName, listen/*, level: LEVEL_OFF*/ })
     .add({ cmd: 'cmd1' }, request => request.act({ cmd: 'ping' }))
     .add({ cmd: 'cmd2' }, request => request.act({ cmd: 'cmd1' }))
   ;
-const client = Micro({ name: 'client', level: LEVEL_OFF })
+const client = Micro({ name: 'client'/*, level: LEVEL_OFF */})
   .api(WorkerName, listen);
 
 before(() => Promise.all([ worker.run(), client.run() ]));
@@ -39,7 +39,7 @@ describe('api', function() {
     ]))
   );
   it('#exec client from worker cmd2', () => client
-    .act({ api: 'worker', cmd: 'cmd1' })
+    .act({ api: 'worker', cmd: 'cmd2' })
     .then(result => should.equal(result, 'pong'))
   );
 

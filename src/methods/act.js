@@ -54,8 +54,10 @@ function exec(app, pin, cb) {
   const request = makeRequest(app, pin);
   const route = app.manager.find(clear(request));
   const meta = {
-    pin    : clear(request),
-    request: request.request
+    pin      : clear(request),
+    action   : !!route ? route.action : undefined,
+    request  : request.request,
+    transport: request.transport
   };
 
   if (!route) {
@@ -75,18 +77,16 @@ function exec(app, pin, cb) {
       dfd.reject(wrapped);
     }, timeout);
   }
-  
+
+  app.log.info(`[${ meta.request.id }] Маршрут (action=${ route.action.name || route.action.id })`, meta);
+
   try {
-    app.log.info(`[${ meta.request.id }] Вызов маршрута (action=${ route.action.id })`, {
-      ...meta,
-      action: route.action
-    });
     let promise = route.callback(request, route);
-    
+
     if (!promise || typeof promise.then !== 'function') {
       promise = Promise.resolve(promise);
     }
-    
+
     promise
       .then(result => {
         if (timerId) { clearTimeout(timerId) }
@@ -96,18 +96,14 @@ function exec(app, pin, cb) {
         if (timerId) { clearTimeout(timerId) }
         dfd.reject(error);
       });
-    
-  } catch (error) {
+  }
+  catch (error) {
     const wrapped = ActInternalError(error);
     if (timerId) { clearTimeout(timerId) }
 
-    app.log.error(wrapped, {
-      pin,
-      request: request.request
-    });
-
+    app.log.error(wrapped, meta);
     dfd.reject(wrapped);
-  } finally {
-    return dfd.promise;
   }
+
+  return dfd.promise;
 }

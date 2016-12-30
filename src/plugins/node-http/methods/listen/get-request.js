@@ -34,8 +34,8 @@ function getTransport(app, req) {
   };
 
   if (SERVER_TRANSPORT_HEADER in req.headers) {
-    let transportInHeader = jwt.verify(req.headers[ SERVER_TRANSPORT_HEADER ], SERVER_SECRET);
-    Object.assign(transport, transportInHeader.transport);
+    let { type, ...other } = jwt.verify(req.headers[ SERVER_TRANSPORT_HEADER ], SERVER_SECRET).transport;
+    Object.assign(transport, other);
   }
 
   transport.trace = [

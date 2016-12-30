@@ -4,12 +4,6 @@ import { version } from '../../package.json';
 import genid from './genid';
 import { round } from './mdn-decimal-adjust';
 
-const TRANSPORT = {
-  type  : 'inner',
-  trace : [],
-  origin: `microjs-origin-v${ version }`
-};
-
 export {
   clear
 };
@@ -18,46 +12,25 @@ export default (app, raw) => {
   if (isString(raw)) {
     raw = jsonic(raw);
   }
-  
-  const {
-    // Убираем гетеры если есть
-    appId, appName, log,
-    
-    transport = TRANSPORT,
-    request = {},
-    ...msg
-  } = raw;
-  
-  const req = {
-    get appId() { return app.id },
-  
-    get appName() { return app.name },
-  
-    get log() { return app.log },
+
+  const TRANSPORT = {
+    type  : 'inner',
+    trace : [],
+    origin: `microjs-${ app.name !== 'microjs' ? app.name : '' }-v${ version }`
   };
 
-  Object.assign(req, {
-    transport,
-    request: {
-      id  : genid(),
-      ...request,
-      time: {
-        hrtime: process.hrtime(),
-        start : Date.now()
-      }
-    },
-    ...msg,
-    duration,
-    act: (pin) => {
-      if (isString(pin)) {
-        pin = jsonic(pin);
-      }
+  const { transport = TRANSPORT, request, ...msg } = clearOldRequest(raw);
+  const req = newReq(app);
 
-      return app.act({
-        ...pin,
-        request  : req.request,
-        transport: req.transport,
-      });
+  Object.assign(req, {
+    ...msg,
+    transport,
+    duration,
+    request: wrapRequest(request),
+    act    : (pin) => {
+      if (isString(pin)) { pin = jsonic(pin) }
+      const { request, transport } = req;
+      return app.act({ ...pin, request, transport });
     }
   });
 
@@ -69,6 +42,47 @@ export default (app, raw) => {
     return req.request.time.duration = round((seconds * 1000) + (nanoseconds * 1e-6), -3);
   }
 };
+
+function wrapRequest({
+  original:parent,
+  owner:oId,
+  trace = []
+} = {}) {
+  const original = genid();
+  const owner = oId || original;
+  const start = Date.now();
+  const hrtime = process.hrtime();
+  const id = [
+    owner + (original !== owner || !!parent ? ':~:' : ''),
+    !!parent ? parent + '~>~' : '',
+    original !== owner ? original : ''
+  ].join('');
+
+  trace = !!parent ? [ ...trace, original ] : [];
+
+  return {
+    id,
+    time: { hrtime, start },
+    original,
+    parent,
+    owner,
+    trace
+  };
+}
+
+function newReq(app) {
+  return {
+    get appId() { return app.id },
+
+    get appName() { return app.name },
+
+    get log() { return app.log },
+  };
+}
+
+function clearOldRequest({ appId, appName, log, duration, act, ...msg }) {
+  return msg;
+}
 
 function clear({ appId, appName, log, duration, act, transport, request, ...msg } = {}) {
   return msg;

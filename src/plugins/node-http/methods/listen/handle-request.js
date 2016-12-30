@@ -71,7 +71,10 @@ export default function handleRequest(app, settings){
         };
         const request = getRequest(app, req, pin);
 
-        const meta = { pin, request: request.request };
+        const meta = {
+          request  : request.request,
+          transport: request.transport
+        };
         const errmeta = {
           request: request.request.id,
           url    : pathnameUrl
@@ -82,6 +85,14 @@ export default function handleRequest(app, settings){
           app.log.warn(error.message, meta);
           return responseError(res, error);
         }
+
+        const message = [
+          `[${ request.request.owner }]`,
+          `--- ${ req.method } - run -`,
+          `${ request.duration() }ms`
+        ].join(' | ');
+
+        app.log.info(message, meta);
 
         return app.act({ ...request, ...pin })
           .then(
@@ -103,7 +114,10 @@ function success(request, pin, req, res) {
       result = result.type;
     }
 
-    const meta = { request: request.request, pin };
+    const meta = {
+      request  : request.request,
+      transport: request.transport
+    };
 
     const outJson = JSON.stringify({
       [ RESPONSE_PROPERTY_STATUS ]: status,
@@ -117,7 +131,7 @@ function success(request, pin, req, res) {
     });
 
     const message = [
-      `[${ request.request.id }]`,
+      `[${ request.request.owner }]`,
       `${ code } ${ req.method } ${ status }`,
       `${ request.duration() }ms`
     ].join(' | ');

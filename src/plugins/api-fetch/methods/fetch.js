@@ -85,10 +85,12 @@ export default function fetch(app, { name, settings }) {
     };
     const headers = {
       'Content-Type': CLIENT_CONTENT_TYPE,
+      'Referer'     : app.name,
+      'User-Agent'  : transport.origin,
       ...outerHeaders,
 
-      [ CLIENT_TRANSPORT_HEADER ]: jwt.sign({ transport }, CLIENT_SECRET),
-      [ CLIENT_REQUEST_HEADER ]  : jwt.sign({ request: { id: meta.request.id } }, CLIENT_SECRET)
+      [ CLIENT_TRANSPORT_HEADER ]: getSignTransport(transport),
+      [ CLIENT_REQUEST_HEADER ]  : getSignRequest(meta.request)
     };
     const options = {
       agent,
@@ -107,6 +109,14 @@ export default function fetch(app, { name, settings }) {
       return handleError(request, meta)(e);
     }
   };
+}
+
+function getSignTransport({ ...transport } = {}) {
+  return jwt.sign({ transport: { ...transport } }, CLIENT_SECRET);
+}
+
+function getSignRequest({ time, ...request } = {}) {
+  return jwt.sign({ request: { ...request } }, CLIENT_SECRET);
 }
 
 function handleSuccess(request, meta) {

@@ -100,7 +100,10 @@ function handleRequest(app, settings) {
       const pin = (0, _extends3.default)({}, req.body || {}, req.query);
       const request = (0, _getRequest2.default)(app, req, pin);
 
-      const meta = { pin, request: request.request };
+      const meta = {
+        request: request.request,
+        transport: request.transport
+      };
       const errmeta = {
         request: request.request.id,
         url: pathnameUrl
@@ -111,6 +114,10 @@ function handleRequest(app, settings) {
         app.log.warn(error.message, meta);
         return responseError(res, error);
       }
+
+      const message = [`[${ request.request.owner }]`, `--- ${ req.method } - run -`, `${ request.duration() }ms`].join(' | ');
+
+      app.log.info(message, meta);
 
       return app.act((0, _extends3.default)({}, request, pin)).then(success(request, pin, req, res), error(request, pin, req, res));
     });
@@ -128,7 +135,10 @@ function success(request, pin, req, res) {
       result = result.type;
     }
 
-    const meta = { request: request.request, pin };
+    const meta = {
+      request: request.request,
+      transport: request.transport
+    };
 
     const outJson = (0, _stringify2.default)({
       [_constants.RESPONSE_PROPERTY_STATUS]: status,
@@ -141,7 +151,7 @@ function success(request, pin, req, res) {
       'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
     });
 
-    const message = [`[${ request.request.id }]`, `${ code } ${ req.method } ${ status }`, `${ request.duration() }ms`].join(' | ');
+    const message = [`[${ request.request.owner }]`, `${ code } ${ req.method } ${ status }`, `${ request.duration() }ms`].join(' | ');
 
     request.log[level](message, meta);
 
