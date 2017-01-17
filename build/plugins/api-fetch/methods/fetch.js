@@ -203,16 +203,18 @@ function handleError(request, meta) {
         // Возникает при таймауте запроса
         case 'request-timeout':
           error = TimeoutError(erropt);break;
+        default:
+          error = InternalError(new Error(e.message), erropt);
       }
-    }
-
-    switch (e.code) {
-      // Возникает когда нет сервиса к которому обращаемся
-      case 'ECONNREFUSED':
-        error = ServiceNotAvailableError(e, erropt);
-        break;
-      default:
-        error = InternalError(e, erropt);
+    } else {
+      switch (e.code) {
+        // Возникает когда нет сервиса к которому обращаемся
+        case 'ECONNREFUSED':
+          error = ServiceNotAvailableError(e, erropt);
+          break;
+        default:
+          error = InternalError(e, erropt);
+      }
     }
 
     request.log.error(error.message, meta);
