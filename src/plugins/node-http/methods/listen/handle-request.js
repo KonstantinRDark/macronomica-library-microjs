@@ -85,7 +85,7 @@ export default function handleRequest(app, settings){
           return responseError(res, error);
         }
 
-        app.log.trace(`${ PREFIX_LOG }.run.${ req.method }`, meta);
+        app.log.log(`${ PREFIX_LOG }.start.${ req.method }`, meta);
 
         return app.act({ ...request, ...pin })
           .then(
@@ -155,7 +155,9 @@ function error(request, pin, req, res) {
       pin
     };
 
-    request.log.error(error.message, { ...meta, error });
+    if (originalError.type !== 'micro.act.not.found') {
+      request.log.error(error.message, { ...meta, error });
+    }
 
     responseError(res, error);
   };

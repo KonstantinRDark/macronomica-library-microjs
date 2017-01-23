@@ -114,7 +114,7 @@ function handleRequest(app, settings) {
         return responseError(res, error);
       }
 
-      app.log.trace(`${ PREFIX_LOG }.run.${ req.method }`, meta);
+      app.log.log(`${ PREFIX_LOG }.start.${ req.method }`, meta);
 
       return app.act((0, _extends3.default)({}, request, pin)).then(success(request, req, res), error(request, pin, req, res));
     });
@@ -182,7 +182,9 @@ function error(request, pin, req, res) {
       pin
     };
 
-    request.log.error(error.message, (0, _extends3.default)({}, meta, { error }));
+    if (originalError.type !== 'micro.act.not.found') {
+      request.log.error(error.message, (0, _extends3.default)({}, meta, { error }));
+    }
 
     responseError(res, error);
   };
