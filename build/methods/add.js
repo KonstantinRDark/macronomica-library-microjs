@@ -46,9 +46,9 @@ exports.default = app => {
         id: (0, _genid2.default)(),
         name: cb.name
       };
-      let level = pin.role === 'plugin' || 'private' in pin && pin.private === true ? 'trace' : 'info';
+      // let level = pin.role === 'plugin' || ('private' in pin && pin.private === true) ? 'trace' : 'info';
 
-      app.log[level](`microjs.common.add.${ action.name || action.id }`, { pin, action });
+      app.log.trace(`microjs.common.add.${ action.name || action.id }`, { pin, action });
 
       app.manager.add((0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin, { pin, action, callback: cb });
 
