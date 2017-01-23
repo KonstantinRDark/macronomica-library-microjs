@@ -50,25 +50,25 @@ var _constants = require('./../../constants');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const ERROR_TYPE = 'micro.plugin.http-node';
+const PREFIX_LOG = 'micro.plugins.http-node.handle-request';
 
 const InternalError = (0, _wrapped2.default)({
   message: '[{code}:{method}:error] - {origMessage}',
-  type: `${ ERROR_TYPE }.internal`,
+  type: `${ PREFIX_LOG }.internal`,
   code: 500,
   method: null
 });
 
 const UrlNotFoundError = (0, _typed2.default)({
   message: '{name} - не поддерживаемый url: {url}',
-  type: `${ ERROR_TYPE }.url.not.found`,
+  type: `${ PREFIX_LOG }.url.not.found`,
   code: 404,
   url: null
 });
 
 const CallPrivateMethodError = (0, _typed2.default)({
   message: '{name} - попытка вызова приватного метода: [request]{url}',
-  type: `${ ERROR_TYPE }.call.private.method`,
+  type: `${ PREFIX_LOG }.call.private.method`,
   code: 404,
   url: null,
   request: null
@@ -76,7 +76,7 @@ const CallPrivateMethodError = (0, _typed2.default)({
 
 const ActError = (0, _wrapped2.default)({
   message: '[{request}] | {code} {method} error | {origMessage}',
-  type: `${ ERROR_TYPE }.act`,
+  type: `${ PREFIX_LOG }.act`,
   request: null,
   code: null,
   method: null
@@ -104,29 +104,25 @@ function handleRequest(app, settings) {
         request: request.request,
         transport: request.transport
       };
-      const errmeta = {
-        request: request.request.id,
-        url: pathnameUrl
-      };
 
-      if (pin.role === 'plugin') {
-        let error = CallPrivateMethodError(errmeta);
+      if (pin.role === 'plugin' || 'private' in pin && pin.private === true) {
+        let error = CallPrivateMethodError({
+          request: request.request.id,
+          url: pathnameUrl
+        });
         app.log.warn(error.message, meta);
         return responseError(res, error);
       }
 
-      const message = [`[${ request.request.owner }]`, `--- ${ req.method } - run -`, `${ request.duration() }ms`].join(' | ');
+      app.log.trace(`${ PREFIX_LOG }.run.${ req.method }`, meta);
 
-      app.log.info(message, meta);
-
-      return app.act((0, _extends3.default)({}, request, pin)).then(success(request, pin, req, res), error(request, pin, req, res));
+      return app.act((0, _extends3.default)({}, request, pin)).then(success(request, req, res), error(request, pin, req, res));
     });
   };
 }
 
-function success(request, pin, req, res) {
+function success(request, req, res) {
   return result => {
-    const level = 'info';
     const code = 200;
     let status = _constants.RESPONSE_STATUS_SUCCESS;
 
@@ -151,9 +147,7 @@ function success(request, pin, req, res) {
       'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
     });
 
-    const message = [`[${ request.request.owner }]`, `${ code } ${ req.method } ${ status }`, `${ request.duration() }ms`].join(' | ');
-
-    request.log[level](message, meta);
+    request.log.info(`${ PREFIX_LOG }.${ status }.${ req.method }`, meta);
 
     res.end(outJson);
   };

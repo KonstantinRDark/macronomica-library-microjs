@@ -54,7 +54,10 @@ function ApiFetchPlugin(app) {
 
     app.add({ role: 'plugin', cmd: 'clients' }, () => _promise2.default.resolve((0, _keys2.default)(clientsSettings[app.id])));
 
-    app.add(`api:${ name }`, (0, _fetch2.default)(app, { name, settings: clientsSettings[app.id][name] }));
+    let settings = { name, settings: clientsSettings[app.id][name] };
+
+    app.log.info(`microjs.common.api-add.${ name }`, settings);
+    app.add(`api:${ name }`, (0, _fetch2.default)(app, settings));
 
     onClose(() => {
       if ((0, _lodash2.default)(clientsSettings[app.id][name])) {

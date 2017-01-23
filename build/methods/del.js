@@ -28,14 +28,14 @@ exports.default = app => {
     const route = app.manager.find((0, _lodash2.default)(pin) ? (0, _jsonic2.default)(pin) : pin);
 
     if (!route) {
-      app.log.trace(`Удаление несуществующего маршрута`, pin);
+      app.log.trace(`microjs.common.del.not-found`, pin);
       return app;
     }
 
     const action = route.action;
 
 
-    app.log.trace(`Удаление маршрута`, { pin, action });
+    app.log.trace(`microjs.common.del.${ action.name || action.id }`, { pin, action });
 
     app.manager.remove(pin);
 
