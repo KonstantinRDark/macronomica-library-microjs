@@ -114,7 +114,7 @@ function handleRequest(app, settings) {
         return responseError(res, error);
       }
 
-      app.log.log(`${ PREFIX_LOG }.start.${ req.method }`, meta);
+      app.log.info(`${ PREFIX_LOG }.${ req.method }`, meta);
 
       return app.act((0, _extends3.default)({}, request, pin)).then(success(request, req, res), error(request, pin, req, res));
     });

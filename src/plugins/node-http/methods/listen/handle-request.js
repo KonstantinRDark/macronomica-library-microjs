@@ -85,7 +85,7 @@ export default function handleRequest(app, settings){
           return responseError(res, error);
         }
 
-        app.log.log(`${ PREFIX_LOG }.start.${ req.method }`, meta);
+        app.log.info(`${ PREFIX_LOG }.${ req.method }`, meta);
 
         return app.act({ ...request, ...pin })
           .then(
