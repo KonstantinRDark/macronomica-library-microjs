@@ -17,7 +17,10 @@ export default function ApiFetchPlugin(app, { name, settings = {} } = {}) {
     app.add({ role: 'plugin', cmd: 'clients' }, () =>
       Promise.resolve(Object.keys(clientsSettings[ app.id ])));
 
-    app.add(`api:${ name }`, fetch(app, { name, settings: clientsSettings[ app.id ][ name ] }));
+    let settings = { name, settings: clientsSettings[ app.id ][ name ] };
+
+    app.log.info(`microjs.common.api-add.${ name }`, settings);
+    app.add(`api:${ name }`, fetch(app, settings));
 
     onClose(() => {
       if (isPlainObject(clientsSettings[ app.id ][ name ])) {

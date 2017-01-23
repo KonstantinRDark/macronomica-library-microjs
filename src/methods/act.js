@@ -78,7 +78,7 @@ function exec(app, pin, cb) {
     }, timeout);
   }
 
-  app.log.info(`[${ meta.request.id }] Маршрут (action=${ route.action.name || route.action.id })`, meta);
+  app.log.trace(`[${ meta.request.id }] Маршрут (action=${ route.action.name || route.action.id })`, meta);
 
   try {
     let promise = route.callback(request, route);

@@ -15,13 +15,13 @@ export default app => {
     const route = app.manager.find(isString(pin) ? jsonic(pin) : pin);
 
     if (!route) {
-      app.log.trace(`Удаление несуществующего маршрута`, pin);
+      app.log.trace(`microjs.common.del.not-found`, pin);
       return app;
     }
 
     const { action } = route;
 
-    app.log.trace(`Удаление маршрута`, { pin, action });
+    app.log.trace(`microjs.common.del.${ action.name || action.id }`, { pin, action });
 
     app.manager.remove(pin);
 

@@ -30,7 +30,7 @@ export default app => {
         name: cb.name
       };
 
-      app.log.trace(`Добавление нового маршрута`, { pin, action });
+      app.log.info(`microjs.common.add.${ action.name || action.id }`, { pin, action });
 
       app.manager.add(isString(pin) ? jsonic(pin) : pin, { pin, action, callback: cb });
 
