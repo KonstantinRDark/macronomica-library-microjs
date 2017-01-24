@@ -15,14 +15,14 @@ import {
   RESPONSE_STATUS_SUCCESS
 } from './../constants';
 
-const ERROR_TYPE = 'micro.plugin.fetch';
+const PREFIX_LOG = 'micro.plugins.fetch';
 
 const InternalError = WrappedError({
   message: [
     '{name}: Внутренняя ошибка по запросу [{request}]{url}',
     '{name}: {origMessage}',
   ].join('\n'),
-  type   : `${ ERROR_TYPE }.internal`,
+  type   : `${ PREFIX_LOG }.internal`,
   url    : null,
   request: null
 });
@@ -32,7 +32,7 @@ const ServiceNotAvailableError = WrappedError({
     '{name}: Сервис недоступен по запросу [{request}]{url}',
     '{name}: {origMessage}',
   ].join('\n'),
-  type   : `${ ERROR_TYPE }.service.not.available`,
+  type   : `${ PREFIX_LOG }.service.not.available`,
   url    : null,
   request: null
 });
@@ -42,14 +42,14 @@ const ParseResponseError = WrappedError({
     '{name}: Ошибка парсинга ответа по запросу [{request}]{url}',
     '{name}: {origMessage}',
   ].join('\n'),
-  type   : `${ ERROR_TYPE }.parse.response`,
+  type   : `${ PREFIX_LOG }.parse.response`,
   url    : null,
   request: null
 });
 
 const TimeoutError = TypedError({
   message: '{name}: Превышено время ожидания (timeout={timeout}) запроса [{request}]{url}',
-  type   : `${ ERROR_TYPE }.timeout`,
+  type   : `${ PREFIX_LOG }.timeout`,
   timeout: API_TIMEOUT,
   code   : 504
 });
@@ -74,14 +74,12 @@ export default function fetch(app, { name, settings }) {
 
   return (request, route) => {
     const { api, transport, ...msg } = request;
+    const body = clear(msg);
     const meta = {
       api,
-      route,
+      transport,
       request : request.request,
-      body    : clear(msg),
-      url     : url + prefix,
-      useAgent: !!agent,
-      timeout : API_TIMEOUT
+      useAgent: !!agent
     };
     const headers = {
       'Content-Type': CLIENT_CONTENT_TYPE,
@@ -97,8 +95,10 @@ export default function fetch(app, { name, settings }) {
       headers,
       method : 'POST',
       timeout: API_TIMEOUT,
-      body   : JSON.stringify(meta.body)
+      body   : JSON.stringify(body)
     };
+    request.duration();
+    request.log.trace(`${ PREFIX_LOG }.in`, { body, ...meta });
 
     try {
       return middleware(url + prefix, options).then(
@@ -133,6 +133,8 @@ function handleSuccess(request, meta) {
 
       // Если статус результата - успех, то завершим работу вернув результат
       if (status === RESPONSE_STATUS_SUCCESS) {
+        request.duration();
+        request.log.info(`${ PREFIX_LOG }`, { ...meta, result });
         return resolve(result);
       }
 
@@ -142,6 +144,8 @@ function handleSuccess(request, meta) {
       // Если ошибка парсинга - вызовем обработчик ошибок
       const { url } = meta;
       const error = ParseResponseError(e, { url, request: request.request.id });
+
+      request.duration();
       request.log.error(error.message, { error, ...meta });
       return reject(result);
     }
@@ -167,7 +171,7 @@ function handleError(request, meta) {
         default: error = InternalError(e, erropt);
       }
     }
-
+    request.duration();
     request.log.error(error.message, meta);
     reject(error);
   });

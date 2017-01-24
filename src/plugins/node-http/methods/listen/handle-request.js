@@ -74,33 +74,36 @@ export default function handleRequest(app, settings){
         const request = getRequest(app, req, pin);
 
         const meta = {
+          pin,
           body,
           query,
+          method   : req.method,
           request  : request.request,
           transport: request.transport
         };
 
+        request.duration();
+
         if (pin.role === 'plugin' || ('private' in pin && pin.private === true)) {
           let error = CallPrivateMethodError({
-            request: request.request.id,
+            request: meta.request.id,
             url    : pathnameUrl
           });
           app.log.warn(error.message, meta);
           return responseError(res, error);
         }
 
-        app.log.info(`${ PREFIX_LOG }.${ req.method }`, meta);
+        app.log.trace(PREFIX_LOG, meta);
 
-        return app.act({ ...request, ...pin })
-          .then(
-            success(request, req, res),
-            error(request, pin, req, res)
-          );
+        return request.act(pin).then(
+          success(request, res, meta),
+          error(request, res, meta)
+        );
       });
   };
 }
 
-function success(request, req, res) {
+function success(request, res, meta) {
   return result => {
     const code = 200;
     let status = RESPONSE_STATUS_SUCCESS;
@@ -115,25 +118,19 @@ function success(request, req, res) {
       [ RESPONSE_PROPERTY_RESULT ]: result
     });
 
-    const meta = {
-      result,
-      request  : request.request,
-      transport: request.transport
-    };
-
     res.writeHead(code, {
       'Content-Type'  : 'application/json',
       // 'Cache-Control' : 'private, max-age=0, no-cache, no-store',
       'Content-Length': buffer.Buffer.byteLength(outJson)
     });
-
-    request.log.info(`${ PREFIX_LOG }.${ req.method }.${ status }`, meta);
+    request.duration();
+    request.log.info(PREFIX_LOG, { status, result, ...meta });
 
     res.end(outJson);
   };
 }
 
-function error(request, pin, req, res) {
+function error(request, res, meta) {
   return (originalError) => {
     let error;
 
@@ -143,22 +140,16 @@ function error(request, pin, req, res) {
       case 'micro.act.timeout':
       case 'micro.act.not.found': {
         error = ActError(originalError, {
-          request: request.request.id,
+          request: meta.request.id,
           code   : originalError.code,
-          method : req.method
+          method : meta.method
         });
         break;
       }
       default: {
-        error = InternalError(originalError, { method: req.method });
+        error = InternalError(originalError, { method: meta.method });
       }
     }
-
-    const meta = {
-      request: request.request,
-      error,
-      pin
-    };
 
     if (originalError.type !== 'micro.act.not.found') {
       request.log.error(error.message, { ...meta, error });
