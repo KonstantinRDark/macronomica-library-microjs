@@ -97,10 +97,14 @@ function handleRequest(app, settings) {
     }
 
     (0, _applyPreprocessors2.default)(app, req, res, pathnameUrl).catch(error => responseError(res, error)).then(() => {
-      const pin = (0, _extends3.default)({}, req.body || {}, req.query);
+      const body = req.body || {};
+      const query = req.query || {};
+      const pin = (0, _extends3.default)({}, body, query);
       const request = (0, _getRequest2.default)(app, req, pin);
 
       const meta = {
+        body,
+        query,
         request: request.request,
         transport: request.transport
       };
@@ -131,15 +135,16 @@ function success(request, req, res) {
       result = result.type;
     }
 
-    const meta = {
-      request: request.request,
-      transport: request.transport
-    };
-
     const outJson = (0, _stringify2.default)({
       [_constants.RESPONSE_PROPERTY_STATUS]: status,
       [_constants.RESPONSE_PROPERTY_RESULT]: result
     });
+
+    const meta = {
+      result,
+      request: request.request,
+      transport: request.transport
+    };
 
     res.writeHead(code, {
       'Content-Type': 'application/json',
@@ -147,7 +152,7 @@ function success(request, req, res) {
       'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
     });
 
-    request.log.info(`${ PREFIX_LOG }.${ status }.${ req.method }`, meta);
+    request.log.info(`${ PREFIX_LOG }.${ req.method }.${ status }`, meta);
 
     res.end(outJson);
   };
