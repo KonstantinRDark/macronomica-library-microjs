@@ -38,8 +38,6 @@ function runSubscribers(microjs, subscribers, getPromise) {
 
       promise.then(() => callback(), callback);
     }, error => {
-      console.log('exec', error, q.jobs.length);
-
       if (error) {
         reject(InternalError(error));
       } else if (!q.jobs.length) {
