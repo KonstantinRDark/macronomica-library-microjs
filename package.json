@@ -46,6 +46,7 @@
     "node-fetch": "^1.6.3",
     "patrun": "^0.5.1",
     "qs": "^6.3.0",
+    "queue3": "^1.0.3",
     "winston": "^2.3.0",
     "winston-elasticsearch": "^0.4.2"
   },
