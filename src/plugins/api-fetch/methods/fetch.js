@@ -134,7 +134,7 @@ function handleSuccess(request, meta) {
       // Если статус результата - успех, то завершим работу вернув результат
       if (status === RESPONSE_STATUS_SUCCESS) {
         request.duration();
-        request.log.info(`${ PREFIX_LOG }`, { ...meta, result });
+        request.log.info(`${ PREFIX_LOG }`, meta);
         return resolve(result);
       }
 

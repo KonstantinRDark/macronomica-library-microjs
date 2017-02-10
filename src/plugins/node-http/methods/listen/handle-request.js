@@ -74,9 +74,9 @@ export default function handleRequest(app, settings){
         const request = getRequest(app, req, pin);
 
         const meta = {
-          pin,
-          body,
-          query,
+          /* pin, */
+          /* body,
+          query, */
           method   : req.method,
           request  : request.request,
           transport: request.transport
@@ -124,7 +124,7 @@ function success(request, res, meta) {
       'Content-Length': buffer.Buffer.byteLength(outJson)
     });
     request.duration();
-    request.log.info(PREFIX_LOG, { status, result, ...meta });
+    request.log.info(PREFIX_LOG, { status, /*result,*/ ...meta });
 
     res.end(outJson);
   };

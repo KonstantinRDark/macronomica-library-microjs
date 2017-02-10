@@ -103,9 +103,9 @@ function handleRequest(app, settings) {
       const request = (0, _getRequest2.default)(app, req, pin);
 
       const meta = {
-        pin,
-        body,
-        query,
+        /* pin, */
+        /* body,
+        query, */
         method: req.method,
         request: request.request,
         transport: request.transport
@@ -150,7 +150,7 @@ function success(request, res, meta) {
       'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
     });
     request.duration();
-    request.log.info(PREFIX_LOG, (0, _extends3.default)({ status, result }, meta));
+    request.log.info(PREFIX_LOG, (0, _extends3.default)({ status }, meta));
 
     res.end(outJson);
   };

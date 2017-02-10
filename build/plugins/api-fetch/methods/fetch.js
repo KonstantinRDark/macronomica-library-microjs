@@ -173,7 +173,7 @@ function handleSuccess(request, meta) {
 
         if (status === _constants.RESPONSE_STATUS_SUCCESS) {
           request.duration();
-          request.log.info(`${ PREFIX_LOG }`, (0, _extends3.default)({}, meta, { result }));
+          request.log.info(`${ PREFIX_LOG }`, meta);
           return resolve(result);
         }
 
