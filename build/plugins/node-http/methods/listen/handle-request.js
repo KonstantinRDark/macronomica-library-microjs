@@ -150,7 +150,7 @@ function success(request, res, meta) {
       'Content-Length': _buffer2.default.Buffer.byteLength(outJson)
     });
     request.duration();
-    request.log.info(PREFIX_LOG, (0, _extends3.default)({ status }, meta));
+    request.log.trace(PREFIX_LOG, (0, _extends3.default)({ status }, meta));
 
     res.end(outJson);
   };
