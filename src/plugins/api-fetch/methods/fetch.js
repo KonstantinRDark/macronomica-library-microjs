@@ -134,7 +134,7 @@ function handleSuccess(request, meta) {
       // Если статус результата - успех, то завершим работу вернув результат
       if (status === RESPONSE_STATUS_SUCCESS) {
         request.duration();
-        request.log.info(`${ PREFIX_LOG }`, meta);
+        request.log.trace(`${ PREFIX_LOG }`, meta);
         return resolve(result);
       }
 
@@ -155,12 +155,17 @@ function handleSuccess(request, meta) {
 function handleError(request, meta) {
   return e => new Promise((resolve, reject) => {
     const erropt = { url: meta.url, request: request.request.id };
+    let printError = true;
     let error;
 
     if (e.name === 'FetchError') {
       switch (e.type) {
         // Возникает при таймауте запроса
-        case 'request-timeout': error = TimeoutError(erropt); break;
+        case 'request-timeout': {
+          printError = false;
+          error = TimeoutError(erropt);
+          break;
+        }
         default: error = InternalError(new Error(e.message), erropt);
       }
     } else {
@@ -172,7 +177,11 @@ function handleError(request, meta) {
       }
     }
     request.duration();
-    request.log.error(error.message, meta);
+
+    if (printError) {
+      request.log.error(error.message, meta);
+    }
+
     reject(error);
   });
 }

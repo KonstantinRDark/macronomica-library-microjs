@@ -124,7 +124,7 @@ function success(request, res, meta) {
       'Content-Length': buffer.Buffer.byteLength(outJson)
     });
     request.duration();
-    request.log.info(PREFIX_LOG, { status, /*result,*/ ...meta });
+    request.log.trace(PREFIX_LOG, { status, /*result,*/ ...meta });
 
     res.end(outJson);
   };
