@@ -22,6 +22,6 @@ exports.default = (_ref) => {
   let plugin = _ref$plugin === undefined ? '-' : _ref$plugin;
 
   // error:plugin-dal:module-list:action-find-one:internal.error
-  return new Error(['error', `plugin-${ plugin }`, `module-${ module }`, `action-${ action }`, message].join(ERROR_SEPARATOR));
+  return new Error(['error', `plugin-${plugin}`, `module-${module}`, `action-${action}`, message].join(ERROR_SEPARATOR));
 };
 //# sourceMappingURL=error.js.map

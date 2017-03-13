@@ -21,7 +21,7 @@ const prefix = '/act';
 const micro = (0, _2.default)({ listen });
 
 micro.run().then(() => {
-  return (0, _nodeFetch2.default)(`http://${ host }:${ port }${ prefix }`, { method: 'POST',
+  return (0, _nodeFetch2.default)(`http://${host}:${port}${prefix}`, { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: (0, _stringify2.default)({ cmd: 'ping' })
   }).then(response => response.json()).then(micro.log.info).then(result => micro.end()).catch(micro.log.error);

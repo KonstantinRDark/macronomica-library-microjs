@@ -40,18 +40,18 @@ const ERROR_TYPE = 'micro.act';
 
 const ActInternalError = (0, _wrapped2.default)({
   message: '{name}: {origMessage}',
-  type: `${ ERROR_TYPE }.internal`
+  type: `${ERROR_TYPE}.internal`
 });
 
 const ActNotFoundError = (0, _typed2.default)({
   message: '{name}: Вызов не существующего маршрута',
-  type: `${ ERROR_TYPE }.not.found`,
+  type: `${ERROR_TYPE}.not.found`,
   code: 404
 });
 
 const TimeoutError = (0, _typed2.default)({
   message: '{name}: Превышено время выполнения (timeout={timeout}) запроса',
-  type: `${ ERROR_TYPE }.timeout`,
+  type: `${ERROR_TYPE}.timeout`,
   timeout: null,
   code: 408
 });
@@ -108,7 +108,7 @@ function exec(app, pin, cb) {
     }, timeout);
   }
 
-  app.log.trace(`[${ meta.request.id }] Маршрут (action=${ route.action.name || route.action.id })`, meta);
+  app.log.trace(`[${meta.request.id}] Маршрут (action=${route.action.name || route.action.id})`, meta);
 
   try {
     let promise = route.callback(request, route);

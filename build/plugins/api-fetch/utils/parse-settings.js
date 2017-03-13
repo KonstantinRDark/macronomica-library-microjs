@@ -52,33 +52,33 @@ const ERROR_TYPE = 'micro.plugin.api-fetch.settings';
 
 const SshSettingsIncorrectError = (0, _typed2.default)({
   message: ['{name}: Не корректные настройки SSH API', 'Пример настроек', { url: 'sshUser@sshHost:sshPort@host:port' }].join(_os2.default.EOL),
-  type: `${ ERROR_TYPE }.ssh.incorrect`
+  type: `${ERROR_TYPE}.ssh.incorrect`
 });
 
 const SshSettingsUserNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует SSH USER',
-  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.user`
+  type: `${ERROR_TYPE}.ssh.incorrect.not.found.user`
 });
 
 const SshSettingsPrivateKeyNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует ssh private key in {path}',
-  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.private.key`,
+  type: `${ERROR_TYPE}.ssh.incorrect.not.found.private.key`,
   path: null
 });
 
 const SshSettingsHostNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует SSH HOST',
-  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.host`
+  type: `${ERROR_TYPE}.ssh.incorrect.not.found.host`
 });
 
 const SshSettingsPortNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвует SSH PORT',
-  type: `${ ERROR_TYPE }.ssh.incorrect.not.found.host`
+  type: `${ERROR_TYPE}.ssh.incorrect.not.found.host`
 });
 
 const SettingsNotFoundError = (0, _typed2.default)({
   message: '{name}: Отсутвуют настройки для клиента {clientName}',
-  type: `${ ERROR_TYPE }.not.found`,
+  type: `${ERROR_TYPE}.not.found`,
   clientName: null
 });
 
@@ -181,6 +181,6 @@ exports.default = (app, name, settings) => {
     port = ':' + port;
   }
 
-  return (0, _extends3.default)({ url: `${ protocol }://${ host }${ port }`, ssh, agent }, other);
+  return (0, _extends3.default)({ url: `${protocol}://${host}${port}`, ssh, agent }, other);
 };
 //# sourceMappingURL=parse-settings.js.map

@@ -35,7 +35,7 @@ exports.default = app => {
     const action = route.action;
 
 
-    app.log.trace(`microjs.common.del.${ action.name || action.id }`, { pin, action });
+    app.log.trace(`microjs.common.del.${action.name || action.id}`, { pin, action });
 
     app.manager.remove(pin);
 

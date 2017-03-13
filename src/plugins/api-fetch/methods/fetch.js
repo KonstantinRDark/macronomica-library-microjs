@@ -100,14 +100,18 @@ export default function fetch(app, { name, settings }) {
     request.duration();
     request.log.trace(`${ PREFIX_LOG }.in`, { body, ...meta });
 
+    let promise;
+
     try {
-      return middleware(url + prefix, options).then(
-        handleSuccess(request, meta),
-        handleError(request, meta)
-      );
+      promise = middleware(url + prefix, options);
     } catch (e) {
       return handleError(request, meta)(e);
     }
+
+    return promise.then(
+      handleSuccess(request, meta),
+      handleError(request, meta)
+    );
   };
 }
 
@@ -139,7 +143,7 @@ function handleSuccess(request, meta) {
       }
 
       // Если статус результата - ошибка, то вызовем обработчик ошибок
-      return reject(result);
+      return reject(typeof result !== 'string' ? result : new Error(result));
     } catch (e) {
       // Если ошибка парсинга - вызовем обработчик ошибок
       const { url } = meta;

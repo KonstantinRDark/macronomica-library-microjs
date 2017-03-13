@@ -37,7 +37,7 @@ const ERROR_TYPE = 'micro.plugin.http-node';
 
 const PreprocessorsParseError = (0, _wrapped2.default)({
   message: ['{name} - ошибка парсисинга препросессора для запроса (url={url})', '{name} - {origMessage}'].join(_os2.default.EOL),
-  type: `${ ERROR_TYPE }.apply.preprocessors`,
+  type: `${ERROR_TYPE}.apply.preprocessors`,
   code: 500,
   url: null
 });

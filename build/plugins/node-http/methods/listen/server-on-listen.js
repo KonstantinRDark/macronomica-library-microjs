@@ -24,7 +24,7 @@ const ERROR_TYPE = 'micro.plugin.http-node';
 
 const ServerListenInternalError = (0, _wrapped2.default)({
   message: ['{name} - Внутренняя ошибка запуска сервера', '{name} - {origMessage}'].join(_os2.default.EOL),
-  type: `${ ERROR_TYPE }.server.listen.internal`
+  type: `${ERROR_TYPE}.server.listen.internal`
 });
 
 function serverOnListen(server, app, settings, meta) {
@@ -42,7 +42,7 @@ function serverOnListen(server, app, settings, meta) {
         return reject(error);
       }
 
-      app.log.info(`Запущен Node Http сервер (host=${ host },port=${ port })`, {
+      app.log.info(`Запущен Node Http сервер (host=${host},port=${port})`, {
         plugin: { host, port }
       });
       resolve();

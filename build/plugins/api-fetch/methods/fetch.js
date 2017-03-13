@@ -52,28 +52,28 @@ const PREFIX_LOG = 'micro.plugins.fetch';
 
 const InternalError = (0, _wrapped2.default)({
   message: ['{name}: Внутренняя ошибка по запросу [{request}]{url}', '{name}: {origMessage}'].join('\n'),
-  type: `${ PREFIX_LOG }.internal`,
+  type: `${PREFIX_LOG}.internal`,
   url: null,
   request: null
 });
 
 const ServiceNotAvailableError = (0, _wrapped2.default)({
   message: ['{name}: Сервис недоступен по запросу [{request}]{url}', '{name}: {origMessage}'].join('\n'),
-  type: `${ PREFIX_LOG }.service.not.available`,
+  type: `${PREFIX_LOG}.service.not.available`,
   url: null,
   request: null
 });
 
 const ParseResponseError = (0, _wrapped2.default)({
   message: ['{name}: Ошибка парсинга ответа по запросу [{request}]{url}', '{name}: {origMessage}'].join('\n'),
-  type: `${ PREFIX_LOG }.parse.response`,
+  type: `${PREFIX_LOG}.parse.response`,
   url: null,
   request: null
 });
 
 const TimeoutError = (0, _typed2.default)({
   message: '{name}: Превышено время ожидания (timeout={timeout}) запроса [{request}]{url}',
-  type: `${ PREFIX_LOG }.timeout`,
+  type: `${PREFIX_LOG}.timeout`,
   timeout: _constants.API_TIMEOUT,
   code: 504
 });
@@ -91,7 +91,7 @@ function fetch(app, _ref) {
 
 
   if (agent) {
-    app.log.trace(`Используется SSH TUNNEL: ${ ssh.username }@${ ssh.host }:${ ssh.port }`);
+    app.log.trace(`Используется SSH TUNNEL: ${ssh.username}@${ssh.host}:${ssh.port}`);
     app.log.debug('Настройки SSH TUNNEL:', ssh);
     agent.on('error', error => app.log.error((0, _wrapped2.default)({
       message: '{name}: {origMessage}',
@@ -128,13 +128,17 @@ function fetch(app, _ref) {
       body: (0, _stringify2.default)(body)
     };
     request.duration();
-    request.log.trace(`${ PREFIX_LOG }.in`, (0, _extends3.default)({ body }, meta));
+    request.log.trace(`${PREFIX_LOG}.in`, (0, _extends3.default)({ body }, meta));
+
+    let promise;
 
     try {
-      return (0, _nodeFetch2.default)(url + prefix, options).then(handleSuccess(request, meta), handleError(request, meta));
+      promise = (0, _nodeFetch2.default)(url + prefix, options);
     } catch (e) {
       return handleError(request, meta)(e);
     }
+
+    return promise.then(handleSuccess(request, meta), handleError(request, meta));
   };
 }
 
@@ -173,12 +177,12 @@ function handleSuccess(request, meta) {
 
         if (status === _constants.RESPONSE_STATUS_SUCCESS) {
           request.duration();
-          request.log.trace(`${ PREFIX_LOG }`, meta);
+          request.log.trace(`${PREFIX_LOG}`, meta);
           return resolve(result);
         }
 
         // Если статус результата - ошибка, то вызовем обработчик ошибок
-        return reject(result);
+        return reject(typeof result !== 'string' ? result : new Error(result));
       } catch (e) {
         // Если ошибка парсинга - вызовем обработчик ошибок
         const url = meta.url;

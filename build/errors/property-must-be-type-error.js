@@ -24,7 +24,7 @@ exports.default = (_ref) => {
       info = (0, _objectWithoutProperties3.default)(_ref, ['property', 'type']);
 
   return (0, _error2.default)((0, _extends3.default)({
-    message: `property.${ property }.${ _error.ERROR_PROPERTY_MUST_BE }.${ type }`
+    message: `property.${property}.${_error.ERROR_PROPERTY_MUST_BE}.${type}`
   }, info));
 };
 //# sourceMappingURL=property-must-be-type-error.js.map

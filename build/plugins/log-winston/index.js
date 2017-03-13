@@ -87,10 +87,10 @@ exports.default = function () {
 
           other.fields = fields;
 
-          let result = [_util2.default.format(`[${ severity }] ${ message }: %j`, other)];
+          let result = [_util2.default.format(`[${severity}] ${message}: %j`, other)];
 
           if (error) {
-            result.push(_util2.default.format(`[${ severity }] %s`, error));
+            result.push(_util2.default.format(`[${severity}] %s`, error));
           }
 
           return result.join('\n');

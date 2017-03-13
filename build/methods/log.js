@@ -183,9 +183,9 @@ exports.default = function (app) {
 
         if (usePluginLogger) {
           app.emit('log', { level, message, meta });
-          app.emit(`log.${ level }`, { level, message, meta });
+          app.emit(`log.${level}`, { level, message, meta });
         } else {
-          const args = [`${ level }`, message, (0, _stringify2.default)(meta, '', 4)];
+          const args = [`${level}`, message, (0, _stringify2.default)(meta, '', 4)];
 
           switch (level) {
             case _constants.LEVEL_ERROR:
@@ -205,9 +205,9 @@ exports.default = function (app) {
 };
 
 function getError(app, error, meta) {
-  return [`Error instanceof ${ error.name }`, '#######################################', `# Instance   : ${ app.name }`, `# Instance Id: ${ app.id }`, '# Started At : ' + new Date(app.time.started).toISOString(), '# =====================================', '  Message    : ' + error.message, '  When       : ' + new Date().toISOString(), '  Stack      : ' + error.stack || '', '#######################################'].join('\n');
+  return [`Error instanceof ${error.name}`, '#######################################', `# Instance   : ${app.name}`, `# Instance Id: ${app.id}`, '# Started At : ' + new Date(app.time.started).toISOString(), '# =====================================', '  Message    : ' + error.message, '  When       : ' + new Date().toISOString(), '  Stack      : ' + error.stack || '', '#######################################'].join('\n');
 }
 function getFatalError(app, error, meta) {
-  return [`Fatal instanceof ${ error.name }`, '#######################################', `# Instance   : ${ app.name }`, `# Instance Id: ${ app.id }`, '# Started At : ' + new Date(app.time.started).toISOString(), '# =====================================', '  Message    : ' + error.message, '  Payload    : ' + _util2.default.inspect(meta, { depth: null }), '  Details    : ' + _util2.default.inspect(error.details, { depth: null }), '  When       : ' + new Date().toISOString(), '  Stack      : ' + error.stack || '', '  Node       : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '               ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '               ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process    : ', '               pid=' + process.pid, '               arch=' + process.arch, '               platform=' + process.platform, '               path=' + process.execPath, '               argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '               env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '#######################################'].join('\n');
+  return [`Fatal instanceof ${error.name}`, '#######################################', `# Instance   : ${app.name}`, `# Instance Id: ${app.id}`, '# Started At : ' + new Date(app.time.started).toISOString(), '# =====================================', '  Message    : ' + error.message, '  Payload    : ' + _util2.default.inspect(meta, { depth: null }), '  Details    : ' + _util2.default.inspect(error.details, { depth: null }), '  When       : ' + new Date().toISOString(), '  Stack      : ' + error.stack || '', '  Node       : ' + _util2.default.inspect(process.versions).replace(/\s+/g, ' '), '               ' + _util2.default.inspect(process.features).replace(/\s+/g, ' '), '               ' + _util2.default.inspect(process.moduleLoadList).replace(/\s+/g, ' '), '  Process    : ', '               pid=' + process.pid, '               arch=' + process.arch, '               platform=' + process.platform, '               path=' + process.execPath, '               argv=' + _util2.default.inspect(process.argv).replace(/\n/g, ''), '               env=' + _util2.default.inspect(process.env).replace(/\n/g, ''), '#######################################'].join('\n');
 }
 //# sourceMappingURL=log.js.map

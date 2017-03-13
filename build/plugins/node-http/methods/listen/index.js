@@ -38,7 +38,7 @@ const ERROR_TYPE = 'micro.plugin.http-node';
 
 const InternalError = (0, _wrapped2.default)({
   message: '{name} - {origMessage}',
-  type: `${ ERROR_TYPE }.internal`
+  type: `${ERROR_TYPE}.internal`
 });
 
 function listenHttp(app, plugin, onClose) {

@@ -23,7 +23,7 @@ exports.default = (_ref) => {
       info = (0, _objectWithoutProperties3.default)(_ref, ['property']);
 
   return (0, _error2.default)((0, _extends3.default)({
-    message: `property.${ property }.${ _error.ERROR_PROPERTY_IS_REQUIRED }`
+    message: `property.${property}.${_error.ERROR_PROPERTY_IS_REQUIRED}`
   }, info));
 };
 //# sourceMappingURL=property-is-required-error.js.map

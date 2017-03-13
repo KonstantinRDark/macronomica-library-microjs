@@ -54,21 +54,21 @@ const PREFIX_LOG = 'micro.plugins.http-node.handle-request';
 
 const InternalError = (0, _wrapped2.default)({
   message: '[{code}:{method}:error] - {origMessage}',
-  type: `${ PREFIX_LOG }.internal`,
+  type: `${PREFIX_LOG}.internal`,
   code: 500,
   method: null
 });
 
 const UrlNotFoundError = (0, _typed2.default)({
   message: '{name} - не поддерживаемый url: {url}',
-  type: `${ PREFIX_LOG }.url.not.found`,
+  type: `${PREFIX_LOG}.url.not.found`,
   code: 404,
   url: null
 });
 
 const CallPrivateMethodError = (0, _typed2.default)({
   message: '{name} - попытка вызова приватного метода: [request]{url}',
-  type: `${ PREFIX_LOG }.call.private.method`,
+  type: `${PREFIX_LOG}.call.private.method`,
   code: 404,
   url: null,
   request: null
@@ -76,7 +76,7 @@ const CallPrivateMethodError = (0, _typed2.default)({
 
 const ActError = (0, _wrapped2.default)({
   message: '[{request}] | {code} {method} error | {origMessage}',
-  type: `${ PREFIX_LOG }.act`,
+  type: `${PREFIX_LOG}.act`,
   request: null,
   code: null,
   method: null

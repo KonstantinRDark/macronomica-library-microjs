@@ -23,11 +23,11 @@ const CONFIG_SSH_PRIVATE_KEY = _process$env$CONFIG_S === undefined ? 'client.ssh
 var _process$env$SSH_PRIV = _process$env.SSH_PRIVATE_KEY;
 const SSH_PRIVATE_KEY = _process$env$SSH_PRIV === undefined ? _config2.default.has(CONFIG_SSH_PRIVATE_KEY) ? _config2.default.get(CONFIG_SSH_PRIVATE_KEY) : '/.ssh/id_rsa' : _process$env$SSH_PRIV;
 function getClientConfig(app, name) {
-  if (!_config2.default.has(`${ CONFIG_CLIENTS_SECTION }.${ name }`)) {
+  if (!_config2.default.has(`${CONFIG_CLIENTS_SECTION}.${name}`)) {
     return {};
   }
 
-  let cfg = { url: _config2.default.get(`${ CONFIG_CLIENTS_SECTION }.${ name }`) };
+  let cfg = { url: _config2.default.get(`${CONFIG_CLIENTS_SECTION}.${name}`) };
 
   if (!!~cfg.url.indexOf('@')) {
     cfg.ssh = {

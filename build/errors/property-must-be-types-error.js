@@ -29,7 +29,7 @@ exports.default = (_ref) => {
   }
 
   return (0, _error2.default)((0, _extends3.default)({
-    message: `property.${ property }.${ _error.ERROR_PROPERTY_MUST_BE }.${ types.join('.or.') }`
+    message: `property.${property}.${_error.ERROR_PROPERTY_MUST_BE}.${types.join('.or.')}`
   }, info));
 };
 //# sourceMappingURL=property-must-be-types-error.js.map

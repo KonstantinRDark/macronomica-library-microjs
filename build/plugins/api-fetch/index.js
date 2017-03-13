@@ -56,8 +56,8 @@ function ApiFetchPlugin(app) {
 
     let settings = { name, settings: clientsSettings[app.id][name] };
 
-    app.log.info(`microjs.common.api-add.${ name }`, settings);
-    app.add(`api:${ name }`, (0, _fetch2.default)(app, settings));
+    app.log.info(`microjs.common.api-add.${name}`, settings);
+    app.add(`api:${name}`, (0, _fetch2.default)(app, settings));
 
     onClose(() => {
       if ((0, _lodash2.default)(clientsSettings[app.id][name])) {

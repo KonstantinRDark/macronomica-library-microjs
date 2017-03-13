@@ -24,7 +24,7 @@ const ERROR_TYPE = 'micro.plugin.http-node';
 
 const ServerCloseInternalError = (0, _wrapped2.default)({
   message: ['{name} - Внутренняя ошибка остановки сервера', '{name} - {origMessage}'].join(_os2.default.EOL),
-  type: `${ ERROR_TYPE }.server.close.internal`
+  type: `${ERROR_TYPE}.server.close.internal`
 });
 
 function serverOnClose(server, app, settings, meta) {
@@ -41,7 +41,7 @@ function serverOnClose(server, app, settings, meta) {
         return reject(error);
       }
 
-      app.log.info(`Остановлен Node Http сервер (host=${ host },port=${ port })`, meta);
+      app.log.info(`Остановлен Node Http сервер (host=${host},port=${port})`, meta);
       resolve();
     });
   });

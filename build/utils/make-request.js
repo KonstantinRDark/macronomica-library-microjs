@@ -49,7 +49,7 @@ exports.default = (app, raw) => {
   const TRANSPORT = {
     type: 'inner',
     trace: [],
-    origin: `microjs-${ app.name !== 'microjs' ? app.name : '' }-v${ _package.version }`
+    origin: `microjs-${app.name !== 'microjs' ? app.name : ''}-v${_package.version}`
   };
 
   var _clearOldRequest = clearOldRequest(raw),
