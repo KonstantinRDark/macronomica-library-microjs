@@ -142,8 +142,8 @@ function handleSuccess(request, meta) {
         return resolve(result);
       }
 
-      // Если статус результата - ошибка, то вызовем обработчик ошибок
-      if (typeof result !== 'string' || !(result instanceof Error)) {
+      // Если результат не строка и не Error - сообщим о не поддерживаемой ошибке
+      if (typeof result !== 'string' && !(result instanceof Error)) {
         request.log.warn('Возвращается ошибка в не поддерживаемом формате', {
           result,
           typeof   : typeof result,
@@ -152,6 +152,7 @@ function handleSuccess(request, meta) {
         });
       }
 
+      // Если статус результата - ошибка, то вызовем обработчик ошибок
       return reject(typeof result !== 'string' ? result : new Error(result));
     } catch (e) {
       // Если ошибка парсинга - вызовем обработчик ошибок
